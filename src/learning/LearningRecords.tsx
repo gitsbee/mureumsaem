@@ -72,7 +72,7 @@ export function Leaderboard({ day, subject, uid }: { day: string; subject: Subje
     <ol className="learning-list">
       {entries.map(entry => <li key={entry.uid}>
         <span>{entries.findIndex(other => other.score === entry.score) + 1}위</span>
-        <Identity uid={entry.uid} fallback="풀림 학습자" />
+        <Identity uid={entry.uid} fallback="물음샘 학습자" />
         <strong>{entry.score} / {DAILY_SIZE}{entry.uid === uid ? ' · 나' : ''}</strong>
       </li>)}
     </ol>

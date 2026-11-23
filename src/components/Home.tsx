@@ -22,7 +22,7 @@ export default function Home() {
   return <>
     <section className="home-hero">
       <div className="home-hero-copy">
-        <h1>풀림</h1>
+        <h1>물음샘</h1>
         <p className="home-headline">오늘 배운 것,<br />어디까지 풀 수 있을까?</p>
         <p>수학은 손으로 풀고 영어는 기억에서 꺼내 보세요. 막힌 문제는 담벼락에 함께 펼쳐 놓을 수 있어요.</p>
       </div>
@@ -48,7 +48,7 @@ export default function Home() {
     </section>
     <section className="home-section home-intro" aria-labelledby="home-intro-title">
       <h2 id="home-intro-title">풀어 보고, 다시 익혀요</h2>
-      <p>풀림은 공부한 내용을 직접 써먹어 보는 곳이에요. 먼저 답을 떠올리고, 채점과 해설을 보고, 틀린 문제를 기록에서 꺼내 다시 풀 수 있어요.</p>
+      <p>물음샘은 공부한 내용을 직접 써먹어 보는 곳이에요. 먼저 답을 떠올리고, 채점과 해설을 보고, 틀린 문제를 기록에서 꺼내 다시 풀 수 있어요.</p>
       <div className="panel home-demo">
         <h3>한 문제 맛보기</h3>
         <div className="filter-tabs" role="group" aria-label="맛보기 과목">

@@ -23,7 +23,7 @@ export default function ProfileRecords({ account }: { account: string }) {
           const url = URL.createObjectURL(new Blob([JSON.stringify(content)], { type: 'application/json' }));
           const link = document.createElement('a');
           link.href = url;
-          link.download = `풀림-${subjects[subject]}-${koreanDay()}.json`;
+          link.download = `물음샘-${subjects[subject]}-${koreanDay()}.json`;
           link.click();
           setTimeout(() => URL.revokeObjectURL(url), 30_000);
           setNotice('학습 기록 백업을 내려받았습니다.');

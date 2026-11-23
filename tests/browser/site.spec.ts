@@ -22,7 +22,7 @@ async function signup(page: Page, handle: string) {
   return email;
 }
 async function openWall(page: Page) {
-  await page.getByRole('link', { name: '풀림', exact: true }).click();
+  await page.getByRole('link', { name: '물음샘', exact: true }).click();
   await page.getByRole('link', { name: '담벼락', exact: true }).click();
 }
 async function openProfile(page: Page) {
@@ -158,7 +158,7 @@ test('mobile two-step signup, email-only login, back navigation and persistent d
   const email = await signup(page, 'phone');
   const nav = page.getByRole('navigation', { name: '서비스' });
   await expect(nav.getByRole('link')).toHaveCount(3);
-  expect(await nav.getByRole('link').evaluateAll(items => items.map(item => item.getAttribute('aria-label')))).toEqual(['풀림', '수학', '영어']);
+  expect(await nav.getByRole('link').evaluateAll(items => items.map(item => item.getAttribute('aria-label')))).toEqual(['물음샘', '수학', '영어']);
   await post(page, '모바일 글 #테스트');
   await openProfile(page);
   await expect(page.getByRole('heading', { name: '프로필', exact: true, level: 1 })).toBeVisible();
@@ -380,13 +380,13 @@ test('one study document, shared dark theme and synchronized practice records', 
     const mathDownload = other.waitForEvent('download');
     await records.getByRole('button', { name: '기록 내보내기' }).click();
     const backup = await mathDownload;
-    expect(backup.suggestedFilename()).toContain('풀림-수학');
+    expect(backup.suggestedFilename()).toContain('물음샘-수학');
     await records.locator('input[type=file]').setInputFiles((await backup.path())!);
     await expect(records.getByRole('status')).toHaveText('학습 기록을 가져왔습니다.');
     await records.getByLabel('학습 기록 과목').selectOption('english');
     const englishDownload = other.waitForEvent('download');
     await records.getByRole('button', { name: '기록 내보내기' }).click();
-    expect((await englishDownload).suggestedFilename()).toContain('풀림-영어');
+    expect((await englishDownload).suggestedFilename()).toContain('물음샘-영어');
     other.once('dialog', dialog => dialog.accept());
     await records.locator('input[type=file]').setInputFiles({
       name: '영어-백업.json', mimeType: 'application/json',
@@ -503,7 +503,7 @@ test('one header, two control styles and shared support at mobile width', async 
   const units = settings.getByRole('tablist', { name: '설정 탭' });
   await expect(units.getByRole('tab', { name: '화면', exact: true })).toHaveAttribute('aria-selected', 'true');
   await expect(settings.getByRole('switch', { name: '전체화면' })).toBeVisible();
-  await expect(units.getByRole('tab').allTextContents()).resolves.toEqual(['화면', '입력', '소리', '지원', '풀림']);
+  await expect(units.getByRole('tab').allTextContents()).resolves.toEqual(['화면', '입력', '소리', '지원', '물음샘']);
   await units.getByRole('tab', { name: '입력', exact: true }).click();
   await settings.getByRole('switch', { name: '펜 전용' }).check();
   await settings.getByRole('switch', { name: '세벌식 390' }).check();
@@ -522,14 +522,14 @@ test('one header, two control styles and shared support at mobile width', async 
   await page.keyboard.press('Home');
   expect((await progress()).fill).toBe(14);
   await settings.getByRole('switch', { name: '효과음' }).uncheck();
-  await units.getByRole('tab', { name: '풀림', exact: true }).click();
+  await units.getByRole('tab', { name: '물음샘', exact: true }).click();
   await expect(settings.getByRole('link', { name: '로그인', exact: true })).toBeVisible();
   await units.getByRole('tab', { name: '지원', exact: true }).click();
   await settings.getByRole('button', { name: '소개', exact: true }).click();
   const about = page.getByRole('dialog', { name: '소개', exact: true });
   const introTabs = about.getByRole('tablist');
   await expect(introTabs.getByRole('tab')).toHaveCount(3);
-  await introTabs.getByRole('tab', { name: '풀림' }).focus();
+  await introTabs.getByRole('tab', { name: '물음샘' }).focus();
   await page.keyboard.press('ArrowRight');
   await expect(about.getByRole('tabpanel', { name: '수학' })).toContainText('문제를 만드는 방식');
   await page.keyboard.press('End');

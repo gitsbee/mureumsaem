@@ -6,7 +6,7 @@ import { warmStudy, type StudyAction, type StudyView } from './StudyScreen';
 import type { Subject } from './daily';
 
 const services = [
-  { key: 'pulleem', label: '풀림', path: '' },
+  { key: 'pulleem', label: '물음샘', path: '' },
   { key: 'math', label: '수학', path: '#/math' },
   { key: 'english', label: '영어', path: '#/english' },
 ] as const;

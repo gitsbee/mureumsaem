@@ -1,8 +1,8 @@
-# 풀림 (Pulim)
+# 물음샘
 
-**수학은 손으로 풀고, 영어는 기억에서 꺼내 보세요.** 풀림은 수학과 영어를 연습하고, 담벼락에서 질문과 풀이를 나누는 학습 공간입니다.
+**수학은 손으로 풀고, 영어는 기억에서 꺼내 보세요.** 물음샘은 수학과 영어를 연습하고, 담벼락에서 질문과 풀이를 나누는 학습 공간입니다.
 
-[풀림 시작하기](https://gitsbee.github.io/Pulim/) · [소개](https://gitsbee.github.io/Pulim/About/) · [도움말](https://gitsbee.github.io/Pulim/#/help)
+[물음샘 시작하기](https://gitsbee.github.io/Pulim/) · [소개](https://gitsbee.github.io/Pulim/About/) · [도움말](https://gitsbee.github.io/Pulim/#/help)
 
 ## 무엇을 할 수 있나요?
 
@@ -20,6 +20,6 @@
 
 설정에서 밝게·어둡게·종이 테마와 효과음, 펜 입력, 세벌식 390을 조정할 수 있습니다. 쓴 글과 댓글은 공개되므로 개인정보는 게시하지 마세요.
 
-풀림 코드와 디자인에 기여하려면 [저장소 작업 지침](AGENTS.md)과 [디자인 시스템 v4 가이드](docs/design-system/v4/README.md)를 참고하세요.
+물음샘 코드와 디자인에 기여하려면 [저장소 작업 지침](AGENTS.md)과 [디자인 시스템 v4 가이드](docs/design-system/v4/README.md)를 참고하세요.
 
 향후 개발 제안과 우선순위는 [개발 로드맵](docs/ROADMAP.md)에서 확인할 수 있습니다.

@@ -14,7 +14,7 @@ export function groupStudySettings(root: HTMLElement, service: Subject | 'pulim'
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'plain-button nav-tab';
-    button.textContent = labels[key] || (service === 'pulim' ? '풀림' : subjects[service]);
+    button.textContent = labels[key] || (service === 'pulim' ? '물음샘' : subjects[service]);
     section.firstElementChild?.classList.add('sr-only');
     section.id = `settings-section-${key}`;
     button.id = `settings-tab-${key}`;

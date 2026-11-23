@@ -6,7 +6,7 @@ export type Service = 'pulim' | Subject;
 export const supportTitles = { about: '소개', help: '도움말' };
 
 const services = [
-  { id: 'pulim', label: '풀림' },
+  { id: 'pulim', label: '물음샘' },
   { id: 'math', label: '수학' },
   { id: 'english', label: '영어' },
 ] as const;
@@ -14,7 +14,7 @@ const services = [
 const content = {
   about: {
     pulim: [
-      ['함께 푸는 학습 공간', '풀림에서 수학과 영어를 연습하고, 담벼락에서 질문과 풀이를 나눌 수 있어요.'],
+      ['함께 푸는 학습 공간', '물음샘에서 수학과 영어를 연습하고, 담벼락에서 질문과 풀이를 나눌 수 있어요.'],
       ['내 기록과 온라인 랭킹', '한 계정으로 기기마다 풀이 기록을 확인하고 온라인 랭킹을 볼 수 있어요. 진행 중인 문제와 필기는 사용하던 브라우저에 남아요.'],
     ],
     math: [
