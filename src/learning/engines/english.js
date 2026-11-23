@@ -388,7 +388,8 @@ function recordOutcome(outcome) {
     subject: "english",
     label: words[index].en,
     mode: studyModes[mode][0],
-    result: outcome === "medium" ? "seen" : outcome
+    result: outcome === "medium" ? "seen" : outcome,
+    answer: mode === "choice" ? question.options?.[question.selected] : mode === "type" ? question.answer : undefined
   });
   state.modeProgress[mode][index] = outcome;
   if (roundKey) { state.segmentProgress[roundKey] ??= {}; state.segmentProgress[roundKey][index] = outcome; }
@@ -415,6 +416,7 @@ function renderSession() {
     <div class="session-content"><div class="question-area">
       <div class="question-label">${chip(`${index + 1}번 단어`, 'cards', 'neutral')}</div>
       <p class="prompt question"><span lang="en">${escapeHtml(word.en)}</span>${mode === 'recall' && question.revealed ? ` - ${escapeHtml(word.ko)}` : ''}</p>
+      <button type="button" id="ask-on-wall" class="plain-button study-wall-question">${icon('comment')}이 문제로 질문하기</button>
       <div id="interaction" class="vocabulary-answer"></div>
     </div></div>
   </section>`;
@@ -426,6 +428,7 @@ function renderSession() {
   moveSessionTags();
   window.onresize = moveSessionTags;
   $('#exit').onclick = () => go('home');
+  $('#ask-on-wall').onclick = () => window.studyBridge.ask(`‘${word.en}’의 뜻은 무엇인가요?`);
   if (mode === 'choice') { renderChoice(word, index); bindStars(); }
   else if (mode === 'type') {
     renderType(word, index);

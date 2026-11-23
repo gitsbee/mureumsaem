@@ -19,7 +19,7 @@ export function useNavigation() {
       const anchor = (event.target as Element).closest?.('a[href]') as HTMLAnchorElement | null;
       if (!anchor || anchor.target || anchor.hasAttribute('download') || anchor.getAttribute('href') === '#main') return;
       const url = new URL(anchor.href);
-      if (url.origin === location.origin && url.pathname.startsWith(base)) { event.preventDefault(); navigate(url.pathname + url.search + url.hash); }
+      if (url.origin === location.origin && [base, base + 'About', base + 'About/'].includes(url.pathname)) { event.preventDefault(); navigate(url.pathname + url.search + url.hash); }
     };
     window.addEventListener('popstate', changed); window.addEventListener('hashchange', changed); document.addEventListener('click', follow);
     return () => { window.removeEventListener('popstate', changed); window.removeEventListener('hashchange', changed); document.removeEventListener('click', follow); };

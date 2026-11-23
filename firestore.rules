@@ -19,11 +19,15 @@ service cloud.firestore {
       allow read: if learningOwner(uid);
       allow create: if learningOwner(uid)
         && request.resource.data.keys().hasAll(['subject', 'label', 'mode', 'result', 'occurredAt', 'createdAt'])
-        && request.resource.data.keys().hasOnly(['subject', 'label', 'mode', 'result', 'occurredAt', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['subject', 'label', 'mode', 'result', 'occurredAt', 'createdAt', 'answer', 'prompt', 'elapsedMs'])
         && learningSubject(request.resource.data.subject)
         && request.resource.data.label is string && request.resource.data.label.size() >= 1 && request.resource.data.label.size() <= 160
         && request.resource.data.mode is string && request.resource.data.mode.size() >= 1 && request.resource.data.mode.size() <= 24
         && request.resource.data.result in ['correct', 'wrong', 'seen', 'hinted']
+        && request.resource.data.get('answer', '') is string && request.resource.data.get('answer', '').size() <= 300
+        && request.resource.data.get('prompt', '') is string && request.resource.data.get('prompt', '').size() <= 1200
+        && request.resource.data.get('elapsedMs', 0) is int && request.resource.data.get('elapsedMs', 0) >= 0
+        && request.resource.data.get('elapsedMs', 0) <= 604800000
         && request.resource.data.occurredAt is int && request.resource.data.occurredAt > 0
         && request.resource.data.createdAt == request.time;
       allow update, delete: if false;
@@ -49,6 +53,47 @@ service cloud.firestore {
       allow delete: if learningOwner(uid);
     }
     // Retired login-service records, if any, remain inaccessible to clients.
+    function blocks(uid, other) {
+      return exists(/databases/$(database)/documents/users/$(uid)/blockedAuthors/$(other));
+    }
+    function canInteract(other) {
+      return learningOwner(other) || (!blocks(other, request.auth.uid) && !blocks(request.auth.uid, other));
+    }
+    function visibilityStamp() {
+      return request.resource.data.keys().hasOnly(['createdAt']) && request.resource.data.createdAt == request.time;
+    }
+    function validReport() {
+      return request.resource.data.keys().hasOnly(['reason', 'note', 'createdAt'])
+        && request.resource.data.reason in ['spam', 'abuse', 'privacy', 'other']
+        && request.resource.data.note is string && request.resource.data.note.size() <= 500
+        && request.resource.data.createdAt == request.time;
+    }
+    function canReport(path) {
+      return exists(path) && get(path).data.get('deleted', false) == false
+        && get(path).data.authorId != request.auth.uid;
+    }
+    match /users/{uid}/hiddenPosts/{postId} {
+      allow read, delete: if learningOwner(uid);
+      allow create, update: if learningOwner(uid) && visibilityStamp()
+        && exists(/databases/$(database)/documents/posts/$(postId));
+    }
+    match /users/{uid}/blockedAuthors/{authorId} {
+      allow read, delete: if learningOwner(uid);
+      allow create, update: if learningOwner(uid) && uid != authorId && visibilityStamp();
+    }
+    match /users/{uid}/reports/{postId} {
+      allow get: if learningOwner(uid);
+      allow create: if learningOwner(uid) && validReport()
+        && canReport(/databases/$(database)/documents/posts/$(postId));
+      match /reportedComments/{commentId} {
+        allow get: if learningOwner(uid);
+        allow create: if learningOwner(uid) && validReport()
+          && exists(/databases/$(database)/documents/posts/$(postId))
+          && get(/databases/$(database)/documents/posts/$(postId)).data.get('deleted', false) == false
+          && canReport(/databases/$(database)/documents/posts/$(postId)/comments/$(commentId));
+      }
+    }
+
     match /loginAttempts/{id} { allow read, write: if false; }
     match /users/{uid}/activity/{activityId} {
       function own() { return request.auth != null && request.auth.uid == uid; }
@@ -143,7 +188,7 @@ service cloud.firestore {
         let path = /databases/$(database)/documents/posts/$(id);
         return id is string && id.matches('[^/]+')
           && exists(path) && get(path).data.get('kind', 'post') == 'post'
-          && get(path).data.get('deleted', false) == false;
+          && get(path).data.get('deleted', false) == false && canInteract(get(path).data.authorId);
       }
       function repostBody(body) { return body == '' || nonblank(body, 2000); }
       function content(data) {
@@ -220,7 +265,7 @@ service cloud.firestore {
           return getAfter(path).data.lastCommentId == commentId && commentCounts(getAfter(path).data);
         }
         allow read: if commentsOpen();
-        allow create: if signedIn() && commentsOpen() && validComment(request.resource.data)
+        allow create: if signedIn() && commentsOpen() && canInteract(parent().authorId) && validComment(request.resource.data)
           && request.resource.data.authorId == request.auth.uid && request.resource.data.createdAt == request.time
           && !request.resource.data.keys().hasAny(['updatedAt']) && request.resource.data.deleted == false
           && nonblank(request.resource.data.body, 1000) && countsMatch();
@@ -235,7 +280,7 @@ service cloud.firestore {
         // Only the author can list identities. A reactor can get their own choice.
         allow get: if signedIn() && (request.auth.uid == uid || parent().authorId == request.auth.uid);
         allow list: if signedIn() && parent().authorId == request.auth.uid;
-        allow create, update: if reactable() && request.auth.uid == uid
+        allow create, update: if reactable() && request.auth.uid == uid && canInteract(parent().authorId)
           && request.resource.data.keys().hasAll(['kind', 'name']) && request.resource.data.keys().hasOnly(['kind', 'name'])
           && request.resource.data.kind in ['like', 'dislike'] && nonblank(request.resource.data.name, 30)
           && validCounts(getAfter(/databases/$(database)/documents/posts/$(postId)/stats/reactions).data);

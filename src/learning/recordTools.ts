@@ -1,3 +1,4 @@
+import { storageKey } from '../storage';
 import { fillSettings } from './settingsUnits';
 import { createStudyRuntime } from './engines/runtime';
 import type { Subject } from './daily';
@@ -41,7 +42,7 @@ export async function withRecordTools<T>(subject: Subject, account: string, acti
   resetRecords: () => Promise<void>;
 }) => Promise<T>): Promise<T> {
   if (subject === 'english') {
-    const key = 'pulleem:' + account + ':english:amgi-v1';
+    const key = storageKey(account + ':english:amgi-v1');
     const read = () => JSON.parse(localStorage.getItem(key) || '{}');
     return action({
       async exportRecords() {

@@ -22,9 +22,9 @@ export default function Home() {
   return <>
     <section className="home-hero">
       <div className="home-hero-copy">
-        <h1>물음샘</h1>
-        <p className="home-headline">오늘 배운 것,<br />어디까지 풀 수 있을까?</p>
-        <p>수학은 손으로 풀고 영어는 기억에서 꺼내 보세요. 막힌 문제는 담벼락에 함께 펼쳐 놓을 수 있어요.</p>
+        <h1 className="brand-wordmark"><Icon name="brand" />물음샘</h1>
+        <p className="home-headline">한 문제에서,<br />함께 푸는 질문으로.</p>
+        <p>수학과 영어를 연습하고, 막힌 문제를 담벼락에서 바로 질문하는 학습 공간.</p>
       </div>
       <div className="home-symbols" aria-hidden="true">
         <span><Icon name="math" /></span><span><Icon name="english" /></span>

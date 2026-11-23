@@ -151,3 +151,14 @@
 }
 
 .pulim-ui :where([data-tone="unit-rational"]) { --tone-solid: var(--pulim-solid-palette-lime); }
+
+/* Brand colors are separate from the shared interaction roles. */
+:root {
+  --brand-teal: #17707a;
+  --brand-on-teal: #ffffff;
+  --brand-ink: var(--brand-teal);
+}
+
+:root[data-theme="dark"] {
+  --brand-ink: #8ed1d8;
+}

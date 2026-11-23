@@ -59,6 +59,7 @@ export default function AccountForm({ onClose, onSuccess, onPending }: { onClose
   const title = mode === 'signup' ? step === 0 ? '회원가입' : '프로필 설정' : mode === 'reset' ? '비밀번호 재설정' : '로그인';
   return <section className="panel account" aria-labelledby="account-title">
     <div className="page-heading"><button type="button" className="plain-button" onClick={back} disabled={busy} aria-label="이전 화면으로"><Icon name="back" /></button><h1 id="account-title">{title}</h1></div>
+    {mode === 'login' && <p className="account-brand"><Icon name="brand" />물음샘 계정으로 로그인하여 다른 기기에서도 풀이 기록을 확인하세요.</p>}
     <form onSubmit={submit} autoComplete="on">
       <fieldset className="credentials-fields">
         <label htmlFor="account-username">{mode === 'signup' && step === 1 ? '가입 이메일' : '이메일'}</label><input id="account-username" name="username" type="email" value={email} onChange={event => setEmail(event.target.value)} autoComplete="username" readOnly={busy || Boolean(created.current) || mode === 'signup' && step === 1} autoCapitalize="none" autoCorrect="off" spellCheck={false} required autoFocus />

@@ -15053,12 +15053,18 @@ export default function mountMath(runtime) {
       subject: "math",
       label: TYPES[typeFor(draft.problem)]?.label ?? "수학 연습",
       mode: draft.record.dailyDay ? "오늘의 문제" : draft.record.reviewOf ? "복습" : "연습",
-      result: draft.record.correct ? "correct" : "wrong"
+      result: draft.record.correct ? "correct" : "wrong",
+      elapsedMs: Math.round(elapsed),
+      answer: Array.isArray(input) ? input.join(", ") : answer.kind === "choice" ? answer.options[Number(input)] : input,
+      prompt: shareText(draft.problem, false)
     });
     syncTimer();
     saveDraft();
     renderFeedback(true);
     renderHistory();
+  });
+  $("ask-on-wall").addEventListener("click", () => {
+    if (draft) window.studyBridge.ask(shareText(draft.problem, false));
   });
   answerFields.addEventListener("click", event => {
     const label = event.target.closest("label[for]");

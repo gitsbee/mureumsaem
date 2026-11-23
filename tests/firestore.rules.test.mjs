@@ -326,6 +326,11 @@ test('learning records stay private, and daily rankings require three same-day r
   const ranked = value => ({ score: value, updatedAt: serverTimestamp() });
 
   await assertSucceeds(setDoc(privateRecord, attempt));
+  const detail = doc(player, 'users/writer/learning/math-detail');
+  await assertSucceeds(setDoc(detail, { ...attempt, answer: '7', prompt: '제곱하면 49인 양수는?', elapsedMs: 1500 }));
+  await assertFails(getDoc(doc(stranger, detail.path)));
+  await assertFails(setDoc(doc(player, 'users/writer/learning/math-invalid'), { ...attempt, elapsedMs: -1 }));
+  await assertFails(setDoc(doc(player, 'users/writer/learning/math-long'), { ...attempt, answer: '가'.repeat(301) }));
   await assertFails(getDoc(doc(stranger, privateRecord.path)));
   await assertFails(setDoc(doc(stranger, privateRecord.path), attempt));
   await assertFails(updateDoc(privateRecord, { result: 'wrong' }));
@@ -344,4 +349,38 @@ test('learning records stay private, and daily rankings require three same-day r
   await assertSucceeds(getDoc(doc(publicDb, scorePath)));
   await assertFails(deleteDoc(doc(stranger, scorePath)));
   await assertSucceeds(deleteDoc(score));
+});
+
+test('reports and visibility lists are private and blocks stop new interactions', async () => {
+  const reader = environment.authenticatedContext('reader').firestore();
+  const stranger = environment.authenticatedContext('stranger').firestore();
+  await setDoc(doc(writer(), 'posts/first'), validPost());
+  await setDoc(doc(reader, 'posts/second'), { ...validPost(), authorId: 'reader' });
+  await makeComment('writer', 'first', 'comment');
+  const hidden = doc(reader, 'users/reader/hiddenPosts/first');
+  const blocked = doc(reader, 'users/reader/blockedAuthors/writer');
+  const report = doc(reader, 'users/reader/reports/first');
+  const commentReport = doc(report, 'reportedComments/comment');
+  const payload = () => ({ reason: 'abuse', note: '세부 내용', createdAt: serverTimestamp() });
+  await assertSucceeds(setDoc(hidden, { createdAt: serverTimestamp() }));
+  await assertFails(getDoc(doc(stranger, hidden.path)));
+  await assertFails(setDoc(doc(writer(), 'users/writer/reports/first'), payload()));
+  await assertFails(setDoc(doc(reader, 'users/reader/reports/missing'), payload()));
+  await assertFails(setDoc(report, { ...payload(), reason: 'invalid' }));
+  await assertSucceeds(setDoc(report, payload()));
+  await assertSucceeds(setDoc(commentReport, payload()));
+  await assertFails(setDoc(report, payload()));
+  await assertFails(getDoc(doc(writer(), report.path)));
+  await assertFails(getDoc(doc(stranger, commentReport.path)));
+  await assertSucceeds(setDoc(blocked, { createdAt: serverTimestamp() }));
+  await assertFails(getDoc(doc(writer(), blocked.path)));
+  await assertFails(changeReaction('reader', 'like'));
+  await assertFails(makeComment('reader', 'first', 'reader-comment'));
+  await assertFails(makeComment('writer', 'second', 'writer-comment'));
+  await assertFails(setDoc(doc(reader, 'posts/repost_reader_first'), quoteData()));
+  await assertSucceeds(getDoc(doc(reader, 'posts/first')));
+  await assertSucceeds(deleteDoc(hidden));
+  await assertSucceeds(deleteDoc(blocked));
+  await assertSucceeds(changeReaction('reader', 'like'));
+  await assertSucceeds(makeComment('writer', 'second', 'writer-comment'));
 });

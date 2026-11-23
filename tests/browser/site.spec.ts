@@ -291,7 +291,7 @@ test('quote text and independent comment threads survive original deletion safel
     await expect(readerDetail.getByText('리포스트만의 댓글', { exact: true })).toBeVisible();
     await expect(readerDetail.getByText('삭제되었거나 찾을 수 없는 원문입니다.')).toBeVisible();
     await reader.setViewportSize({ width: 390, height: 844 });
-    await reader.evaluate(() => localStorage.setItem('pulim:theme', 'dark')); await reader.reload();
+    await reader.evaluate(() => localStorage.setItem('muleumsaem:theme', 'dark')); await reader.reload();
     await expect(reader.locator('html')).toHaveAttribute('data-theme', 'dark');
     await expect(readerDetail.getByText('리포스트만의 댓글', { exact: true })).toBeVisible();
     expect((await readerDetail.boundingBox())?.width).toBe(390);
@@ -365,6 +365,12 @@ test('one study document, shared dark theme and synchronized practice records', 
     await expect(author.locator('.app-header:visible, .session-header:visible')).toHaveCount(1);
     await english.getByRole('button', { name: '정답 확인', exact: true }).click();
     await english.getByRole('button', { name: '쉬움', exact: true }).click();
+    await english.getByRole('button', { name: '연습 나가기' }).click();
+    await english.locator('.mode-options input[value="choice"] + span').click();
+    await english.getByRole('button', { name: '1구간 시작', exact: true }).click();
+    const firstOption = english.locator('.choice-option').first();
+    const chosenAnswer = await firstOption.locator('.choice-text').innerText();
+    await firstOption.click();
     await author.reload();
     await expect(author.locator('html')).toHaveAttribute('data-theme', 'dark');
 
@@ -401,7 +407,10 @@ test('one study document, shared dark theme and synchronized practice records', 
     const syncedRecords = other.locator('.record-panel').filter({
       has: other.getByRole('heading', { name: '동기화된 풀이 기록', exact: true }),
     });
-    await expect(syncedRecords.getByText('as part of', { exact: true })).toBeVisible();
+    await expect(syncedRecords.getByText('as part of', { exact: true })).toHaveCount(2);
+    const attempt = syncedRecords.getByRole('listitem').filter({ hasText: '영어 · 선택' });
+    await attempt.getByText('풀이 상세', { exact: true }).click();
+    await expect(attempt.getByText(`내 답안 · ${chosenAnswer}`, { exact: true })).toBeVisible();
   } finally {
     unblockMath();
     await context.close();
@@ -576,5 +585,89 @@ test('one header, two control styles and shared support at mobile width', async 
     await settings.getByRole('button', { name: '닫기', exact: true }).click();
     await expect(page.locator('.app-header:visible, .session-header:visible')).toHaveCount(1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
+test('legacy browser data moves to the new namespace and stays independent of resets', async ({ page }) => {
+  await page.addInitScript(() => {
+    if (!sessionStorage.getItem('test:legacy')) {
+      sessionStorage.setItem('test:legacy', '1');
+      localStorage.setItem('pulim:theme', 'dark');
+      localStorage.setItem('pulleem:guest:english:amgi-v1', JSON.stringify({ stars: { 0: true } }));
+      sessionStorage.setItem('pulleem:guest:math:math-forge:active-ink', 'legacy-ink');
+    }
+  });
+  await page.goto('./');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('muleumsaem:guest:english:amgi-v1') || '{}'))).toEqual({ stars: { 0: true } });
+  expect(await page.evaluate(() => sessionStorage.getItem('muleumsaem:guest:math:math-forge:active-ink'))).toBe('legacy-ink');
+  await page.evaluate(() => localStorage.removeItem('muleumsaem:guest:english:amgi-v1'));
+  await page.reload();
+  expect(await page.evaluate(() => localStorage.getItem('muleumsaem:guest:english:amgi-v1'))).toBeNull();
+});
+
+test('a question can be attached from practice and a reader can report, hide and block', async ({ browser }) => {
+  const authorContext = await browser.newContext();
+  const readerContext = await browser.newContext();
+  try {
+    const author = await authorContext.newPage();
+    const reader = await readerContext.newPage();
+    await signup(author, 'question_author');
+    await author.getByRole('link', { name: '수학', exact: true }).click();
+    await author.locator('.study-math #quick-practice').click();
+    await author.getByRole('button', { name: '이 문제로 질문하기' }).click();
+    const composer = author.getByRole('dialog', { name: '담벼락에 질문하기' });
+    await expect(composer.getByText('[수학 문제]', { exact: false })).toBeVisible();
+    await composer.getByLabel('게시할 글').fill('이 문제의 첫 단계가 궁금해요.');
+    await composer.getByRole('button', { name: '게시하기' }).click();
+    await expect(composer.getByRole('status')).toHaveText('글을 게시했어요.');
+    await composer.getByRole('button', { name: '닫기' }).click();
+
+    await signup(reader, 'moderation_reader');
+    const card = reader.getByRole('article', { name: 'question_author의 글' });
+    await expect(card.getByText('이 문제의 첫 단계가 궁금해요.', { exact: false })).toBeVisible();
+    await menu(card, '신고');
+    const report = reader.getByRole('dialog', { name: '게시물 신고' });
+    await report.getByLabel('신고 이유').selectOption('other');
+    await report.getByRole('button', { name: '신고 보내기' }).click();
+    await expect(report.getByRole('status')).toHaveText('신고를 접수했어요.');
+    await report.getByRole('button', { name: '닫기' }).click();
+    await menu(card, '이 글 숨기기');
+    await expect(card).toHaveCount(0);
+    await openProfile(reader);
+    await reader.getByRole('button', { name: '숨김 해제' }).click();
+    await openWall(reader);
+    await expect(card).toBeVisible();
+    reader.once('dialog', dialog => dialog.accept());
+    await menu(card, '작성자 차단');
+    await expect(card).toHaveCount(0);
+    await openProfile(reader);
+    await reader.getByRole('button', { name: '차단 해제' }).click();
+    await openWall(reader);
+    await expect(card).toBeVisible();
+  } finally {
+    await Promise.all([authorContext.close(), readerContext.close()]);
+  }
+});
+
+test('a guest keeps an attached English question through sign-in', async ({ browser }) => {
+  const authorContext = await browser.newContext();
+  const guestContext = await browser.newContext();
+  try {
+    const email = await signup(await authorContext.newPage(), 'guest_question');
+    const guest = await guestContext.newPage();
+    await guest.goto('./#/english');
+    const english = guest.locator('.study-english');
+    await english.getByRole('button', { name: '1구간 시작', exact: true }).click();
+    await english.getByRole('button', { name: '이 문제로 질문하기' }).click();
+    const question = guest.getByRole('dialog', { name: '담벼락에 질문하기' });
+    await question.getByLabel('이메일', { exact: true }).fill(email);
+    await question.getByLabel('비밀번호', { exact: true }).fill(password);
+    await question.getByRole('button', { name: '로그인', exact: true }).click();
+    await expect(question.getByText('[영어 문제] ‘as part of’의 뜻은 무엇인가요?', { exact: false })).toBeVisible();
+    await question.getByRole('button', { name: '문제 첨부 빼기' }).click();
+    await expect(question.getByText('[영어 문제]', { exact: false })).toHaveCount(0);
+  } finally {
+    await Promise.all([authorContext.close(), guestContext.close()]);
   }
 });

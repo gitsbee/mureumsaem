@@ -1,4 +1,4 @@
-name: Deploy Pulim to GitHub Pages
+name: Deploy 물음샘 to GitHub Pages
 
 on:
   push:
@@ -51,12 +51,24 @@ jobs:
           cache: npm
       - name: Configure Pages
         uses: actions/configure-pages@v5
+      - name: Select production and preview paths
+        id: routes
+        env:
+          DOMAIN: ${{ vars.PAGES_CUSTOM_DOMAIN }}
+        run: |
+          if [ -n "$DOMAIN" ]; then
+            printf 'production=/\npreview=/dev/\norigin=https://%s\n' "$DOMAIN" >> "$GITHUB_OUTPUT"
+          else
+            printf 'production=/Pulim/\npreview=/Pulim/dev/\norigin=https://gitsbee.github.io\n' >> "$GITHUB_OUTPUT"
+          fi
       - name: Install dependencies
         run: npm ci
       - name: Test
         run: npm test
       - name: Build with Firebase configuration
         env:
+          VITE_BASE_PATH: ${{ steps.routes.outputs.production }}
+          VITE_SITE_ORIGIN: ${{ steps.routes.outputs.origin }}
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY || vars.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN || vars.VITE_FIREBASE_AUTH_DOMAIN }}
           VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID || vars.VITE_FIREBASE_PROJECT_ID }}
@@ -64,6 +76,33 @@ jobs:
         run: |
           node scripts/check-firebase-env.mjs
           npm run build
+      - name: Check out develop for the preview
+        uses: actions/checkout@v6
+        with:
+          ref: develop
+          path: preview
+      - name: Build the development preview
+        working-directory: preview
+        env:
+          VITE_BASE_PATH: ${{ steps.routes.outputs.preview }}
+          VITE_SITE_ORIGIN: ${{ steps.routes.outputs.origin }}
+          VITE_PREVIEW: 'true'
+          PRODUCTION_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID || vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_DEV_FIREBASE_API_KEY || vars.VITE_DEV_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_DEV_FIREBASE_AUTH_DOMAIN || vars.VITE_DEV_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_DEV_FIREBASE_PROJECT_ID || vars.VITE_DEV_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_DEV_FIREBASE_APP_ID || vars.VITE_DEV_FIREBASE_APP_ID }}
+        run: |
+          if [ -n "$VITE_FIREBASE_PROJECT_ID" ]; then
+            if [ "$VITE_FIREBASE_PROJECT_ID" = "$PRODUCTION_PROJECT_ID" ]; then
+              echo 'The preview requires a separate Firebase project.' >&2
+              exit 1
+            fi
+            node scripts/check-firebase-env.mjs
+          fi
+          npm ci
+          npm run build
+          mv dist ../dist/dev
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

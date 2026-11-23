@@ -283,3 +283,17 @@ textarea { vertical-align: top; resize: vertical; }
 .home-demo h3 { margin: 0; }
 .home-demo [role="status"]:empty { display: none; }
 .profile-records select { display: block; margin-top: var(--pulim-space-4); }
+
+.brand-wordmark, .account-brand, .application-main .account-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--brand-ink);
+}
+.service-nav a:first-child .icon { color: var(--brand-ink); }
+.attempt-details { margin-top: 0.5rem; }
+.attempt-details summary { cursor: pointer; }
+.attempt-prompt { white-space: pre-wrap; overflow-wrap: anywhere; }
+.question-context { margin-block: 0.75rem; padding: 1rem; border-inline-start: 2px solid var(--brand-ink); }
+.study-wall-question { margin-top: 0.5rem; }
+.report-form { display: grid; gap: 0.75rem; }

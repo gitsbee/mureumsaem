@@ -38,7 +38,7 @@ export default function Header({ user, name, loggedOut, subject, view, pulimTab,
             onFocus={() => { if (key !== 'pulleem') warmStudy(key); }}
             onClick={event => {
               if (!(event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)) window.scrollTo(0, 0);
-            }}><Icon name={key} /></a>)}
+            }}><Icon name={key === 'pulleem' ? 'brand' : key} /></a>)}
       </nav>
       <nav aria-label="화면 메뉴" className="page-nav">
         {subject ? tools.filter(item => subject === 'math' || item.key !== 'inspection').map(item =>

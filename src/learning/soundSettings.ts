@@ -1,4 +1,5 @@
-const key = 'pulim:study-sound';
+import { storageKey } from '../storage';
+const key = storageKey('study-sound');
 
 export function readStudySound(fallback = { enabled: true, volume: 70 }) {
   try {

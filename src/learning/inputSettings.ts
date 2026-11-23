@@ -1,11 +1,12 @@
-const key = 'pulim:study-inputs';
+import { storageKey } from '../storage';
+const key = storageKey('study-inputs');
 let current: { penOnly: boolean; sensitivity: number; ime: boolean } | undefined;
 
 function readInputs(account: string) {
   try {
     const shared = localStorage.getItem(key);
     if (shared) return JSON.parse(shared) as NonNullable<typeof current>;
-    const prefix = 'pulleem:' + account + ':';
+    const prefix = storageKey(account + ':');
     const saved = localStorage.getItem(prefix + 'math:math-forge:pen-sensitivity');
     const sensitivity = saved === null ? 85 : Number(saved);
     return {

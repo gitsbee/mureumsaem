@@ -1,3 +1,4 @@
+import { storageKey } from '../storage';
 import { collection, doc, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { type Subject } from './daily';
@@ -10,6 +11,9 @@ export type Attempt = {
   mode: string;
   result: Result;
   occurredAt: number;
+  answer?: string;
+  prompt?: string;
+  elapsedMs?: number;
 };
 export const scoreCollection = (day: string, subject: Subject) =>
   collection(db!, 'pulleemDays', day, 'subjects', subject, 'scores');
@@ -23,13 +27,17 @@ export function readPracticeAttempt(value: unknown, subject: Subject): Attempt |
     || typeof data.label !== 'string' || !data.label.trim()
     || typeof data.mode !== 'string' || !data.mode.trim()
     || !['correct', 'wrong', 'hinted', 'seen'].includes(data.result ?? '')) return null;
+  const elapsed = data.elapsedMs;
   return {
     id: data.id, subject, label: data.label.trim().slice(0, 160), mode: data.mode.trim().slice(0, 24),
     result: data.result!, occurredAt: Date.now(),
+    ...(typeof data.answer === 'string' && data.answer.trim() ? { answer: data.answer.trim().slice(0, 300) } : {}),
+    ...(typeof data.prompt === 'string' && data.prompt.trim() ? { prompt: data.prompt.trim().slice(0, 1200) } : {}),
+    ...(typeof elapsed === 'number' && Number.isInteger(elapsed) && elapsed >= 0 && elapsed <= 604_800_000 ? { elapsedMs: elapsed } : {}),
   };
 }
 
-const queuePrefix = (uid: string) => 'pulleem:pending:' + uid + ':';
+const queuePrefix = (uid: string) => storageKey('pending:' + uid + ':');
 export function queueAttempt(uid: string, attempt: Attempt) {
   localStorage.setItem(queuePrefix(uid) + attempt.id, JSON.stringify(attempt));
 }

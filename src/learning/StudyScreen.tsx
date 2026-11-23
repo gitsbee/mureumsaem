@@ -22,11 +22,12 @@ export function warmStudy(subject: Subject) {
   void (subject === 'math' ? loadMath() : loadEnglish()).catch(() => {});
 }
 
-export default function StudyScreen({ subject, account, theme, setTheme, onAttempt, onView, onSupport, day, action }: {
+export default function StudyScreen({ subject, account, theme, setTheme, onAttempt, onQuestion, onView, onSupport, day, action }: {
   subject: Subject;
   account: string;
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  onQuestion: (subject: Subject, prompt: string) => void;
   onAttempt: (attempt: Attempt) => void;
   onView: (view: StudyView) => void;
   day: string;
@@ -34,8 +35,8 @@ export default function StudyScreen({ subject, account, theme, setTheme, onAttem
   action: { name: StudyAction; id: number } | null;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const live = useRef({ theme, setTheme, onAttempt, onView, onSupport });
-  live.current = { theme, setTheme, onAttempt, onView, onSupport };
+  const live = useRef({ theme, setTheme, onAttempt, onQuestion, onView, onSupport });
+  live.current = { theme, setTheme, onAttempt, onQuestion, onView, onSupport };
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [rankingTarget, setRankingTarget] = useState<HTMLElement | null>(null);
   const [isHistory, setHistory] = useState(false);
@@ -74,6 +75,7 @@ export default function StudyScreen({ subject, account, theme, setTheme, onAttem
         updateRanking();
         runtime = createStudyRuntime(root, {
           account, subject, vocabulary: words?.default,
+          ask(prompt: string) { if (mounted) live.current.onQuestion(subject, prompt); },
           report(payload: unknown) {
             const attempt = readPracticeAttempt(payload, subject);
             if (mounted && attempt) live.current.onAttempt(attempt);

@@ -40,7 +40,14 @@ export function LearningRecords({ uid, onLogin, fixedSubject }: { uid?: string; 
       {!loading && !error && visible.length === 0 && <p>표시할 풀이 기록이 없어요.</p>}
       <ul className="learning-list">
         {visible.map(item => <li key={item.id}>
-          <div><p className="muted">{subjects[item.subject]} · {item.mode} · {dateLabel(item.createdAt)}</p><strong>{item.label}</strong></div>
+          <div><p className="muted">{subjects[item.subject]} · {item.mode} · {dateLabel(item.createdAt)}</p><strong>{item.label}</strong>
+            {(item.prompt || item.answer || item.elapsedMs !== undefined) && <details className="attempt-details">
+              <summary>풀이 상세</summary>
+              {item.prompt && <p className="attempt-prompt">{item.prompt}</p>}
+              {item.answer && <p>내 답안 · {item.answer}</p>}
+              {item.elapsedMs !== undefined && <p>걸린 시간 · {Math.round(item.elapsedMs / 1000).toLocaleString()}초</p>}
+            </details>}
+          </div>
           <span className={item.result === 'wrong' ? 'wrong-result' : 'correct-result'}>{resultNames[item.result]}</span>
         </li>)}
       </ul>

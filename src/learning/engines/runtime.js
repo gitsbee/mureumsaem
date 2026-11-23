@@ -1,3 +1,4 @@
+import { inkNamespace, storageKey } from '../../storage';
 // The original engines run against their own markup and route within the Pulim document.
 function scopedStorage(storage, namespace) {
   const prefix = namespace + ':';
@@ -11,12 +12,12 @@ function scopedStorage(storage, namespace) {
   });
 }
 
-export function createStudyRuntime(root, { account, subject, vocabulary, report, updateView, getTheme, setTheme, recordsOnly = false }) {
+export function createStudyRuntime(root, { account, subject, vocabulary, report, ask = (_prompt) => {}, updateView, getTheme, setTheme, recordsOnly = false }) {
   const abort = new AbortController();
   const localEvents = new EventTarget();
   const observations = new Set();
   const initialization = [];
-  const namespace = 'pulleem:' + account + ':' + subject;
+  const namespace = storageKey(account + ':' + subject);
   const listen = (target, type, callback, options = {}) =>
     target.addEventListener(type, callback, { ...options, signal: abort.signal });
   const observe = Observer => class extends Observer {
@@ -79,7 +80,7 @@ export function createStudyRuntime(root, { account, subject, vocabulary, report,
       listen(type === 'hashchange' ? localEvents : window, type, callback, options);
     },
     studyBridge: {
-      namespace, vocabulary, report,
+      namespace: inkNamespace(account, subject), vocabulary, report, ask,
       local: scopedStorage(localStorage, namespace),
       session: scopedStorage(sessionStorage, namespace),
     },
