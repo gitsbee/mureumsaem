@@ -1,3 +1,5 @@
+import { useSettingLimit } from './harueum/settingLimit';
+import { useVerification } from './learning/SessionVerification';
 import { ModerationProvider, useVisibility } from './moderation';
 import { VisibilitySettings } from './components/Moderation';
 import { isPreview, storageKey } from './storage';
@@ -53,6 +55,7 @@ function Application({ user, authLoading, authError }: { user: User | null; auth
   const visibility = useVisibility();
   const release = useRelease();
   const enrollment = useEnrollment(user?.uid);
+  const quota = useSettingLimit(user?.uid || "");
   const [labels, setLabels] = useState(() => { try { return localStorage.getItem(storageKey('tab-labels')) === 'true'; } catch { return false; } });
   const [editingProfile, setEditingProfile] = useState(false);
   const [enrollmentError, setEnrollmentError] = useState('');
@@ -98,6 +101,22 @@ function Application({ user, authLoading, authError }: { user: User | null; auth
     return () => { clearInterval(timer); document.removeEventListener('visibilitychange', refresh); };
   }, []);
   const account = user?.uid;
+  const verification = useVerification(user);
+  const sessionActive = useRef(false);
+  function observeStudy(view: StudyView) {
+    if (view.session && !sessionActive.current) verification.begin();
+    if (!view.session && sessionActive.current) verification.end();
+    sessionActive.current = view.session;
+    setStudyView({ subject: route.subject!, view });
+  }
+  const verificationRef = useRef(verification);
+  verificationRef.current = verification;
+  useEffect(() => {
+    return () => {
+      if (sessionActive.current) verificationRef.current.end();
+      sessionActive.current = false;
+    };
+  }, [route.subject, account]);
   const upload = useCallback(() => {
     if (!account) return;
     void flushAttempts(account).then(() => setSync(''), () => {
@@ -113,9 +132,9 @@ function Application({ user, authLoading, authError }: { user: User | null; auth
   }, [account, upload]);
   const record = useCallback((attempt: Attempt) => {
     if (!account) return;
-    try { queueAttempt(account, attempt); upload(); }
+    try { queueAttempt(account, attempt); verification.track(attempt); upload(); }
     catch { setSync('이 브라우저에 풀이 기록을 임시 저장할 수 없어요. 저장소 설정을 확인해 주세요.'); }
-  }, [account, upload]);
+  }, [account, upload, verification]);
   const feed = useFeed(listing); const authors = useAuthorProfiles(listing ? feed.posts : []);
   const popular = usePopularity(feed.posts, listing && route.explore); const activity = useActivity(feed.posts, user?.uid, listing && route.activity);
   const actor = user && own.profile ? { ...user, displayName: own.profile.name } as User : user;
@@ -156,7 +175,7 @@ function Application({ user, authLoading, authError }: { user: User | null; auth
     try { await saveEnrollment(user.uid, form.get('accountType') as AccountType, String(form.get('accountStage')), release.policyVersion); }
     catch (cause) { setEnrollmentError(errorMessage(cause)); }
     finally { setSavingEnrollment(false); }
-  }}><h2>하루이음 계정 설정</h2><EnrollmentFields release={release} current={enrollment.data} />
+  }}><h2>하루이음 계정 설정</h2><p>{quota}</p><EnrollmentFields release={release} current={enrollment.data} />
     {enrollmentError && <p className="error" role="alert">{enrollmentError}</p>}
     <button className="button primary" disabled={savingEnrollment}><Icon name="save" />계정 설정 저장</button>
   </form>;
@@ -177,6 +196,7 @@ function Application({ user, authLoading, authError }: { user: User | null; auth
       <button className="plain-button" type="button" onClick={() => setStudyAction({ subject: route.subject!, name: 'settings', id: Date.now() })}><Icon name="settings" />설정</button>
     </nav>}
     <main id="main" tabIndex={-1} className={showStudy && route.subject ? "study-main" : "application-main setup-view"}>
+      {!focus && verification.panel}
       {isPreview && <p className="connection" role="status">개발 미리보기</p>}
       {(error || authError || visibility.error) && <p className="error" role="alert">{error || authError || visibility.error}</p>}
       {sync && <div className="connection sync-status" role="status">{sync} <button className="button secondary" onClick={upload}><Icon name="repeat" />동기화 다시 시도</button></div>}
@@ -191,7 +211,7 @@ function Application({ user, authLoading, authError }: { user: User | null; auth
         subject={route.subject} account={account || 'guest'} theme={theme} setTheme={setTheme} onAttempt={record} onQuestion={askOnWall}
         canShare={Boolean(plazaAccess)} action={studyAction?.subject === route.subject ? studyAction : null}
         onSupport={(kind, service) => setSupport({ kind, service })}
-        onView={view => setStudyView({ subject: route.subject!, view })} />
+        onView={observeStudy} />
       : showStudy ? <StudyHome uid={account} /> : student && (route.records || route.ranking) ? <>
         <PageHeading title="내 풀이 기록" back />
         <LearningRecords key={account} uid={account} onLogin={profile} />
@@ -210,7 +230,7 @@ function Application({ user, authLoading, authError }: { user: User | null; auth
           </>}
           {enrollment.error && <p className="error" role="alert">{enrollment.error}</p>}
           {enrollment.data ? <p className="muted">{teacher ? '교사 계정 · 그룹 관리' : '학생 계정'}</p> : null}
-          {(!enrollment.data || enrollment.data.policyVersion !== release.policyVersion) && enrollmentForm}
+          {enrollmentForm}
           {(!teacher || enrollment.data?.stage === 'school') && <School key={user.uid} uid={user.uid} />}
           <section className="panel harueum-section"><h2 className="harueum-heading"><Icon name="settings" />설정</h2>
             {!teacher && <label className="ha-switch mix-toggle settings-toggle"><span>하단 메뉴 이름 표시</span>

@@ -68,6 +68,66 @@ service cloud.firestore {
     match /harueumConfig/release {
       allow get: if true;
     }
+    function changeRef(uid) { return /databases/$(database)/documents/users/$(uid)/harueum/changeLimit; }
+    function ownerCountRef(uid) { return /databases/$(database)/documents/users/$(uid)/harueum/ownedGroups; }
+    function accountChanged(uid) {
+      return exists(accountRef(uid)) && (get(accountRef(uid)).data.type != getAfter(accountRef(uid)).data.type
+        || get(accountRef(uid)).data.stage != getAfter(accountRef(uid)).data.stage);
+    }
+    function schoolChanged(uid) {
+      return existsAfter(schoolRef(uid)) && (!exists(schoolRef(uid))
+        || getAfter(schoolRef(uid)).data.diff(get(schoolRef(uid)).data).affectedKeys().hasAny(['school', 'grade', 'room']));
+    }
+    function changeHistory(uid, seq) { return /databases/$(database)/documents/users/$(uid)/settingsHistory/$(string(seq)); }
+    function currentChange(uid) {
+      let next = getAfter(changeRef(uid)).data;
+      return next.first == request.time && getAfter(changeHistory(uid, next.seq)).data.at == request.time;
+    }
+    function typeChangeAllowed(uid) {
+      return release().get('ownershipIndexed', false) == true
+        && countBefore(uid) == 0
+        && (!existsAfter(ownerCountRef(uid)) || getAfter(ownerCountRef(uid)).data.count == 0);
+    }
+    match /users/{uid}/harueum/changeLimit {
+      function validChange(next, previous) {
+        return next.keys().hasOnly(['seq', 'first', 'second', 'third']) && next.seq == previous.seq + 1
+          && next.first == request.time && next.second == previous.first && next.third == previous.second
+          && (previous.third == null || previous.third <= request.time - duration.value(90, 'd'))
+          && (accountChanged(uid) || schoolChanged(uid))
+          && getAfter(changeHistory(uid, next.seq)).data.at == request.time;
+      }
+      allow get: if learningOwner(uid);
+      allow create: if learningOwner(uid) && validChange(request.resource.data, { 'seq': 0, 'first': null, 'second': null, 'third': null });
+      allow update: if learningOwner(uid) && validChange(request.resource.data, resource.data);
+    }
+    match /users/{uid}/settingsHistory/{sequence} {
+      allow read: if learningOwner(uid);
+      allow create: if learningOwner(uid)
+        && request.resource.data.keys().hasOnly(['at', 'account', 'school'])
+        && request.resource.data.at == request.time
+        && request.resource.data.account == accountChanged(uid) && request.resource.data.school == schoolChanged(uid)
+        && sequence == string(getAfter(changeRef(uid)).data.seq)
+        && getAfter(changeRef(uid)).data.first == request.time;
+    }
+    function countBefore(uid) { return exists(ownerCountRef(uid)) ? get(ownerCountRef(uid)).data.count : 0; }
+    function ownerCountChange(uid, id, delta) {
+      let next = getAfter(ownerCountRef(uid)).data;
+      return next.group == id && next.at == request.time && next.count == countBefore(uid) + delta;
+    }
+    match /users/{uid}/harueum/ownedGroups {
+      allow get: if learningOwner(uid);
+      allow create, update: if request.auth != null
+        && request.resource.data.keys().hasOnly(['count', 'group', 'at'])
+        && request.resource.data.group.matches('[a-f0-9]{32}') && request.resource.data.at == request.time
+        && request.resource.data.count is int && request.resource.data.count >= 0
+        && ((request.resource.data.count == countBefore(uid) + 1
+          && getAfter(groupRef(request.resource.data.group)).data.owner == uid
+          && (!exists(groupRef(request.resource.data.group)) || get(groupRef(request.resource.data.group)).data.owner != uid))
+        || (request.resource.data.count == countBefore(uid) - 1
+          && get(groupRef(request.resource.data.group)).data.owner == uid
+          && getAfter(groupRef(request.resource.data.group)).data.owner != uid));
+    }
+
     match /users/{uid}/harueum/account {
       function validEnrollment(data) {
         let seoul = request.time + duration.value(9, 'h');
@@ -82,7 +142,8 @@ service cloud.firestore {
       allow get: if learningOwner(uid);
       allow create: if learningOwner(uid) && validEnrollment(request.resource.data);
       allow update: if learningOwner(uid) && validEnrollment(request.resource.data)
-        && request.resource.data.type == resource.data.type && request.resource.data.stage == resource.data.stage;
+        && (!accountChanged(uid) || (currentChange(uid)
+          && (request.resource.data.type == resource.data.type || typeChangeAllowed(uid))));
     }
     match /users/{uid}/harueum/school {
       allow get: if learningOwner(uid);
@@ -91,7 +152,7 @@ service cloud.firestore {
         && request.resource.data.school.matches('[0-9]{7}')
         && request.resource.data.grade is int && request.resource.data.grade >= 1 && request.resource.data.grade <= 3
         && request.resource.data.room is int && request.resource.data.room >= 1 && request.resource.data.room <= 50
-        && request.resource.data.updatedAt == request.time;
+        && request.resource.data.updatedAt == request.time && (!schoolChanged(uid) || currentChange(uid));
     }
     match /users/{uid}/schedule/{eventId} {
       allow read, delete: if learningOwner(uid) && privateStudent(uid);
@@ -133,12 +194,32 @@ service cloud.firestore {
         && request.resource.data.owner == request.auth.uid && request.resource.data.createdAt == request.time
         && groupText(request.resource.data.name, 60) && groupIdentity(request.resource.data, request.auth.uid)
         && allowedGroupFor(request.resource.data, request.auth.uid)
-        && getAfter(memberRef(id, request.auth.uid)).data.joinedAt == request.time;
+        && getAfter(memberRef(id, request.auth.uid)).data.joinedAt == request.time
+        && ownerCountChange(request.auth.uid, id, 1);
       allow update: if groupOwner(id)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['owner'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['owner', 'transferredAt'])
+        && request.resource.data.transferredAt == request.time
+        && ownerCountChange(request.auth.uid, id, -1)
+        && ownerCountChange(request.resource.data.owner, id, 1)
         && request.resource.data.owner is string && request.resource.data.owner != request.auth.uid
         && exists(memberRef(id, request.resource.data.owner))
         && allowedGroupFor(resource.data, request.resource.data.owner);
+      match /transferNotices/{uid} {
+        allow get: if learningOwner(uid) && groupMember(id);
+        allow create, update: if learningOwner(uid) && groupMember(id)
+          && request.resource.data.keys().hasOnly(['transfer', 'confirmedAt'])
+          && request.resource.data.transfer == get(groupRef(id)).data.transferredAt
+          && request.resource.data.confirmedAt == request.time;
+      }
+      match /memberDetails/{uid} {
+        // No client writes or list access. A future approved aggregation job owns this path.
+        allow get: if groupMember(id) && (learningOwner(uid) || (groupOwner(id)
+          && get(groupRef(id)).data.kind == 'study'
+          && get(groupRef(id)).data.get('detailSharing', false)
+          && exists(memberRef(id, uid)) && exists(/databases/$(database)/documents/harueumGroups/$(id)/transferNotices/$(uid))
+          && get(/databases/$(database)/documents/harueumGroups/$(id)/transferNotices/$(uid)).data.transfer
+            == get(groupRef(id)).data.get('transferredAt', null)));
+      }
       match /requests/{uid} {
         allow get: if (learningOwner(uid) && groupsEnabled()) || groupOwner(id);
         allow list: if groupOwner(id);
@@ -209,6 +290,7 @@ service cloud.firestore {
     function dailyPoint(uid, day, subject, index) {
       return get(dailyAnswer(uid, day, subject, index)).data.correct == true ? 1 : 0;
     }
+    match /users/{uid}/harueum/learningTotals { allow get: if learningOwner(uid); }
     match /users/{uid}/learning/{attemptId} {
       allow read: if learningOwner(uid);
       allow create: if learningOwner(uid)

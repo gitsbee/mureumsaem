@@ -118,11 +118,11 @@
   --pulim-control-neutral-fill: #303030;
   --pulim-text-on-control-pressed: #f4f4f4;
   --pulim-font-family: "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --pulim-status-correct: hsl(from var(--pulim-role-correct) h s calc(100 - l));
-  --pulim-status-incorrect: hsl(from var(--pulim-role-incorrect) h s calc(100 - l));
+  --pulim-status-correct: #82cba4;
+  --pulim-status-incorrect: #f28c9e;
   --pulim-status-hint: hsl(from var(--pulim-role-hint) h s calc(100 - l));
   --pulim-status-review: hsl(from var(--pulim-role-review) h s calc(100 - l));
-  --pulim-status-info: hsl(from var(--pulim-role-info) h s calc(100 - l));
+  --pulim-status-info: #91b7e1;
   --pulim-status-streak: hsl(from var(--pulim-role-streak) h s calc(100 - l));
   --pulim-focus-ring: var(--pulim-status-info);
 }

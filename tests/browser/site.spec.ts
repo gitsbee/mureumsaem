@@ -688,3 +688,20 @@ test('가입 신청을 승인한 뒤에만 학생이 그룹 글을 볼 수 있�
     await expect(member.getByText('이번 주 수학 연습')).toBeVisible();
   } finally { await first.close(); await second.close(); }
 });
+
+test('profile settings show a shared remaining allowance after changing study stage and school', async ({ page }) => {
+  await signup(page, 'setting_quota');
+  await openProfile(page);
+  const area = page.locator('form').filter({ has: page.getByRole('heading', { name: '하루이음 계정 설정' }) });
+  await expect(area.getByText('최근 90일 기준 3회 변경할 수 있어요.')).toBeVisible();
+  await area.getByLabel('학습 단계').selectOption('high3');
+  for (const name of ['age', 'terms', 'privacy']) await area.locator('input[name=' + name + ']').check();
+  await area.getByRole('button', { name: '계정 설정 저장' }).click();
+  await expect(area.getByText('최근 90일 기준 2회 변경할 수 있어요.')).toBeVisible();
+  await page.getByText('학교·학급 설정', { exact: true }).click();
+  await page.getByLabel('학교 코드').fill('1234567');
+  await page.getByLabel('학년', { exact: true }).fill('3');
+  await page.getByLabel('반', { exact: true }).fill('1');
+  await page.getByRole('button', { name: '학급 저장' }).click();
+  await expect(area.getByText('최근 90일 기준 1회 변경할 수 있어요.')).toBeVisible();
+});

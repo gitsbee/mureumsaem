@@ -1,9 +1,19 @@
+import { useEffect, useState } from 'react';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
 import Icon from '../components/Icon';
 import ProfileRecords from '../components/ProfileRecords';
 import { base } from '../hooks/useNavigation';
 import { LearningRecords } from '../learning/LearningRecords';
 
 export default function StudyHome({ uid }: { uid?: string }) {
+  const [totals, setTotals] = useState<{ points: number; xp: number }>();
+  useEffect(() => {
+    setTotals(undefined);
+    if (uid && db) return onSnapshot(doc(db, 'users', uid, 'harueum', 'learningTotals'), snap => {
+      setTotals(snap.data() as typeof totals);
+    }, () => setTotals(undefined));
+  }, [uid]);
   return <>
     <h1 className="harueum-title">물음샘</h1>
     <section className="panel harueum-section">
@@ -16,6 +26,9 @@ export default function StudyHome({ uid }: { uid?: string }) {
         <a className="button secondary" data-tone="review" href={base + '#/english/history'}><Icon name="star" />영어 복습</a>
       </div>
     </section>
+    {uid && totals && <section className="panel harueum-section"><h2>누적 학습</h2>
+      <div className="harueum-columns"><strong>점수 {totals.points}</strong><strong>XP {totals.xp}</strong></div>
+    </section>}
     {uid ? <LearningRecords uid={uid} /> : <>
       <p className="muted">비로그인 학습 기록은 이 브라우저에 저장돼요. 로그인해도 기존 로컬 기록은 계정으로 옮겨지지 않습니다.</p>
       <ProfileRecords account="guest" />

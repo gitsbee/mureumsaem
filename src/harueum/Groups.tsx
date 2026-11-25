@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { collection, deleteDoc, doc, getDoc, onSnapshot, orderBy, query, limit, serverTimestamp, setDoc, writeBatch, where, type DocumentData } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, increment, onSnapshot, orderBy, query, limit, serverTimestamp, setDoc, writeBatch, where, type Timestamp, type DocumentData } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useVisibility } from '../moderation';
 import { errorMessage } from '../model';
@@ -10,10 +10,11 @@ import { useSchool } from './School';
 
 const groups = { class: '학급', study: '스터디' } as const;
 type Kind = keyof typeof groups;
-type Group = { id: string; name: string; kind: Kind; owner: string };
+type Group = { id: string; name: string; kind: Kind; owner: string; transferredAt?: Timestamp };
 type GroupPost = { id: string; body: string; authorId: string; hidden: boolean };
 const codePattern = /^[a-f0-9]{32}$/;
 const groupRef = (id: string) => doc(db!, 'harueumGroups', id);
+const countRef = (uid: string) => doc(db!, 'users', uid, 'harueum', 'ownedGroups');
 const personalRef = (uid: string, id: string) => doc(db!, 'users', uid, 'harueumMemberships', id);
 
 function useRows<T>(path: string, sorted = false) {
@@ -76,6 +77,13 @@ function GroupRoom({ group, uid, stories, onBack }: { group: Group; uid: string;
   const path = 'harueumGroups/' + group.id;
   const requests = useRows<{ id: string }>(owner ? path + '/requests' : '');
   const posts = useRows<GroupPost>(stories ? path + '/posts' : '', true);
+  const [confirmTime, setConfirmTime] = useState<number>();
+  const noticeRef = doc(groupRef(group.id), 'transferNotices', uid);
+  useEffect(() => onSnapshot(doc(groupRef(group.id), 'transferNotices', uid), snap => {
+    setConfirmTime(snap.data()?.transfer?.toMillis());
+  }, () => setConfirmTime(undefined)), [group.id, uid]);
+  const transferTime = group.transferredAt?.toMillis();
+  const needsConfirmation = !owner && transferTime !== undefined && transferTime !== confirmTime;
   const [transferOpen, setTransferOpen] = useState(false);
   const [openComments, setOpenComments] = useState('');
   const [busy, setBusy] = useState(false);
@@ -111,7 +119,11 @@ function GroupRoom({ group, uid, stories, onBack }: { group: Group; uid: string;
       const lookup = await getDoc(doc(store, 'handles', handle));
       const nextOwner = lookup.data()?.uid;
       if (!nextOwner || nextOwner === uid) throw new Error('이양 가능한 그룹원을 지정해 주세요.');
-      await setDoc(groupRef(group.id), { owner: nextOwner }, { merge: true });
+      const batch = writeBatch(store);
+      batch.update(groupRef(group.id), { owner: nextOwner, transferredAt: serverTimestamp() });
+      batch.set(countRef(uid), { count: increment(-1), group: group.id, at: serverTimestamp() }, { merge: true });
+      batch.set(countRef(nextOwner), { count: increment(1), group: group.id, at: serverTimestamp() }, { merge: true });
+      await batch.commit();
       setTransferOpen(false);
     }, '그룹장 권한을 이양했어요.');
   }
@@ -170,6 +182,13 @@ function GroupRoom({ group, uid, stories, onBack }: { group: Group; uid: string;
         </div>)}
       </section>}
     </section>
+    {needsConfirmation && <section className="panel harueum-section">
+      <h3>그룹장이 변경되었어요</h3>
+      <p>새 그룹장은 회원이 변경 안내를 확인한 뒤, 그룹에서 허용된 범위의 상세 통계만 볼 수 있어요. 확인을 미뤄도 그룹에 남을 수 있어요.</p>
+      <button className="button secondary" disabled={busy} onClick={() => void perform(() => setDoc(noticeRef, {
+        transfer: group.transferredAt, confirmedAt: serverTimestamp(),
+      }), '이양 안내를 확인했어요.')}><Icon name="check" />이양 안내 확인</button>
+    </section>}
     {stories ? <>
       <form className="panel harueum-form harueum-section" onSubmit={post}>
         <h3>그룹 이야기 쓰기</h3><span className="context-chip" data-tone="info"><Icon name="users" />승인된 그룹원에게 공개</span>
@@ -237,12 +256,13 @@ export default function Groups({ uid, enrollment, enabled, stories }: { uid: str
     if (!name || !allowed.includes(kind)) return;
     void perform(async () => {
       const id = crypto.randomUUID().replaceAll('-', '');
-      const batch = writeBatch(store);
       const info = { name, kind, ...(kind === 'class' && school ? { ...school, year: schoolYear() } : {}) };
+      const batch = writeBatch(store);
       batch.set(groupRef(id), { ...info, owner: uid, createdAt: serverTimestamp() });
       batch.set(doc(store, 'harueumInvites', id), info);
       batch.set(doc(groupRef(id), 'members', uid), { policy: 1, joinedAt: serverTimestamp() });
       batch.set(personalRef(uid, id), { joinedAt: serverTimestamp() });
+      batch.set(countRef(uid), { count: increment(1), group: id, at: serverTimestamp() }, { merge: true });
       await batch.commit();
       setCreating(false);
       setSelected(id);

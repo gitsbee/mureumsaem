@@ -449,8 +449,10 @@ test('study group approval gates content, hidden posts and withdrawal', async ()
   create.set(doc(owner, 'harueumInvites/' + id), { kind: 'study', name: '수학 연습' });
   create.set(doc(owner, member('writer')), { policy: 1, joinedAt: serverTimestamp() });
   create.set(doc(owner, index('writer')), { joinedAt: serverTimestamp() });
+  create.set(doc(owner, 'users/writer/harueum/ownedGroups'), { count: increment(1), group: id, at: serverTimestamp() }, { merge: true });
   await assertSucceeds(create.commit());
   await assertFails(getDoc(doc(other, group)));
+  await assertFails(getDoc(doc(other, 'users/writer/harueum/ownedGroups')));
   await assertFails(getDocs(collection(other, 'harueumInvites')));
   await assertSucceeds(setDoc(doc(owner, content), { authorId: 'writer', body: '그룹 학습 내용', hidden: false, createdAt: serverTimestamp() }));
   await assertFails(getDoc(doc(other, content)));
@@ -470,4 +472,66 @@ test('study group approval gates content, hidden posts and withdrawal', async ()
   leave.delete(doc(other, index('other')));
   await assertSucceeds(leave.commit());
   await assertFails(getDoc(doc(other, group)));
+  await setDoc(doc(other, request), { policy: 1, createdAt: serverTimestamp() });
+  const acceptAgain = writeBatch(owner);
+  acceptAgain.set(doc(owner, member('other')), { policy: 1, joinedAt: serverTimestamp() });
+  acceptAgain.set(doc(owner, index('other')), { joinedAt: serverTimestamp() });
+  acceptAgain.delete(doc(owner, request));
+  await assertSucceeds(acceptAgain.commit());
+  await assertFails(updateDoc(doc(owner, group), { owner: 'other', transferredAt: serverTimestamp() }));
+  const transfer = writeBatch(owner);
+  transfer.update(doc(owner, group), { owner: 'other', transferredAt: serverTimestamp() });
+  transfer.set(doc(owner, 'users/writer/harueum/ownedGroups'), { count: increment(-1), group: id, at: serverTimestamp() }, { merge: true });
+  transfer.set(doc(owner, 'users/other/harueum/ownedGroups'), { count: increment(1), group: id, at: serverTimestamp() }, { merge: true });
+  await assertSucceeds(transfer.commit());
+  const mark = (await getDoc(doc(other, group))).data().transferredAt;
+  await environment.withSecurityRulesDisabled(async context => {
+    const admin = context.firestore();
+    await updateDoc(doc(admin, group), { detailSharing: true });
+    await setDoc(doc(admin, group + '/memberDetails/writer'), { activityCount: 2 });
+  });
+  await assertFails(getDoc(doc(other, group + '/memberDetails/writer')));
+  await assertFails(getDoc(doc(other, group + '/transferNotices/writer')));
+  await assertFails(setDoc(doc(owner, group + '/transferNotices/writer'), { transfer: Timestamp.fromMillis(1), confirmedAt: serverTimestamp() }));
+  await assertSucceeds(setDoc(doc(owner, group + '/transferNotices/writer'), { transfer: mark, confirmedAt: serverTimestamp() }));
+  await assertSucceeds(getDoc(doc(other, group + '/memberDetails/writer')));
+  await assertFails(getDocs(collection(other, group + '/memberDetails')));
+  await environment.withSecurityRulesDisabled(context => updateDoc(doc(context.firestore(), group), { transferredAt: serverTimestamp() }));
+  await assertFails(getDoc(doc(other, group + '/memberDetails/writer')));
+});
+
+test('account, stage and school changes share three slots and a server-checked history', async () => {
+  const store = writer();
+  const user = 'users/writer/';
+  const account = doc(store, user + 'harueum/account');
+  const school = doc(store, user + 'harueum/school');
+  const quota = doc(store, user + 'harueum/changeLimit');
+  const values = { type: 'student', schoolYear: currentSchoolYear(), policyVersion: enabled.policyVersion,
+    ageConfirmed: true, termsAccepted: true, privacyAccepted: true, acceptedAt: serverTimestamp() };
+  await assertFails(setDoc(account, { ...values, stage: 'high3' }));
+  for (let i = 1; i <= 4; i++) {
+    const before = (await getDoc(quota)).data();
+    const change = writeBatch(store);
+    if (i === 2) change.set(school, { school: '1234567', grade: 2, room: 1, updatedAt: serverTimestamp() });
+    else change.set(account, { ...values, stage: i === 3 ? 'repeat' : 'high3' });
+    change.set(quota, { seq: i, first: serverTimestamp(), second: before?.first ?? null, third: before?.second ?? null });
+    change.set(doc(store, user + 'settingsHistory/' + i), { at: serverTimestamp(), account: i !== 2, school: i === 2 });
+    if (i === 4) await assertFails(change.commit()); else await assertSucceeds(change.commit());
+  }
+  await assertFails(getDocs(collection(environment.authenticatedContext('other').firestore(), user + 'settingsHistory')));
+  const totals = doc(store, user + 'harueum/learningTotals');
+  await assertFails(setDoc(totals, { xp: 10, points: 9 }));
+  await assertFails(getDoc(doc(environment.authenticatedContext('other').firestore(), totals.path)));
+  await environment.withSecurityRulesDisabled(async context => {
+    const admin = context.firestore();
+    await updateDoc(doc(admin, 'harueumConfig/release'), { ownershipIndexed: true });
+    await setDoc(doc(admin, user + 'harueum/ownedGroups'), { count: 1 });
+    await deleteDoc(doc(admin, quota.path));
+    await deleteDoc(doc(admin, user + 'settingsHistory/1'));
+  });
+  const roleChange = writeBatch(store);
+  roleChange.set(account, { ...values, type: 'teacher', stage: 'study' });
+  roleChange.set(quota, { seq: 1, first: serverTimestamp(), second: null, third: null });
+  roleChange.set(doc(store, user + 'settingsHistory/1'), { at: serverTimestamp(), account: true, school: false });
+  await assertFails(roleChange.commit());
 });

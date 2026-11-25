@@ -57,6 +57,9 @@ export default {
     const headers = { 'Access-Control-Allow-Origin': origin, Vary: 'Origin' };
     const json = (payload, status = 200) => Response.json(payload, { status, headers });
     if (request.method !== 'GET' || url.pathname !== '/v1/agenda') return json({ error: 'Not found' }, 404);
+    if (!env.NEIS_RATE_LIMIT) return json({ error: 'Rate limiter unavailable' }, 503);
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    if (!(await env.NEIS_RATE_LIMIT.limit({ key: ip })).success) return json({ error: 'Too many requests' }, 429);
     if (!env.NEIS_API_KEY) return json({ error: 'Service unavailable' }, 503);
 
     const [school, grade, room, start, end] = ['school', 'grade', 'room', 'start', 'end'].map(key => url.searchParams.get(key) ?? '');

@@ -1,5 +1,6 @@
+import { registerChange, useSettingLimit } from './settingLimit';
 import { useEffect, useState, type FormEvent } from 'react';
-import { doc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore';
+import { doc, onSnapshot, serverTimestamp, runTransaction } from 'firebase/firestore';
 import { db } from '../firebase';
 import { errorMessage } from '../model';
 import Icon from '../components/Icon';
@@ -16,6 +17,7 @@ export function useSchool(uid: string) {
 
 export default function School({ uid }: { uid: string }) {
   const school = useSchool(uid);
+  const quota = useSettingLimit(uid);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
@@ -25,8 +27,15 @@ export default function School({ uid }: { uid: string }) {
     const form = new FormData(event.currentTarget);
     setBusy(true); setError(''); setStatus('');
     try {
-      await setDoc(doc(db, 'users', uid, 'harueum', 'school'), {
-        school: String(form.get('school')).trim(), grade: Number(form.get('grade')), room: Number(form.get('room')), updatedAt: serverTimestamp(),
+      const store = db;
+      const target = doc(store, 'users', uid, 'harueum', 'school');
+      const values = { school: String(form.get('school')).trim(), grade: Number(form.get('grade')), room: Number(form.get('room')) };
+      await runTransaction(store, async txn => {
+        const before = (await txn.get(target)).data();
+        if (!before || before.school !== values.school || before.grade !== values.grade || before.room !== values.room) {
+          await registerChange(store, txn, uid, 'school');
+        }
+        txn.set(target, { ...values, updatedAt: serverTimestamp() });
       });
       setStatus('학급 정보를 저장했어요.');
     } catch (cause) { setError(errorMessage(cause)); }
@@ -34,6 +43,7 @@ export default function School({ uid }: { uid: string }) {
   }
   return <details className="panel harueum-section">
     <summary>학교·학급 설정</summary>
+    <p>{quota}</p>
     <p>학급 그룹을 찾을 때만 사용합니다. 공개 프로필에는 표시하지 않습니다.</p>
     <form className="harueum-form" onSubmit={save} key={JSON.stringify(school)}>
       <label>학교 코드 <input name="school" defaultValue={school?.school} pattern="[0-9]{7}" inputMode="numeric" required /></label>

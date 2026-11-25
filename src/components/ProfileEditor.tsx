@@ -39,6 +39,7 @@ export default function ProfileEditor({ user, profile }: { user: User; profile: 
   return <section className="panel profile-editor" aria-labelledby="profile-edit-title">
     <h2 id="profile-edit-title">{profile ? '프로필 편집' : '프로필 만들기'}</h2>
     {!profile && <p className="muted">이름과 고유 핸들을 등록하면 글을 쓰고 반응할 수 있어요. 최초 핸들 등록은 변경 횟수에 포함되지 않습니다.</p>}
+    {Boolean(profile?.links.length) && <p className="notice" role="status">이전 SNS 링크가 남아 있어요. 프로필을 저장하면 링크가 정리되고 공개 프로필을 다시 볼 수 있어요.</p>}
     <form onSubmit={submit}>
       <label htmlFor="profile-name">이름</label><input id="profile-name" value={name} onChange={e => setName(e.target.value)} maxLength={30} required disabled={busy} autoComplete="nickname" />
       <label htmlFor="profile-handle">핸들</label><div className="handle-input"><span aria-hidden="true">@</span><input id="profile-handle" value={handle} onChange={e => setHandle(e.target.value.toLowerCase())} placeholder="my_handle" maxLength={20} required disabled={busy || Boolean(profile && remaining === 0)} aria-describedby="handle-help" autoCapitalize="none" autoCorrect="off" spellCheck={false} /></div>

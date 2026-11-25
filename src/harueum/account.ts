@@ -1,5 +1,6 @@
+import { registerChange } from './settingLimit';
 import { useEffect, useState } from 'react';
-import { doc, getDoc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, serverTimestamp, runTransaction } from 'firebase/firestore';
 import { db } from '../firebase';
 import { errorMessage } from '../model';
 
@@ -62,8 +63,14 @@ export function schoolYear() {
 
 export async function saveEnrollment(uid: string, type: AccountType, stage: string, policyVersion: string) {
   if (!db || !policyVersion || !Object.hasOwn(accountOptions[type], stage)) throw new Error('계정 유형과 약관 확인 정보를 확인해 주세요.');
-  await setDoc(doc(db, 'users', uid, 'harueum', 'account'), {
+  const store = db;
+  const target = doc(store, 'users', uid, 'harueum', 'account');
+  await runTransaction(store, async txn => {
+    const previous = (await txn.get(target)).data();
+    if (previous && (previous.type !== type || previous.stage !== stage)) await registerChange(store, txn, uid, 'account');
+    txn.set(target, {
     type, stage, schoolYear: schoolYear(), policyVersion,
     ageConfirmed: true, termsAccepted: true, privacyAccepted: true, acceptedAt: serverTimestamp(),
+    });
   });
 }
