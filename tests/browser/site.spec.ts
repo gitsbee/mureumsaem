@@ -15,19 +15,29 @@ async function signup(page: Page, handle: string) {
   await expect(page.getByLabel('가입 이메일', { exact: true })).toHaveAttribute('readonly', '');
   await page.getByLabel('핸들', { exact: true }).fill(handle);
   await page.getByLabel('닉네임', { exact: true }).fill(handle);
+  await page.getByLabel('학습 단계').selectOption('high2');
+  await page.getByText('만 14세 이상입니다.').click();
+  await page.locator('input[name=terms]').check();
+  await page.locator('input[name=privacy]').check();
   await page.getByRole('button', { name: '가입 완료', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '프로필', exact: true, level: 1 })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '프로필 편집', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: handle, exact: true, level: 1 })).toBeVisible();
   await openWall(page);
   return email;
 }
 async function openWall(page: Page) {
-  await page.getByRole('link', { name: '물음샘', exact: true }).click();
-  await page.getByRole('link', { name: '담벼락', exact: true }).click();
+  await page.getByRole('navigation', { name: '주 메뉴' }).getByRole('link', { name: '이야기' }).click();
+  await page.getByRole('link', { name: '광장', exact: true }).click();
 }
 async function openProfile(page: Page) {
-  await page.getByRole('button', { name: '계정 메뉴' }).click();
-  await page.getByRole('button', { name: '프로필', exact: true }).click();
+  await page.getByRole('navigation', { name: '주 메뉴' }).getByRole('link', { name: '나', exact: true }).click();
+}
+async function openSubject(page: Page, subject: string) {
+  const navigation = page.getByRole('navigation', { name: '주 메뉴' });
+  if (await navigation.isVisible()) await navigation.getByRole('link', { name: '물음샘' }).click();
+  else if (await page.getByRole('navigation', { name: '학습 메뉴' }).isVisible()) {
+    await page.getByRole('navigation', { name: '학습 메뉴' }).getByRole('link', { name: '물음샘' }).click();
+  } else await page.goto('./#/study');
+  await page.getByRole('main').getByRole('link', { name: subject, exact: true }).click();
 }
 async function expectFlat(control: Locator) {
   await expect(control).toHaveCSS('border-top-width', '0px');
@@ -63,6 +73,14 @@ async function cancelQuote(page: Page, card: Locator) {
 test.beforeAll(async () => {
   const response = await fetch('http://127.0.0.1:8080/emulator/v1/projects/demo-postpost/databases/(default)/documents', { method: 'DELETE' });
   expect(response.ok).toBeTruthy();
+  const setup = await fetch('http://127.0.0.1:8080/v1/projects/demo-postpost/databases/(default)/documents/harueumConfig/release', {
+    method: 'PATCH', headers: { Authorization: 'Bearer owner', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: {
+      groups: { booleanValue: true }, groupStories: { booleanValue: true }, plaza: { booleanValue: true },
+      policyVersion: { stringValue: 'test-v1' }, termsUrl: { stringValue: 'https://example.com/terms' }, privacyUrl: { stringValue: 'https://example.com/privacy' },
+    } }),
+  });
+  expect(setup.ok).toBeTruthy();
 });
 
 test('desktop navigation, private reactions, activity, exploration, inline search and menus', async ({ browser }) => {
@@ -74,15 +92,9 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     const original = author.getByRole('article', { name: 'writer의 글', exact: true });
     await expect(original.getByText('@writer', { exact: true })).toBeVisible();
     expect(await original.locator('.post-body').evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBe(17);
-    expect(await author.getByRole('navigation', { name: '서비스' }).getByRole('link').allTextContents()).toEqual(['', '', '']);
-    const header = author.locator('.pulim-header');
-    const profileMenu = header.getByRole('button', { name: '계정 메뉴', exact: true });
-    await expect(profileMenu).toHaveText('');
-    await expect(header.getByText('writer', { exact: true })).toBeHidden();
-    await profileMenu.click();
-    await expect(header.getByText('writer', { exact: true })).toBeVisible();
-    await expectFlat(header.getByRole('button', { name: '프로필', exact: true }));
-    await author.keyboard.press('Escape');
+    const nav = author.getByRole('navigation', { name: '주 메뉴' });
+    await expect(nav.getByRole('link')).toHaveCount(5);
+    await expect(nav.getByRole('link', { name: '이야기' })).toHaveAttribute('aria-current', 'page');
     await author.screenshot({ path: 'test-results/feed-desktop.png', fullPage: true });
     await signup(reader, 'reader');
     const foreign = reader.getByRole('article', { name: 'writer의 글', exact: true });
@@ -94,7 +106,7 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     await people.getByRole('link').filter({ hasText: '@reader' }).click();
     await expect(author.getByRole('heading', { name: '프로필', exact: true, level: 1 })).toBeVisible();
     await author.getByRole('button', { name: '이전 화면으로', exact: true }).click();
-    await expect(author.getByRole('heading', { name: '담벼락', exact: true, level: 1 })).toBeVisible();
+    await expect(author.getByRole('heading', { name: '이야기', exact: true, level: 1 })).toBeVisible();
 
     await quote(reader, foreign);
     const shared = reader.getByRole('article', { name: 'reader의 리포스트', exact: true });
@@ -118,14 +130,13 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     await reader.keyboard.press('Escape');
 
     await openProfile(reader);
-    await reader.getByRole('button', { name: '계정 메뉴' }).click();
-    await reader.getByRole('button', { name: '내 활동', exact: true }).click();
+    await reader.getByRole('link', { name: '광장 활동', exact: true }).click();
     await expect(reader.getByRole('heading', { name: '내 활동', exact: true })).toBeVisible();
     await reader.getByRole('button', { name: '좋아요', exact: true }).click();
     await expect(reader.getByRole('article', { name: 'writer의 글', exact: true })).toHaveCount(1);
     await openWall(reader);
     await reader.getByRole('link', { name: '검색', exact: true }).click();
-    await expect(reader.getByRole('heading', { name: '담벼락 검색', exact: true })).toBeVisible();
+    await expect(reader.getByRole('heading', { name: '광장 검색', exact: true })).toBeVisible();
     await reader.locator('.discovery .tags button').filter({ hasText: '#일상' }).click();
     await expect(reader.getByRole('searchbox', { name: '검색어' })).toHaveValue('#일상');
     await expect(reader.getByRole('dialog')).toHaveCount(0);
@@ -138,8 +149,7 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     await original.getByRole('button', { name: '저장', exact: true }).click();
     await expect(foreign.getByText('수정한 이야기 #기록', { exact: true })).toBeVisible();
     await openProfile(reader);
-    await reader.getByRole('button', { name: '계정 메뉴' }).click();
-    await reader.getByRole('button', { name: '내 활동', exact: true }).click();
+    await reader.getByRole('link', { name: '광장 활동', exact: true }).click();
     await reader.getByRole('button', { name: '좋아요', exact: true }).click();
     await expect(reader.getByText('수정한 이야기 #기록', { exact: true })).toBeVisible();
     await original.getByRole('button', { name: '게시물 메뉴', exact: true }).click();
@@ -156,34 +166,30 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
 test('mobile two-step signup, email-only login, back navigation and persistent dark mode', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const email = await signup(page, 'phone');
-  const nav = page.getByRole('navigation', { name: '서비스' });
-  await expect(nav.getByRole('link')).toHaveCount(3);
-  expect(await nav.getByRole('link').evaluateAll(items => items.map(item => item.getAttribute('aria-label')))).toEqual(['물음샘', '수학', '영어']);
+  const nav = page.getByRole('navigation', { name: '주 메뉴' });
+  await expect(nav.getByRole('link')).toHaveCount(5);
+  expect(await nav.getByRole('link').evaluateAll(items => items.map(item => item.getAttribute('aria-label')))).toEqual(['오늘', '다음', '물음샘', '이야기', '나']);
   await post(page, '모바일 글 #테스트');
   await openProfile(page);
-  await expect(page.getByRole('heading', { name: '프로필', exact: true, level: 1 })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'phone', exact: true, level: 1 })).toBeVisible();
+  await page.getByRole('button', { name: '프로필 편집' }).click();
   const editor = page.locator('.profile-editor');
-  const addLink = editor.getByRole('button', { name: '링크 추가', exact: true });
   const save = editor.getByRole('button', { name: '프로필 저장', exact: true });
   const formWidth = await editor.locator('form').evaluate(el => el.getBoundingClientRect().width);
-  expect((await addLink.boundingBox())?.width).toBe(formWidth);
   expect((await save.boundingBox())?.width).toBe(formWidth);
   await expect(save.locator('svg')).toHaveCount(1);
   const [prefix, handleInput] = await Promise.all([
     editor.locator('.handle-input span').boundingBox(), editor.getByLabel('핸들', { exact: true }).boundingBox(),
   ]);
   expect(prefix!.y + prefix!.height / 2).toBeCloseTo(handleInput!.y + handleInput!.height / 2);
-  await page.getByRole('button', { name: '이전 화면으로', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '담벼락', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '계정 메뉴' }).click();
   await page.getByRole('button', { name: '로그아웃', exact: true }).click();
-  await openWall(page);
-  await page.getByRole('link', { name: '검색', exact: true }).click();
-  await page.getByRole('link', { name: '로그인', exact: true }).click();
-  await expect(page.getByRole('button', { name: '닫기', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '물음샘' })).toBeVisible();
+  await page.goto('./#/search');
+  await expect(page.getByRole('heading', { name: '로그인이 필요해요' })).toBeVisible();
+  await page.getByRole('main').getByRole('link', { name: '로그인', exact: true }).click();
   await page.getByRole('button', { name: '이전 화면으로', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '담벼락 검색', exact: true })).toBeVisible();
-  await page.getByRole('link', { name: '로그인', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '로그인이 필요해요' })).toBeVisible();
+  await page.getByRole('main').getByRole('link', { name: '로그인', exact: true }).click();
   await page.getByLabel('이메일', { exact: true }).fill('@phone');
   expect(await page.getByLabel('이메일', { exact: true }).evaluate(el => (el as HTMLInputElement).checkValidity())).toBeFalsy();
   await page.getByLabel('이메일', { exact: true }).fill(email);
@@ -197,17 +203,16 @@ test('mobile two-step signup, email-only login, back navigation and persistent d
   await page.getByRole('button', { name: '이전 화면으로', exact: true }).click();
   await page.getByLabel('비밀번호', { exact: true }).fill(password);
   await page.getByRole('button', { name: '로그인', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '프로필', exact: true, level: 1 })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'phone', exact: true, level: 1 })).toBeVisible();
   await expect(page.getByRole('main').getByText('@phone', { exact: true })).toBeVisible();
-  await page.locator('.pulim-header').getByRole('button', { name: '설정', exact: true }).click();
+  await page.getByRole('button', { name: '공통 설정', exact: true }).click();
   await page.getByRole('dialog', { name: '설정', exact: true }).getByText('다크', { exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  expect(await nav.getByRole('link').allTextContents()).toEqual(['', '', '']);
+  await expect(nav.locator('a span:visible')).toHaveCount(0);
   expect(await page.locator('html').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(21, 21, 21)');
   expect(await page.locator('html').evaluate(el => getComputedStyle(el).color)).toBe('rgb(244, 244, 244)');
-  expect(await page.locator('.pulim-header').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(21, 21, 21)');
   await openWall(page);
   await page.getByRole('link', { name: '검색', exact: true }).click();
   await expect(page.getByRole('searchbox', { name: '검색어' })).toBeVisible();
@@ -278,15 +283,11 @@ test('quote text and independent comment threads survive original deletion safel
     await readerDetail.getByRole('button', { name: '댓글 등록', exact: true }).click();
     await expect(original.getByRole('button', { name: '댓글 2', exact: true })).toBeVisible();
     await anon.goto('./#/wall');
-    await anon.getByRole('article', { name: 'comment_writer의 글', exact: true }).getByRole('button', { name: '댓글 2', exact: true }).click();
-    const anonDetail = anon.getByRole('dialog', { name: '포스트 보기', exact: true });
-    await expect(anonDetail.getByText('남겨 둘 원문 댓글', { exact: true })).toBeVisible();
-    await expect(anonDetail.getByLabel('댓글 내용', { exact: true })).toHaveCount(0);
+    await expect(anon.getByRole('heading', { name: '로그인이 필요해요' })).toBeVisible();
+    await expect(anon.getByText('남겨 둘 원문 댓글', { exact: true })).toHaveCount(0);
     await original.getByRole('button', { name: '게시물 메뉴', exact: true }).click();
     owner.once('dialog', dialog => dialog.accept());
     await original.getByRole('button', { name: '삭제', exact: true }).click();
-    await expect(anonDetail.getByText('삭제되었거나 찾을 수 없는 게시물입니다.')).toBeVisible();
-    await expect(anonDetail.getByText('남겨 둘 원문 댓글', { exact: true })).toHaveCount(0);
     await expect(readerDetail.getByText('리포스트에 덧붙인 생각 #의견', { exact: true })).toBeVisible();
     await expect(readerDetail.getByText('리포스트만의 댓글', { exact: true })).toBeVisible();
     await expect(readerDetail.getByText('삭제되었거나 찾을 수 없는 원문입니다.')).toBeVisible();
@@ -317,15 +318,15 @@ test('one study document, shared dark theme and synchronized practice records', 
   });
   try {
     const email = await signup(author, 'study_user');
-    const bar = author.locator('.pulim-header');
-    const signature = () => bar.locator('.header-inner').evaluate(element => {
+    const bar = author.locator('.harueum-sidebar');
+    const signature = () => bar.evaluate(element => {
       const css = getComputedStyle(element);
       return [css.height, css.width, css.fontFamily, getComputedStyle(element.parentElement!).backgroundColor];
     });
     await expect(bar).toBeVisible();
     const originalBar = await signature();
-    await author.evaluate(() => document.querySelector('.pulim-header')?.setAttribute('data-persistent', 'yes'));
-    await author.getByRole('link', { name: '수학', exact: true }).click();
+    await author.evaluate(() => document.querySelector('.harueum-sidebar')?.setAttribute('data-persistent', 'yes'));
+    await openSubject(author, '수학');
     await expect(author.getByRole('heading', { name: '수학', exact: true })).toBeVisible();
     await expect(author.locator('html')).toHaveCSS('background-color', 'rgb(21, 21, 21)');
     await expect(bar).toHaveAttribute('data-persistent', 'yes');
@@ -340,7 +341,7 @@ test('one study document, shared dark theme and synchronized practice records', 
     await author.screenshot({ path: 'test-results/pulim-math-dark.png' });
     await start.click();
     await expect(math.locator('#daily-navigation')).toBeVisible();
-    await expect(author.locator('.app-header:visible, .session-header:visible')).toHaveCount(1);
+    await expect(author.locator('.harueum-sidebar:visible, .session-header:visible')).toHaveCount(1);
     await expect(math.locator('#session-view .katex').first()).toBeVisible();
     await math.getByRole('link', { name: '연습 나가기' }).click();
     await author.getByRole('button', { name: '설정', exact: true }).click();
@@ -348,12 +349,12 @@ test('one study document, shared dark theme and synchronized practice records', 
     await preferences.getByText('종이', { exact: true }).click();
     await expect(author.locator('html')).toHaveAttribute('data-theme', 'paper');
     await preferences.getByRole('button', { name: '닫기' }).click();
-    await author.getByRole('link', { name: '영어', exact: true }).click();
+    await openSubject(author, '영어');
 
     const english = author.locator('.study-english');
     await expect(english.getByRole('heading', { name: '오늘의 학습', level: 1 })).toBeVisible();
     await expect(author.locator('html')).toHaveAttribute('data-theme', 'paper');
-    await expect(author.locator('.app-header:visible, .session-header:visible')).toHaveCount(1);
+    await expect(author.locator('.harueum-sidebar:visible, .session-header:visible')).toHaveCount(1);
     expect(await author.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await author.getByRole('button', { name: '설정', exact: true }).click();
     const englishPreferences = english.getByRole('dialog', { name: '설정', exact: true });
@@ -362,7 +363,7 @@ test('one study document, shared dark theme and synchronized practice records', 
     await author.screenshot({ path: 'test-results/pulim-english-dark.png' });
     expect(await signature()).toEqual(originalBar);
     await english.getByRole('button', { name: '1구간 시작', exact: true }).click();
-    await expect(author.locator('.app-header:visible, .session-header:visible')).toHaveCount(1);
+    await expect(author.locator('.harueum-sidebar:visible, .session-header:visible')).toHaveCount(1);
     await english.getByRole('button', { name: '정답 확인', exact: true }).click();
     await english.getByRole('button', { name: '쉬움', exact: true }).click();
     await english.getByRole('button', { name: '연습 나가기' }).click();
@@ -378,10 +379,7 @@ test('one study document, shared dark theme and synchronized practice records', 
     await other.getByLabel('이메일', { exact: true }).fill(email);
     await other.getByLabel('비밀번호', { exact: true }).fill(password);
     await other.getByRole('button', { name: '로그인', exact: true }).click();
-    await expect(other.getByRole('heading', { name: '프로필', level: 1 })).toBeVisible();
-    await other.getByRole('button', { name: '계정 메뉴' }).click();
-    await expect(other.getByRole('button', { name: '내 기록', exact: true })).toHaveCount(0);
-    await other.getByRole('button', { name: '프로필', exact: true }).click();
+    await expect(other.getByRole('heading', { name: 'study_user', level: 1 })).toBeVisible();
     const records = other.getByRole('region', { name: '내 정보 관리' });
     const mathDownload = other.waitForEvent('download');
     await records.getByRole('button', { name: '기록 내보내기' }).click();
@@ -401,7 +399,7 @@ test('one study document, shared dark theme and synchronized practice records', 
       } })),
     });
     await expect(records.getByRole('status')).toHaveText('학습 기록을 가져왔습니다.');
-    await other.getByRole('link', { name: '영어', exact: true }).click();
+    await openSubject(other, '영어');
     await expect(other.locator('.study-english')).toBeVisible();
     await other.getByRole('button', { name: '기록', exact: true }).click();
     const syncedRecords = other.locator('.record-panel').filter({
@@ -477,37 +475,14 @@ test('English restores the vocabulary layout and uses Forge control roles on des
 
 test('one header, two control styles and shared support at mobile width', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 760 });
-  await page.goto('./');
-  const header = page.locator('.pulim-header');
-  const tabs = header.getByRole('navigation', { name: '화면 메뉴' });
-  await expect(tabs.getByRole('link', { name: '홈', exact: true })).toHaveAttribute('aria-current', 'page');
-  await tabs.getByRole('link', { name: '담벼락', exact: true }).click();
-  await expect(tabs.getByRole('link', { name: '담벼락', exact: true })).toHaveAttribute('aria-current', 'page');
-  await expect(page.getByRole('main').getByRole('link', { name: '담벼락', exact: true })).toHaveCount(0);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-
-  await expect(tabs.getByRole('link', { name: '홈', exact: true }).locator('svg')).toHaveCount(1);
-  await expect(tabs.getByRole('link', { name: '담벼락', exact: true }).locator('svg')).toHaveCount(1);
-  await tabs.getByRole('link', { name: '홈', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '무엇을 연습할까요?' })).toBeVisible();
-  await expect(page.locator('.subject-card')).toHaveCount(4);
-  await page.getByRole('button', { name: '7', exact: true }).click();
-  await expect(page.locator('.home-demo').getByRole('status')).toContainText('정답이에요');
-  await page.locator('.home-demo').getByRole('button', { name: '영어', exact: true }).click();
-  await page.getByRole('button', { name: '알아내다', exact: true }).click();
-  await expect(page.locator('.home-demo').getByRole('status')).toContainText('정답이에요');
-
-  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-  expect(await header.evaluate(el => el.getBoundingClientRect().top)).toBe(0);
-  const searchTab = tabs.getByRole('link', { name: '검색', exact: true });
-  await expectFlat(searchTab);
-  await searchTab.click();
-  await expect(searchTab).toHaveAttribute('aria-current', 'page');
-
-  const gear = tabs.getByRole('button', { name: '설정', exact: true });
-  await expectFlat(gear);
-  await expect(gear.locator('svg use')).toHaveAttribute('href', '#ico-settings');
-  await gear.click();
+  await signup(page, 'theme_settings');
+  const header = page.locator('.harueum-sidebar');
+  await expect(header.locator('nav a')).toHaveCount(5);
+  await expect(header.locator('nav a span:visible')).toHaveCount(0);
+  await openProfile(page);
+  await page.getByRole('switch', { name: '하단 메뉴 이름 표시' }).check();
+  await expect(header.locator('nav a span:visible')).toHaveCount(5);
+  await page.getByRole('button', { name: '공통 설정' }).click();
   const settings = page.getByRole('dialog', { name: '설정', exact: true });
   const units = settings.getByRole('tablist', { name: '설정 탭' });
   await expect(units.getByRole('tab', { name: '화면', exact: true })).toHaveAttribute('aria-selected', 'true');
@@ -532,7 +507,6 @@ test('one header, two control styles and shared support at mobile width', async 
   expect((await progress()).fill).toBe(14);
   await settings.getByRole('switch', { name: '효과음' }).uncheck();
   await units.getByRole('tab', { name: '물음샘', exact: true }).click();
-  await expect(settings.getByRole('link', { name: '로그인', exact: true })).toBeVisible();
   await units.getByRole('tab', { name: '지원', exact: true }).click();
   await settings.getByRole('button', { name: '소개', exact: true }).click();
   const about = page.getByRole('dialog', { name: '소개', exact: true });
@@ -554,18 +528,18 @@ test('one header, two control styles and shared support at mobile width', async 
   await expect(page.getByRole('tablist').getByRole('tab')).toHaveCount(3);
 
   for (const [subject, engine] of [['수학', 'math'], ['영어', 'english']]) {
-    await header.getByRole('link', { name: subject, exact: true }).click();
+    await openSubject(page, subject);
     await expect(page.locator('.study-' + engine)).toBeVisible();
     if (engine === 'english') {
       const gaps = await page.locator('.study-english .home-overview > .home-session').evaluateAll(cards =>
         cards.slice(1).map((card, index) => card.getBoundingClientRect().top - cards[index].getBoundingClientRect().bottom));
       expect(gaps).toEqual([16, 16]);
     }
-    await header.getByRole('button', { name: '기록', exact: true }).click();
+    await page.getByRole('navigation', { name: '학습 메뉴' }).getByRole('button', { name: '기록', exact: true }).click();
     const ranking = page.locator('[data-ranking]');
-    await expect(ranking.getByRole('heading', { name: subject + ' 온라인 랭킹' })).toBeVisible();
+    await expect(ranking.getByRole('heading', { name: '동기화된 풀이 기록' })).toBeVisible();
     await expect(page.getByRole('dialog')).toHaveCount(0);
-    await gear.click();
+    await page.getByRole('navigation', { name: '학습 메뉴' }).getByRole('button', { name: '설정', exact: true }).click();
     await expect(settings.getByRole('switch', { name: '전체화면' })).toBeVisible();
     await units.getByRole('tab', { name: '소리', exact: true }).click();
     await expect(settings.getByRole('switch', { name: '효과음' })).not.toBeChecked();
@@ -583,7 +557,7 @@ test('one header, two control styles and shared support at mobile width', async 
     await help.getByRole('button', { name: '닫기', exact: true }).click();
     await expect(settings.getByRole('button', { name: '도움말', exact: true })).toBeFocused();
     await settings.getByRole('button', { name: '닫기', exact: true }).click();
-    await expect(page.locator('.app-header:visible, .session-header:visible')).toHaveCount(1);
+    await expect(page.locator('.harueum-sidebar:visible, .session-header:visible')).toHaveCount(1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
@@ -613,10 +587,10 @@ test('a question can be attached from practice and a reader can report, hide and
     const author = await authorContext.newPage();
     const reader = await readerContext.newPage();
     await signup(author, 'question_author');
-    await author.getByRole('link', { name: '수학', exact: true }).click();
+    await openSubject(author, '수학');
     await author.locator('.study-math #quick-practice').click();
     await author.getByRole('button', { name: '이 문제로 질문하기' }).click();
-    const composer = author.getByRole('dialog', { name: '담벼락에 질문하기' });
+    const composer = author.getByRole('dialog', { name: '광장에 질문하기' });
     await expect(composer.getByText('[수학 문제]', { exact: false })).toBeVisible();
     await composer.getByLabel('게시할 글').fill('이 문제의 첫 단계가 궁금해요.');
     await composer.getByRole('button', { name: '게시하기' }).click();
@@ -650,24 +624,67 @@ test('a question can be attached from practice and a reader can report, hide and
   }
 });
 
-test('a guest keeps an attached English question through sign-in', async ({ browser }) => {
-  const authorContext = await browser.newContext();
-  const guestContext = await browser.newContext();
+test('guests can practice but cannot access member spaces or question posting', async ({ page }) => {
+  await page.goto('./#/english');
+  const english = page.locator('.study-english');
+  await english.getByRole('button', { name: '1구간 시작', exact: true }).click();
+  await expect(english.getByRole('button', { name: '이 문제로 질문하기' })).toBeHidden();
+  await page.goto('./#/stories');
+  await expect(page.getByRole('heading', { name: '로그인이 필요해요' })).toBeVisible();
+  await page.goto('./#/today');
+  await expect(page.getByRole('heading', { name: '로그인이 필요해요' })).toBeVisible();
+});
+
+test('오늘과 다음은 같은 일정과 개인 필기를 사용한다', async ({ page }) => {
+  await signup(page, 'plan_student');
+  const nav = page.getByRole('navigation', { name: '주 메뉴' });
+  await nav.getByRole('link', { name: '오늘', exact: true }).click();
+  await page.getByRole('button', { name: '일정 추가' }).click();
+  const editor = page.getByRole('dialog', { name: '개인 일정 추가' });
+  await editor.getByLabel('일정 이름').fill('수학 시험 준비');
+  await editor.getByLabel('종류').selectOption('exam');
+  await editor.getByLabel('연결할 학습').selectOption('math');
+  await editor.getByRole('button', { name: '저장', exact: true }).click();
+  await expect(page.getByText('수학 시험 준비', { exact: true })).toBeVisible();
+  await nav.getByRole('link', { name: '다음', exact: true }).click();
+  await page.getByText('수학 시험 준비', { exact: true }).click();
+  await expect(page.getByRole('link', { name: '범위 복습', exact: true })).toBeVisible();
+  await nav.getByRole('link', { name: '오늘', exact: true }).click();
+  await page.getByRole('button', { name: '개인 필기' }).click();
+  const notes = page.getByRole('dialog', { name: '오늘의 개인 필기' });
+  await notes.getByLabel('필기', { exact: true }).fill('# 오늘 정리');
+  await notes.getByRole('button', { name: '미리보기' }).click();
+  await expect(notes.getByRole('heading', { name: '오늘 정리' })).toBeVisible();
+  await notes.getByRole('button', { name: '필기 저장' }).click();
+  await expect(notes).toBeHidden();
+  await page.getByRole('button', { name: '개인 필기' }).click();
+  await expect(notes.getByLabel('필기', { exact: true })).toHaveValue('# 오늘 정리');
+});
+
+test('가입 신청을 승인한 뒤에만 학생이 그룹 글을 볼 수 있다', async ({ browser }) => {
+  const first = await browser.newContext();
+  const second = await browser.newContext();
   try {
-    const email = await signup(await authorContext.newPage(), 'guest_question');
-    const guest = await guestContext.newPage();
-    await guest.goto('./#/english');
-    const english = guest.locator('.study-english');
-    await english.getByRole('button', { name: '1구간 시작', exact: true }).click();
-    await english.getByRole('button', { name: '이 문제로 질문하기' }).click();
-    const question = guest.getByRole('dialog', { name: '담벼락에 질문하기' });
-    await question.getByLabel('이메일', { exact: true }).fill(email);
-    await question.getByLabel('비밀번호', { exact: true }).fill(password);
-    await question.getByRole('button', { name: '로그인', exact: true }).click();
-    await expect(question.getByText('[영어 문제] ‘as part of’의 뜻은 무엇인가요?', { exact: false })).toBeVisible();
-    await question.getByRole('button', { name: '문제 첨부 빼기' }).click();
-    await expect(question.getByText('[영어 문제]', { exact: false })).toHaveCount(0);
-  } finally {
-    await Promise.all([authorContext.close(), guestContext.close()]);
-  }
+    const owner = await first.newPage();
+    const member = await second.newPage();
+    await signup(owner, 'group_owner');
+    await owner.getByRole('link', { name: '그룹', exact: true }).click();
+    await owner.getByRole('button', { name: '새 그룹 만들기' }).click();
+    await owner.getByLabel('그룹 이름').fill('수학 문제 모임');
+    await owner.getByRole('button', { name: '개설', exact: true }).click();
+    const code = await owner.locator('code').innerText();
+    await owner.getByLabel('게시할 글').fill('이번 주 수학 연습');
+    await owner.getByRole('button', { name: '게시하기', exact: true }).click();
+    await expect(owner.getByText('이번 주 수학 연습')).toBeVisible();
+    await signup(member, 'group_member');
+    await member.getByRole('link', { name: '그룹', exact: true }).click();
+    await member.getByLabel('초대 코드').fill(code);
+    await member.getByRole('button', { name: '그룹 찾기' }).click();
+    await member.getByText('공유 범위를 확인했습니다.').click();
+    await member.getByRole('button', { name: '가입 요청' }).click();
+    await expect(member.getByText('이번 주 수학 연습')).toHaveCount(0);
+    await owner.getByRole('button', { name: '승인', exact: true }).click();
+    await member.getByRole('button', { name: '수학 문제 모임 · 스터디' }).click();
+    await expect(member.getByText('이번 주 수학 연습')).toBeVisible();
+  } finally { await first.close(); await second.close(); }
 });

@@ -1,0 +1,6 @@
+name = "harueum-neis"
+main = "worker.js"
+compatibility_date = "2026-11-25"
+
+[vars]
+ALLOWED_ORIGINS = "https://gitsbee.github.io"

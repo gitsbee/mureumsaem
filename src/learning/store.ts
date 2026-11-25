@@ -15,8 +15,6 @@ export type Attempt = {
   prompt?: string;
   elapsedMs?: number;
 };
-export const scoreCollection = (day: string, subject: Subject) =>
-  collection(db!, 'pulleemDays', day, 'subjects', subject, 'scores');
 export const attemptCollection = (uid: string) => collection(db!, 'users', uid, 'learning');
 
 export function readPracticeAttempt(value: unknown, subject: Subject): Attempt | null {

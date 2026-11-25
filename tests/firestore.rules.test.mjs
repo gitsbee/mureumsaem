@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { before, after, beforeEach, test } from 'node:test';
 import { initializeTestEnvironment, assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
-import { doc, setDoc, getDoc, updateDoc, deleteDoc, getDocs, collection, increment, runTransaction, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, deleteDoc, getDocs, collection, writeBatch, increment, runTransaction, serverTimestamp, Timestamp } from 'firebase/firestore';
 
 let environment;
 before(async () => {
@@ -11,15 +11,29 @@ before(async () => {
     firestore: { rules: await readFile(new URL('../firestore.rules', import.meta.url), 'utf8') },
   });
 });
-beforeEach(async () => environment.clearFirestore());
+const enabled = { groups: true, groupStories: true, plaza: true, policyVersion: 'test-v1', termsUrl: 'https://example.com/terms', privacyUrl: 'https://example.com/privacy' };
+beforeEach(async () => {
+  await environment.clearFirestore();
+  await environment.withSecurityRulesDisabled(async context => {
+    const store = context.firestore();
+    const setup = writeBatch(store);
+    setup.set(doc(store, 'harueumConfig/release'), enabled);
+    for (const uid of ['alice', 'bob', 'other', 'reader', 'stranger', 'visitor', 'writer']) {
+      setup.set(doc(store, 'users', uid, 'harueum', 'account'), { type: 'student', stage: 'high2', policyVersion: enabled.policyVersion });
+    }
+    await setup.commit();
+  });
+});
 after(async () => environment?.cleanup());
 
 const validPost = () => ({ body: '오늘의 작은 이야기', authorId: 'writer', authorName: '글쓴이', createdAt: serverTimestamp() });
 const writer = () => environment.authenticatedContext('writer').firestore();
 
-test('authenticated author can publish and anonymous visitors can read', async () => {
+test('plaza members can read and anonymous visitors cannot', async () => {
   await assertSucceeds(setDoc(doc(writer(), 'posts/first'), validPost()));
-  await assertSucceeds(getDoc(doc(environment.unauthenticatedContext().firestore(), 'posts/first')));
+  await assertSucceeds(getDoc(doc(environment.authenticatedContext('reader').firestore(), 'posts/first')));
+  await assertFails(getDoc(doc(environment.unauthenticatedContext().firestore(), 'posts/first')));
+  await assertFails(getDoc(doc(environment.authenticatedContext('unconfirmed').firestore(), 'posts/first')));
 });
 test('anonymous visitors cannot publish', async () => {
   await assertFails(setDoc(doc(environment.unauthenticatedContext().firestore(), 'posts/first'), validPost()));
@@ -79,7 +93,7 @@ test('reaction create, switch and cancel maintain public counts with private ide
   await setDoc(doc(writer(), 'posts/first'), validPost());
   await assertSucceeds(changeReaction('reader', 'like'));
   await assertSucceeds(changeReaction('reader', 'dislike'));
-  const anon = environment.unauthenticatedContext().firestore();
+  const anon = environment.authenticatedContext('visitor').firestore();
   const counts = await assertSucceeds(getDoc(doc(anon, 'posts/first/stats/reactions')));
   if (counts.data().likes !== 0 || counts.data().dislikes !== 1) throw new Error('Incorrect counts');
   await assertFails(getDocs(collection(anon, 'posts/first/reactions')));
@@ -181,13 +195,20 @@ test('profile and link validation, owner edits, and private quota reads are enfo
   await assertFails(getDocs(collection(anon, 'profiles')));
   await assertFails(getDoc(doc(stranger, 'profileLimits/alice')));
   await assertFails(updateDoc(doc(stranger, 'profiles/alice'), { name: '위조', updatedAt: serverTimestamp() }));
-  await assertSucceeds(updateDoc(doc(own, 'profiles/alice'), { bio: '가'.repeat(1000), links: ['https://social.example.com/me'], updatedAt: serverTimestamp() }));
+  await assertSucceeds(updateDoc(doc(own, 'profiles/alice'), { bio: '가'.repeat(1000), updatedAt: serverTimestamp() }));
+  await assertFails(updateDoc(doc(own, 'profiles/alice'), { links: ['https://social.example.com/me'], updatedAt: serverTimestamp() }));
   await assertFails(updateDoc(doc(own, 'profiles/alice'), { bio: '가'.repeat(1001), updatedAt: serverTimestamp() }));
   await assertFails(updateDoc(doc(own, 'profiles/alice'), { links: ['javascript:alert(1)'], updatedAt: serverTimestamp() }));
   await assertFails(updateDoc(doc(own, 'profiles/alice'), { links: ['https://user:pass@example.com'], updatedAt: serverTimestamp() }));
   await assertFails(updateDoc(doc(own, 'profiles/alice'), { links: Array.from({length:6},(_,i)=>`https://example.com/${i}`), updatedAt: serverTimestamp() }));
   await assertFails(changeHandle('alice', 'UPPERCASE'));
   await assertFails(changeHandle('alice', 'x'));
+  await environment.withSecurityRulesDisabled(context => updateDoc(doc(context.firestore(), 'profiles/alice'), { links: ['https://social.example.com/legacy'] }));
+  await assertFails(getDoc(doc(anon, 'profiles/alice')));
+  await assertSucceeds(getDoc(doc(own, 'profiles/alice')));
+  await assertSucceeds(updateDoc(doc(own, 'profiles/alice'), { links: [], updatedAt: serverTimestamp() }));
+  await assertSucceeds(getDoc(doc(anon, 'profiles/alice')));
+
 });
 
 test('private activity requires an actual matching reaction and cannot be read by others', async () => {
@@ -258,12 +279,13 @@ async function makeComment(uid, postId, commentId, body = '댓글 내용', extra
     tx.set(stats, { count: increment(1), lastCommentId: commentId }, { merge: true });
   });
 }
-test('comments are public on live posts, support multiple writers and accurate counts', async () => {
+test('comments are visible to members on live posts and maintain accurate counts', async () => {
   await setDoc(doc(writer(), 'posts/first'), validPost());
   await assertSucceeds(Promise.all([makeComment('reader', 'first', 'one'), makeComment('other', 'first', 'two')]));
   const anon = environment.unauthenticatedContext().firestore();
-  await assertSucceeds(getDocs(collection(anon, 'posts/first/comments')));
-  const counts = await getDoc(doc(anon, 'posts/first/stats/comments'));
+  await assertFails(getDocs(collection(anon, 'posts/first/comments')));
+  await assertSucceeds(getDocs(collection(writer(), 'posts/first/comments')));
+  const counts = await getDoc(doc(writer(), 'posts/first/stats/comments'));
   if (counts.data().count !== 2) throw new Error('Wrong concurrent comment count');
   await assertFails(setDoc(doc(anon, 'posts/first/comments/anonymous'), { body: '익명 쓰기', authorId: 'reader', authorName: 'reader', deleted: false, createdAt: serverTimestamp() }));
 });
@@ -305,11 +327,11 @@ test('original comments disappear after deletion; quote comments remain independ
   await assertFails(getDocs(collection(anon, 'posts/first/comments')));
   await assertFails(getDoc(doc(anon, 'posts/first/comments/original')));
   await assertFails(makeComment('reader', 'first', 'after-delete'));
-  await assertSucceeds(getDocs(collection(anon, 'posts/repost_reader_first/comments')));
+  await assertSucceeds(getDocs(collection(writer(), 'posts/repost_reader_first/comments')));
   await assertSucceeds(makeComment('other', 'repost_reader_first', 'independent'));
 });
 
-test('learning records stay private, and daily rankings require three same-day results', async () => {
+test('learning records stay private, and unverified daily rankings stay closed', async () => {
   const day = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format();
   const player = writer();
   const stranger = environment.authenticatedContext('stranger').firestore();
@@ -345,8 +367,8 @@ test('learning records stay private, and daily rankings require three same-day r
   await assertSucceeds(setDoc(answer(1), daily(false)));
   await assertSucceeds(setDoc(answer(2), daily(true)));
   await assertFails(setDoc(score, ranked(3)));
-  await assertSucceeds(setDoc(score, ranked(2)));
-  await assertSucceeds(getDoc(doc(publicDb, scorePath)));
+  await assertFails(setDoc(score, ranked(2)));
+  await assertFails(getDoc(doc(publicDb, scorePath)));
   await assertFails(deleteDoc(doc(stranger, scorePath)));
   await assertSucceeds(deleteDoc(score));
 });
@@ -383,4 +405,69 @@ test('reports and visibility lists are private and blocks stop new interactions'
   await assertSucceeds(deleteDoc(blocked));
   await assertSucceeds(changeReaction('reader', 'like'));
   await assertSucceeds(makeComment('writer', 'second', 'writer-comment'));
+});
+
+test('private schedules and consent stay within the same Firebase account', async () => {
+  const mine = writer();
+  const guest = environment.unauthenticatedContext().firestore();
+  const other = environment.authenticatedContext('other').firestore();
+  const path = 'users/writer/schedule/exam';
+  const event = { day: '2026-11-30', title: '시험', kind: 'exam', subject: 'math', note: '', start: '09:00', end: '10:00', updatedAt: serverTimestamp() };
+  await assertSucceeds(setDoc(doc(mine, path), event));
+  await assertFails(getDoc(doc(other, path)));
+  await assertFails(getDoc(doc(guest, path)));
+  await assertFails(setDoc(doc(mine, path), { ...event, start: '11:00' }));
+  const consent = 'users/writer/harueum/account';
+  const stage = { type: 'student', stage: 'high2', schoolYear: currentSchoolYear(), ageConfirmed: true, termsAccepted: true,
+    privacyAccepted: true, policyVersion: enabled.policyVersion, acceptedAt: serverTimestamp() };
+  await assertFails(setDoc(doc(mine, consent), { ...stage, ageConfirmed: false }));
+  await assertSucceeds(setDoc(doc(mine, consent), stage));
+  await assertFails(getDoc(doc(other, consent)));
+  await assertFails(setDoc(doc(mine, consent), { ...stage, type: 'teacher', stage: 'academy' }));
+});
+
+function currentSchoolYear() {
+  const [year, month] = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit' }).format().split('-').map(Number);
+  return month < 3 ? year - 1 : year;
+}
+
+test('study group approval gates content, hidden posts and withdrawal', async () => {
+  const owner = writer();
+  const other = environment.authenticatedContext('other').firestore();
+  const id = 'a'.repeat(32);
+  const group = 'harueumGroups/' + id;
+  const member = uid => group + '/members/' + uid;
+  const index = uid => 'users/' + uid + '/harueumMemberships/' + id;
+  const request = group + '/requests/other';
+  const content = group + '/posts/thread';
+  const enrollment = { type: 'student', stage: 'high2', schoolYear: currentSchoolYear(), ageConfirmed: true,
+    termsAccepted: true, privacyAccepted: true, policyVersion: enabled.policyVersion, acceptedAt: serverTimestamp() };
+  await setDoc(doc(owner, 'users/writer/harueum/account'), enrollment);
+  await setDoc(doc(other, 'users/other/harueum/account'), enrollment);
+  const create = writeBatch(owner);
+  create.set(doc(owner, group), { owner: 'writer', kind: 'study', name: '수학 연습', createdAt: serverTimestamp() });
+  create.set(doc(owner, 'harueumInvites/' + id), { kind: 'study', name: '수학 연습' });
+  create.set(doc(owner, member('writer')), { policy: 1, joinedAt: serverTimestamp() });
+  create.set(doc(owner, index('writer')), { joinedAt: serverTimestamp() });
+  await assertSucceeds(create.commit());
+  await assertFails(getDoc(doc(other, group)));
+  await assertFails(getDocs(collection(other, 'harueumInvites')));
+  await assertSucceeds(setDoc(doc(owner, content), { authorId: 'writer', body: '그룹 학습 내용', hidden: false, createdAt: serverTimestamp() }));
+  await assertFails(getDoc(doc(other, content)));
+  await assertFails(setDoc(doc(other, member('other')), { policy: 1, joinedAt: serverTimestamp() }));
+  await assertSucceeds(setDoc(doc(other, request), { policy: 1, createdAt: serverTimestamp() }));
+  const approve = writeBatch(owner);
+  approve.set(doc(owner, member('other')), { policy: 1, joinedAt: serverTimestamp() });
+  approve.set(doc(owner, index('other')), { joinedAt: serverTimestamp() });
+  approve.delete(doc(owner, request));
+  await assertSucceeds(approve.commit());
+  await assertSucceeds(getDoc(doc(other, content)));
+  await assertFails(updateDoc(doc(other, content), { hidden: true }));
+  await assertSucceeds(updateDoc(doc(owner, content), { hidden: true, body: '' }));
+  await assertFails(getDoc(doc(other, content)));
+  const leave = writeBatch(other);
+  leave.delete(doc(other, member('other')));
+  leave.delete(doc(other, index('other')));
+  await assertSucceeds(leave.commit());
+  await assertFails(getDoc(doc(other, group)));
 });

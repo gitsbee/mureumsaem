@@ -1,6 +1,200 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function release() {
+      return get(/databases/$(database)/documents/harueumConfig/release).data;
+    }
+    function groupsEnabled() { return release().get('groups', false) == true; }
+    function groupStoriesEnabled() { return groupsEnabled() && release().get('groupStories', false) == true; }
+    function plazaEnabled() {
+      return request.auth != null && groupStoriesEnabled() && release().get('plaza', false) == true
+        && hasEnrollment(request.auth.uid) && privateStudent(request.auth.uid);
+    }
+    function accountRef(uid) { return /databases/$(database)/documents/users/$(uid)/harueum/account; }
+    function hasEnrollment(uid) {
+      return exists(accountRef(uid)) && get(accountRef(uid)).data.policyVersion == release().policyVersion;
+    }
+    function privateStudent(uid) {
+      return !exists(accountRef(uid)) || get(accountRef(uid)).data.type == 'student';
+    }
+    function schoolRef(uid) { return /databases/$(database)/documents/users/$(uid)/harueum/school; }
+    function inviteRef(id) { return /databases/$(database)/documents/harueumInvites/$(id); }
+    function matchesSchool(uid, group) {
+      let school = get(schoolRef(uid)).data;
+      return school.school == group.school && school.grade == group.grade && school.room == group.room;
+    }
+    function sameClass(uid, group) { return group.kind != 'class' || matchesSchool(uid, group); }
+    function classYear() {
+      let seoul = request.time + duration.value(9, 'h');
+      return seoul.month() < 3 ? seoul.year() - 1 : seoul.year();
+    }
+    function groupIdentity(data, uid) {
+      return (data.kind == 'class' && sameClass(uid, data) && data.year == classYear())
+        || (data.kind == 'study' && !data.keys().hasAny(['school', 'grade', 'room', 'year']));
+    }
+    function groupRef(id) { return /databases/$(database)/documents/harueumGroups/$(id); }
+    function memberRef(id, uid) { return /databases/$(database)/documents/harueumGroups/$(id)/members/$(uid); }
+    function membershipIndex(id, uid) { return /databases/$(database)/documents/users/$(uid)/harueumMemberships/$(id); }
+    function joinRef(id, uid) { return /databases/$(database)/documents/harueumGroups/$(id)/requests/$(uid); }
+    function groupMember(id) {
+      return request.auth != null && groupsEnabled() && exists(memberRef(id, request.auth.uid));
+    }
+    function groupOwner(id) {
+      return request.auth != null && groupsEnabled() && get(groupRef(id)).data.owner == request.auth.uid;
+    }
+    function sized(value, max) {
+      return value is string && value.size() <= max && value.matches('[\\s\\S]*[^\\s][\\s\\S]*');
+    }
+    function allowedGroupFor(data, uid) {
+      let account = get(accountRef(uid)).data;
+      return hasEnrollment(uid) && data.kind in ['class', 'study'] && sameClass(uid, data)
+        && (account.type == 'student' || (account.stage == 'study' && data.kind == 'study')
+          || (account.stage == 'school' && data.kind == 'class'));
+    }
+    function personalSchedule(data) {
+      return data.keys().hasOnly(['day', 'title', 'kind', 'subject', 'note', 'start', 'end', 'updatedAt'])
+        && data.day is string && data.day.matches('[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])')
+        && sized(data.title, 80) && data.note is string && data.note.size() <= 4000
+        && data.kind in ['class', 'lunch', 'exam', 'task', 'study', 'personal'] && data.subject in ['', 'math', 'english']
+        && ((data.start == '' && data.end == '') || (data.start is string && data.end is string
+          && data.start.matches('([01][0-9]|2[0-3]):[0-5][0-9]') && data.end.matches('([01][0-9]|2[0-3]):[0-5][0-9]')
+          && (int(data.start.split(':')[0]) * 60 + int(data.start.split(':')[1]))
+          < (int(data.end.split(':')[0]) * 60 + int(data.end.split(':')[1]))))
+        && data.updatedAt == request.time;
+    }
+    function groupText(value, max) {
+      return sized(value, max) && !value.lower().matches('[\\s\\S]*(https?:|www[.]|@[a-z0-9_])[\\s\\S]*');
+    }
+    match /harueumConfig/release {
+      allow get: if true;
+    }
+    match /users/{uid}/harueum/account {
+      function validEnrollment(data) {
+        let seoul = request.time + duration.value(9, 'h');
+        return data.keys().hasOnly(['type', 'stage', 'schoolYear', 'policyVersion', 'ageConfirmed', 'termsAccepted', 'privacyAccepted', 'acceptedAt'])
+          && ((data.type == 'student' && data.stage in ['high1', 'high2', 'high3', 'repeat', 'relearn'])
+            || (data.type == 'teacher' && data.stage in ['school', 'academy', 'study']))
+          && data.schoolYear == (seoul.month() < 3 ? seoul.year() - 1 : seoul.year())
+          && data.policyVersion == release().policyVersion && sized(data.policyVersion, 100)
+          && release().termsUrl.matches('https://.+') && release().privacyUrl.matches('https://.+')
+          && data.ageConfirmed == true && data.termsAccepted == true && data.privacyAccepted == true && data.acceptedAt == request.time;
+      }
+      allow get: if learningOwner(uid);
+      allow create: if learningOwner(uid) && validEnrollment(request.resource.data);
+      allow update: if learningOwner(uid) && validEnrollment(request.resource.data)
+        && request.resource.data.type == resource.data.type && request.resource.data.stage == resource.data.stage;
+    }
+    match /users/{uid}/harueum/school {
+      allow get: if learningOwner(uid);
+      allow create, update: if learningOwner(uid)
+        && request.resource.data.keys().hasOnly(['school', 'grade', 'room', 'updatedAt'])
+        && request.resource.data.school.matches('[0-9]{7}')
+        && request.resource.data.grade is int && request.resource.data.grade >= 1 && request.resource.data.grade <= 3
+        && request.resource.data.room is int && request.resource.data.room >= 1 && request.resource.data.room <= 50
+        && request.resource.data.updatedAt == request.time;
+    }
+    match /users/{uid}/schedule/{eventId} {
+      allow read, delete: if learningOwner(uid) && privateStudent(uid);
+      allow create, update: if learningOwner(uid) && privateStudent(uid) && personalSchedule(request.resource.data);
+    }
+    match /users/{uid}/dayNotes/{day} {
+      allow get: if learningOwner(uid) && privateStudent(uid);
+      allow create, update: if learningOwner(uid) && privateStudent(uid)
+        && day.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && request.resource.data.keys().hasOnly(['body', 'updatedAt'])
+        && request.resource.data.body is string && request.resource.data.body.size() <= 8000
+        && request.resource.data.updatedAt == request.time;
+    }
+    match /harueumInvites/{id} {
+      allow get: if request.auth != null && groupsEnabled() && hasEnrollment(request.auth.uid)
+        && (!exists(inviteRef(id)) || sameClass(request.auth.uid, resource.data));
+      allow create: if request.auth != null && groupsEnabled()
+        && getAfter(groupRef(id)).data.owner == request.auth.uid
+        && getAfter(groupRef(id)).data.createdAt == request.time
+        && request.resource.data.keys().hasOnly(['name', 'kind', 'school', 'grade', 'room', 'year'])
+        && request.resource.data.name == getAfter(groupRef(id)).data.name
+        && request.resource.data.kind == getAfter(groupRef(id)).data.kind
+        && request.resource.data.get('school', '') == getAfter(groupRef(id)).data.get('school', '')
+        && request.resource.data.get('grade', 0) == getAfter(groupRef(id)).data.get('grade', 0)
+        && request.resource.data.get('room', 0) == getAfter(groupRef(id)).data.get('room', 0)
+        && request.resource.data.get('year', 0) == getAfter(groupRef(id)).data.get('year', 0);
+    }
+    match /users/{uid}/harueumMemberships/{id} {
+      allow read: if learningOwner(uid) && groupsEnabled();
+      allow create: if request.auth != null && groupsEnabled()
+        && getAfter(memberRef(id, uid)).data.joinedAt == request.time
+        && request.resource.data.keys().hasOnly(['joinedAt']) && request.resource.data.joinedAt == request.time;
+      allow delete: if learningOwner(uid) && groupsEnabled() && !existsAfter(memberRef(id, uid));
+    }
+    match /harueumGroups/{id} {
+      allow get: if groupMember(id);
+      allow create: if request.auth != null && groupsEnabled() && id.matches('[a-f0-9]{32}')
+        && request.resource.data.keys().hasOnly(['name', 'kind', 'owner', 'createdAt', 'school', 'grade', 'room', 'year'])
+        && request.resource.data.owner == request.auth.uid && request.resource.data.createdAt == request.time
+        && groupText(request.resource.data.name, 60) && groupIdentity(request.resource.data, request.auth.uid)
+        && allowedGroupFor(request.resource.data, request.auth.uid)
+        && getAfter(memberRef(id, request.auth.uid)).data.joinedAt == request.time;
+      allow update: if groupOwner(id)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['owner'])
+        && request.resource.data.owner is string && request.resource.data.owner != request.auth.uid
+        && exists(memberRef(id, request.resource.data.owner))
+        && allowedGroupFor(resource.data, request.resource.data.owner);
+      match /requests/{uid} {
+        allow get: if (learningOwner(uid) && groupsEnabled()) || groupOwner(id);
+        allow list: if groupOwner(id);
+        allow create: if learningOwner(uid) && groupsEnabled() && hasEnrollment(uid)
+          && exists(inviteRef(id)) && sameClass(uid, get(inviteRef(id)).data) && !exists(memberRef(id, uid))
+          && request.resource.data.keys().hasOnly(['policy', 'createdAt'])
+          && request.resource.data.policy == 1 && request.resource.data.createdAt == request.time;
+        allow delete: if (learningOwner(uid) && groupsEnabled()) || groupOwner(id);
+      }
+      match /members/{uid} {
+        allow get: if groupMember(id);
+        allow create: if request.auth != null && groupsEnabled()
+          && request.resource.data.keys().hasOnly(['policy', 'joinedAt'])
+          && request.resource.data.policy == 1 && request.resource.data.joinedAt == request.time
+          && getAfter(membershipIndex(id, uid)).data.joinedAt == request.time
+          && ((learningOwner(uid) && !exists(groupRef(id)) && getAfter(groupRef(id)).data.owner == uid
+              && getAfter(groupRef(id)).data.createdAt == request.time)
+            || (groupOwner(id) && exists(joinRef(id, uid)) && get(joinRef(id, uid)).data.policy == 1
+              && hasEnrollment(uid) && sameClass(uid, get(groupRef(id)).data) && !existsAfter(joinRef(id, uid))));
+        allow delete: if learningOwner(uid) && groupMember(id) && !groupOwner(id)
+          && !existsAfter(membershipIndex(id, uid));
+      }
+      match /posts/{postId} {
+        allow read: if groupStoriesEnabled() && groupMember(id) && resource.data.hidden == false;
+        allow create: if groupStoriesEnabled() && groupMember(id)
+          && request.resource.data.keys().hasOnly(['authorId', 'body', 'hidden', 'createdAt'])
+          && request.resource.data.authorId == request.auth.uid && request.resource.data.hidden == false
+          && request.resource.data.createdAt == request.time && groupText(request.resource.data.body, 2000);
+        allow update: if groupStoriesEnabled() && groupMember(id)
+          && (groupOwner(id) || resource.data.authorId == request.auth.uid)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['body', 'hidden'])
+          && request.resource.data.hidden == true
+          && request.resource.data.body == (resource.data.authorId == request.auth.uid ? '' : resource.data.body);
+        function visibleGroupPost() {
+          return groupStoriesEnabled() && groupMember(id) && get(/databases/$(database)/documents/harueumGroups/$(id)/posts/$(postId)).data.hidden == false;
+        }
+        match /comments/{commentId} {
+          allow read: if visibleGroupPost();
+          allow create: if visibleGroupPost()
+            && canInteract(get(/databases/$(database)/documents/harueumGroups/$(id)/posts/$(postId)).data.authorId)
+            && request.resource.data.keys().hasOnly(['authorId', 'body', 'createdAt'])
+            && request.resource.data.authorId == request.auth.uid
+            && request.resource.data.createdAt == request.time && groupText(request.resource.data.body, 1000);
+          allow delete: if visibleGroupPost() && resource.data.authorId == request.auth.uid;
+        }
+      }
+    }
+    match /users/{uid}/harueumGroupReports/{id} {
+      allow get: if learningOwner(uid);
+      allow create: if learningOwner(uid) && request.resource.data.groupId is string
+        && groupMember(request.resource.data.groupId)
+        && request.resource.data.keys().hasOnly(['groupId', 'target', 'reason', 'createdAt'])
+        && sized(request.resource.data.target, 128) && sized(request.resource.data.reason, 500)
+        && request.resource.data.createdAt == request.time;
+    }
+
     function learningOwner(uid) { return request.auth != null && request.auth.uid == uid; }
     function learningSubject(subject) { return subject in ['math', 'english']; }
     function learningToday(day) {
@@ -41,15 +235,8 @@ service cloud.firestore {
       allow update, delete: if false;
     }
     match /pulleemDays/{day}/subjects/{subject}/scores/{uid} {
-      allow get: if true;
-      allow list: if request.query.limit <= 25;
-      allow create, update: if learningOwner(uid) && learningSubject(subject) && learningToday(day)
-        && exists(/databases/$(database)/documents/profiles/$(uid))
-        && request.resource.data.keys().hasAll(['score', 'updatedAt'])
-        && request.resource.data.keys().hasOnly(['score', 'updatedAt'])
-        && request.resource.data.score is int && request.resource.data.updatedAt == request.time
-        && request.resource.data.score == dailyPoint(uid, day, subject, '0')
-          + dailyPoint(uid, day, subject, '1') + dailyPoint(uid, day, subject, '2');
+      allow get, list: if false;
+      allow create, update: if false;
       allow delete: if learningOwner(uid);
     }
     // Retired login-service records, if any, remain inaccessible to clients.
@@ -129,12 +316,13 @@ service cloud.firestore {
         && getAfter(handleRef(data.handle)).data.uid == request.auth.uid;
     }
     match /profiles/{uid} {
-      allow get: if true;
+      allow get: if learningOwner(uid) || !exists(profileRef(uid)) || resource.data.get('links', []).size() == 0;
       allow list: if false;
       allow create: if request.auth != null && request.auth.uid == uid && validProfile(request.resource.data)
-        && request.resource.data.createdAt == request.time
+        && request.resource.data.links == [] && request.resource.data.createdAt == request.time
         && getAfter(limitRef(uid)).data.last == null && getAfter(limitRef(uid)).data.previous == null;
       allow update: if request.auth != null && request.auth.uid == uid && validProfile(request.resource.data)
+        && (request.resource.data.links == [] || request.resource.data.links == resource.data.links)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'handle', 'bio', 'links', 'updatedAt'])
         && (request.resource.data.handle == resource.data.handle || (
           !existsAfter(handleRef(resource.data.handle))
@@ -170,7 +358,7 @@ service cloud.firestore {
     }
 
     match /posts/{postId} {
-      function signedIn() { return request.auth != null; }
+      function signedIn() { return plazaEnabled(); }
       function owner() { return signedIn() && resource.data.authorId == request.auth.uid; }
       function nonblank(value, maximum) {
         return value is string && value.size() >= 1 && value.size() <= maximum
@@ -196,7 +384,7 @@ service cloud.firestore {
           || (data.get('kind', 'post') == 'repost' && repostBody(data.body) && originalExists(data)
             && postId == 'repost_' + request.auth.uid + '_' + data.originalId);
       }
-      allow read: if true;
+      allow read: if plazaEnabled();
       allow create: if signedIn() && fields(request.resource.data)
         && request.resource.data.authorId == request.auth.uid
         && request.resource.data.createdAt == request.time
@@ -253,7 +441,7 @@ service cloud.firestore {
           && (!existsAfter(comment) || getAfter(comment).data.authorId == request.auth.uid)
           && data.count == before + (commentActive(comment, true) ? 1 : 0) - (commentActive(comment, false) ? 1 : 0);
       }
-      function commentsOpen() { return parent().get('deleted', false) == false; }
+      function commentsOpen() { return plazaEnabled() && parent().get('deleted', false) == false; }
       match /comments/{commentId} {
         function validComment(data) {
           return data.keys().hasAll(['body', 'authorId', 'authorName', 'createdAt', 'deleted'])
@@ -288,7 +476,7 @@ service cloud.firestore {
           && validCounts(getAfter(/databases/$(database)/documents/posts/$(postId)/stats/reactions).data);
       }
       match /stats/{statId} {
-        allow read: if true;
+        allow read: if plazaEnabled();
         allow create, update: if (statId == 'reactions' && reactable() && validCounts(request.resource.data))
           || (statId == 'comments' && signedIn() && commentsOpen() && commentCounts(request.resource.data));
         allow delete: if false;

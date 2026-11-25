@@ -1,7 +1,7 @@
 import { bindStudyInputs } from './inputSettings';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Leaderboard, LearningRecords } from './LearningRecords';
+import { LearningRecords } from './LearningRecords';
 import type { Theme } from '../hooks/useTheme';
 import { subjects, type Subject } from './daily';
 import { readPracticeAttempt, type Attempt } from './store';
@@ -22,7 +22,7 @@ export function warmStudy(subject: Subject) {
   void (subject === 'math' ? loadMath() : loadEnglish()).catch(() => {});
 }
 
-export default function StudyScreen({ subject, account, theme, setTheme, onAttempt, onQuestion, onView, onSupport, day, action }: {
+export default function StudyScreen({ subject, account, theme, setTheme, onAttempt, onQuestion, onView, onSupport, canShare, action }: {
   subject: Subject;
   account: string;
   theme: Theme;
@@ -30,7 +30,7 @@ export default function StudyScreen({ subject, account, theme, setTheme, onAttem
   onQuestion: (subject: Subject, prompt: string) => void;
   onAttempt: (attempt: Attempt) => void;
   onView: (view: StudyView) => void;
-  day: string;
+  canShare: boolean;
   onSupport: (kind: SupportKind, subject: Subject) => void;
   action: { name: StudyAction; id: number } | null;
 }) {
@@ -136,10 +136,9 @@ export default function StudyScreen({ subject, account, theme, setTheme, onAttem
     </section>}
     {status === 'ready' && isHistory && rankingTarget && createPortal(
       <>
-        <Leaderboard key={day} day={day} subject={subject} uid={account === 'guest' ? undefined : account} />
         {account !== 'guest' && <LearningRecords uid={account} fixedSubject={subject} />}
       </>, rankingTarget,
     )}
-    <div ref={ref} className={`study-engine study-${subject}`} hidden={status !== 'ready'} />
+    <div ref={ref} data-share={canShare} className={`study-engine study-${subject}`} hidden={status !== 'ready'} />
   </>;
 }

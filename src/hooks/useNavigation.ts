@@ -26,9 +26,11 @@ export function useNavigation() {
   }, []);
   let hash = '';
   try { hash = decodeURIComponent(state.hash); } catch { /* Invalid paths resolve to the feed. */ }
-  const study = /^#\/(math|english)(\/practice)?$/.exec(hash);
+  const study = /^#\/(math|english)(?:\/(practice|history))?$/.exec(hash);
   return {
-    hub: !hash || hash === '#/home', wall: hash === '#/wall',
+    start: !hash || hash === '#/home', hub: hash === '#/study', today: hash === '#/today', next: hash === '#/next',
+    groups: hash === '#/stories' || hash === '#/groups', wall: hash === '#/wall' || hash === '#/plaza',
+    review: study?.[2] === 'history',
     subject: (study?.[1] || null) as 'math' | 'english' | null,
     records: hash === '#/records', ranking: (hash === '#/ranking/math' ? 'math' : hash === '#/ranking/english' ? 'english' : null) as 'math' | 'english' | null,
     support: state.pathname.replace(/\/$/, '').endsWith('/About') ? 'about' as const : hash === '#/help' ? 'help' as const : null,

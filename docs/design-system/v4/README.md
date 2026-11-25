@@ -1,6 +1,6 @@
 # 물음샘 디자인 시스템 4
 
-[서비스 배포본](https://gitsbee.github.io/Pulim/)과 [beta 9246edf](https://github.com/gitsbee/Pulim/tree/9246edfe3b9a341549e939e4ad557f586f171726)의 색상, 아이콘, 표면과 눌림을 기준으로 정리했습니다. v4는 중복 아이콘, 태그 대비, 토글과 슬라이더, 입력 글자 크기와 모서리 규칙을 통합합니다. 확정한 규칙은 밝은 테마에서만 눌림 글자색 전환, 모든 동작의 아이콘과 라벨 가운데 정렬, 태그 아이콘 필수, 수식 LaTeX 필수입니다.
+[서비스 배포본](https://gitsbee.github.io/mureumsaem/)과 [beta 9246edf](https://github.com/gitsbee/mureumsaem/tree/9246edfe3b9a341549e939e4ad557f586f171726)의 색상, 아이콘, 표면과 눌림을 기준으로 정리했습니다. v4는 중복 아이콘, 태그 대비, 토글과 슬라이더, 입력 글자 크기와 모서리 규칙을 통합합니다. 확정한 규칙은 밝은 테마에서만 눌림 글자색 전환, 모든 동작의 아이콘과 라벨 가운데 정렬, 태그 아이콘 필수, 수식 LaTeX 필수입니다.
 
 ## 브랜드
 
@@ -117,7 +117,7 @@ renderPulimMath(katex, document.querySelector('#equation'), String.raw`3\cdot(5-
 </main>
 ```
 
-원본 React 화면에서는 공통 아이콘을 [Icon.tsx](https://github.com/gitsbee/Pulim/blob/9246edfe3b9a341549e939e4ad557f586f171726/src/components/Icon.tsx)에서 재사용합니다. 토큰 JSON의 `mode` 그룹은 각 도구에서 밝게·어둡게·종이에 매핑하고, `role`의 별칭은 `palette`를 참조합니다. 단일 HTML 가이드에는 KaTeX가 렌더링한 예시와 수식 글꼴이 포함되어 오프라인에서도 볼 수 있습니다.
+원본 React 화면에서는 공통 아이콘을 [Icon.tsx](https://github.com/gitsbee/mureumsaem/blob/9246edfe3b9a341549e939e4ad557f586f171726/src/components/Icon.tsx)에서 재사용합니다. 토큰 JSON의 `mode` 그룹은 각 도구에서 밝게·어둡게·종이에 매핑하고, `role`의 별칭은 `palette`를 참조합니다. 단일 HTML 가이드에는 KaTeX가 렌더링한 예시와 수식 글꼴이 포함되어 오프라인에서도 볼 수 있습니다.
 
 | v1에서 사용한 클래스 | v2에서 적용할 클래스 |
 |---|---|
@@ -129,7 +129,7 @@ renderPulimMath(katex, document.querySelector('#equation'), String.raw`3\cdot(5-
 | `.pulim-option` | `.pulim-control.pulim-select.pulim-option` |
 | `.pulim-select`, `.pulim-select--compact` | `.pulim-control.pulim-select` |
 
-태그와 본문, 모드 색 및 상태색을 원본의 팔레트에 연결했습니다. 기존 18px 버튼은 본문과 같은 17px로, 문제와 객관식 선택지는 기존 지문 크기 중 20px로, 화면 제목은 기존 제목 크기 중 29px로 정했습니다. 다른 모서리 값과 반복 간격은 공용 토큰으로 합쳤습니다. 원본 근거는 [forge.css](https://github.com/gitsbee/Pulim/blob/9246edfe3b9a341549e939e4ad557f586f171726/src/forge.css)와 [pulim.css](https://github.com/gitsbee/Pulim/blob/9246edfe3b9a341549e939e4ad557f586f171726/src/pulim.css)에 있습니다.
+태그와 본문, 모드 색 및 상태색을 원본의 팔레트에 연결했습니다. 기존 18px 버튼은 본문과 같은 17px로, 문제와 객관식 선택지는 기존 지문 크기 중 20px로, 화면 제목은 기존 제목 크기 중 29px로 정했습니다. 다른 모서리 값과 반복 간격은 공용 토큰으로 합쳤습니다. 원본 근거는 [forge.css](https://github.com/gitsbee/mureumsaem/blob/9246edfe3b9a341549e939e4ad557f586f171726/src/forge.css)와 [pulim.css](https://github.com/gitsbee/mureumsaem/blob/9246edfe3b9a341549e939e4ad557f586f171726/src/pulim.css)에 있습니다.
 
 ## 색상과 아이콘
 

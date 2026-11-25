@@ -1,0 +1,97 @@
+:root {
+  --brand-teal: var(--pulim-palette-blue);
+  --brand-ink: var(--pulim-palette-blue);
+  --harueum-sidebar-width: 216px;
+  --harueum-control-info: var(--pulim-palette-blue);
+}
+:root[data-theme="dark"] {
+  --brand-ink: #93b6e2;
+  --harueum-control-info: #91b7e1;
+}
+.harueum-shell { --harueum-nav-space: 65px; min-height: 100dvh; }
+.harueum-shell[data-labels="true"] { --harueum-nav-space: 80px; }
+.harueum-shell[data-member="true"]:not([data-focus="true"]) {
+  padding-bottom: calc(var(--harueum-nav-space) + env(safe-area-inset-bottom));
+}
+.harueum-sidebar {
+  position: fixed; inset: auto 0 0; z-index: 20;
+  padding: 4px 8px calc(4px + env(safe-area-inset-bottom));
+  border-top: 2px solid var(--pulim-line-divider);
+  background: var(--pulim-surface-panel);
+}
+.harueum-sidebar nav { display: grid; gap: 4px; }
+.harueum-sidebar .harueum-brand { display: none; }
+.harueum-sidebar .harueum-tab { display: flex; flex-direction: column; gap: 2px; min-width: 0; width: 100%; min-height: 52px; border: 2px solid transparent; text-decoration: none; }
+.harueum-sidebar .harueum-tab[aria-current="page"] { color: var(--harueum-control-info); border-bottom-color: currentColor; }
+.harueum-sidebar .harueum-tab span { display: none; white-space: nowrap; font-size: 14px; }
+.harueum-sidebar[data-labels="true"] .harueum-tab span { display: inline; }
+.harueum-guestbar, .harueum-studytools { display: flex; justify-content: space-between; gap: 4px; max-width: 740px; margin-inline: auto; padding: 8px 16px; }
+.harueum-studytools { flex-wrap: wrap; justify-content: flex-start; }
+.harueum-studytools [aria-current="page"] { color: var(--harueum-control-info); box-shadow: inset 0 -2px currentColor; }
+.harueum-title { text-align: center; font-size: var(--pulim-font-body); font-weight: 700; margin: 0 0 24px; }
+.harueum-section { margin-block: 24px; }
+.harueum-heading { display: flex; gap: 8px; align-items: center; }
+.harueum-period { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.harueum-period h2 { margin: 0; font-weight: 400; font-size: var(--pulim-font-body); text-align: center; }
+.harueum-agenda { display: grid; gap: 8px; margin-block: 12px; }
+.harueum-agenda h3 { margin: 0; font-size: var(--pulim-font-body); font-weight: 400; text-align: center; }
+.harueum-day-marker { display: flex; align-items: center; gap: 8px; }
+.harueum-day-marker::before, .harueum-day-marker::after { content: ''; block-size: 2px; background: var(--harueum-control-info); flex: 1; }
+.harueum-event { padding: 8px 16px; border: 2px solid transparent; }
+.harueum-event[data-current="true"] { border-color: var(--harueum-control-info); }
+.harueum-event summary { cursor: pointer; list-style: none; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-height: 44px; }
+.harueum-event summary::-webkit-details-marker { display: none; }
+.harueum-event summary::after { content: '⌄'; margin-inline-start: auto; }
+.harueum-event[open] summary::after { transform: rotate(180deg); }
+.harueum-event-name { font-weight: 500; }
+.harueum-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.harueum-event .harueum-tags { flex-basis: 100%; order: 1; }
+.harueum-preserve { white-space: pre-wrap; overflow-wrap: anywhere; }
+.harueum-action { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 16px; margin-block: 16px; }
+.harueum-action > .button { flex: 1 1 auto; }
+.harueum-columns { display: grid; gap: 8px; grid-template-columns: repeat(2,minmax(0,1fr)); }
+.harueum-form { display: grid; gap: 8px; }
+.harueum-form .actions > *, .harueum-form > .button { flex: 1; }
+.harueum-group-list { display: grid; gap: 8px; }
+.harueum-group-list > .panel { padding: 16px; }
+.harueum-shell .ha-switch { display: flex; gap: 8px; align-items: center; min-height: 44px; }
+.enrollment-fields { display: grid; gap: 6px; }
+.harueum-shell label.confirmation, .enrollment-fields .confirmation { display: block; }
+.harueum-shell label.confirmation input, .enrollment-fields .confirmation input[type="checkbox"] { width: auto; min-height: auto; margin-inline: 4px; }
+.harueum-shell :focus-visible { outline: 2px solid var(--harueum-control-info); outline-offset: 4px; }
+@media (min-width: 720px) {
+  .harueum-shell[data-member="true"]:not([data-focus="true"]) { padding: 0 0 0 var(--harueum-sidebar-width); }
+  .harueum-sidebar { inset: 0 auto 0 0; width: var(--harueum-sidebar-width); padding: 16px; border-top: 0; border-right: 2px solid var(--pulim-line-divider); display: flex; flex-direction: column; gap: 24px; }
+  .harueum-sidebar nav { flex: 1; display: flex; flex-direction: column; }
+  .harueum-sidebar nav a:last-child { margin-top: auto; }
+  .harueum-sidebar .harueum-brand { display: flex; font-size: 29px; font-weight: 700; gap: 8px; justify-content: flex-start; color: var(--brand-ink); }
+  .harueum-sidebar .harueum-tab { flex-direction: row; gap: 8px; justify-content: flex-start; padding-inline: 12px; }
+  .harueum-sidebar .harueum-tab span { display: inline; font-size: 17px; }
+  .harueum-sidebar .harueum-tab[aria-current="page"] { border-color: currentColor; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .harueum-shell * { scroll-behavior: auto; }
+}
+.study-engine[data-share="false"] #ask-on-wall { display: none; }
+.harueum-guestbar { border-bottom: 2px solid var(--pulim-line-divider); }
+.harueum-story-tabs { margin-block-end: 16px; }
+.harueum-comments { margin-block-start: 12px; border-top: 2px solid var(--pulim-line-divider); }
+.harueum-shell[data-member="true"]:not([data-focus="true"]) .harueum-action { position: sticky; bottom: calc(var(--harueum-nav-space) + env(safe-area-inset-bottom)); z-index: 5; }
+.harueum-form select, .enrollment-fields select {
+  min-height: var(--pulim-size-control); width: 100%; padding: 8px 12px;
+  background: var(--pulim-surface-panel); color: var(--pulim-text-default);
+  border: 2px solid var(--pulim-line-control); border-radius: var(--pulim-radius-ui); font: inherit;
+}
+.harueum-shell .application-main { min-height: 0; }
+.harueum-shell footer .footer-links { flex-wrap: wrap; }
+@media (min-width: 720px) {
+  .harueum-shell[data-member="true"]:not([data-focus="true"]) .harueum-action { bottom: 8px; }
+}
+@media (max-width: 719px) {
+  .harueum-sidebar .harueum-tab { position: relative; }
+  .harueum-sidebar .harueum-tab[aria-current="page"] { border-bottom-color: transparent; }
+  .harueum-sidebar .harueum-tab[aria-current="page"]::after {
+    content: ''; position: absolute; inset: auto 5px -2px; height: 2px; background: currentColor;
+  }
+  .harueum-shell .application-main footer { flex-direction: column; gap: 8px; }
+}

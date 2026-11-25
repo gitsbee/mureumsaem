@@ -1,5 +1,6 @@
 export const iconNames = [
   "brand",
+  "hourglass",
   "flag",
   "eye-off",
   "block",

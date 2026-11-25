@@ -1,0 +1,1500 @@
+<!doctype html>
+<html lang="ko" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>하루이음 디자인 시스템 팔레트 · 개정 24</title>
+<style>/* Load pulim-tokens.css first. Apply pulim-ui to the containing element. */
+.pulim-ui {
+  background: var(--pulim-surface-page);
+  color: var(--pulim-text-default);
+  --pulim-checked-edge: color-mix(in srgb, var(--pulim-palette-green) var(--pulim-state-pressed-edge-face), var(--pulim-palette-black));
+  font: var(--pulim-type-weight-normal) var(--pulim-font-body)/var(--pulim-type-line-body) var(--pulim-font-family);
+}
+.pulim-ui *, .pulim-ui *::before, .pulim-ui *::after { box-sizing: border-box; }
+.pulim-ui :where(button, input, select, textarea) { font: inherit; color: inherit; }
+.pulim-ui :where(h1, h2, h3, p) { margin: 0; }
+.pulim-ui :focus-visible {
+  outline: var(--pulim-stroke-border) solid var(--pulim-focus-ring);
+  outline-offset: var(--pulim-space-4);
+}
+.pulim-ui :where(.pulim-title, .pulim-heading, .pulim-section-label) { font-weight: var(--pulim-type-weight-strong); }
+.pulim-title { font-size: var(--pulim-font-title); line-height: var(--pulim-type-line-title); }
+.pulim-heading { font-size: var(--pulim-font-section); line-height: var(--pulim-type-line-title); }
+.pulim-meta { font-size: var(--pulim-font-meta); color: var(--pulim-text-secondary); }
+.pulim-prompt { font-size: var(--pulim-font-problem); line-height: var(--pulim-type-line-problem); }
+.pulim-icon {
+  width: var(--pulim-size-icon);
+  height: var(--pulim-size-icon);
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pulim-icon--small, .pulim-tag .pulim-icon {
+  width: var(--pulim-size-icon-small);
+  height: var(--pulim-size-icon-small);
+}
+.pulim-content, .pulim-reading {
+  width: min(calc(100% - 2 * var(--pulim-space-16)), var(--pulim-layout-content-max));
+  margin-inline: auto;
+}
+.pulim-reading { max-width: var(--pulim-layout-question-max); }
+.pulim-dialog { width: min(calc(100% - 2 * var(--pulim-space-16)), var(--pulim-layout-dialog-max)); }
+.pulim-stack { display: grid; gap: var(--pulim-space-12); min-width: 0; }
+.pulim-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--pulim-space-8); min-width: 0; }
+.pulim-panel {
+  min-width: 0;
+  padding: var(--pulim-space-16);
+  border-radius: var(--pulim-radius-ui);
+  background: var(--pulim-surface-panel);
+}
+
+.pulim-ui :where([data-tone]:not([data-tone="neutral"])) { --tag-ink: var(--pulim-palette-white); }
+.pulim-ui :where([data-tone="neutral"]) { --tone: initial; --tag-ink: initial; --tone-solid: initial; }
+.pulim-ui :where([data-tone="save"]) { --tone: var(--pulim-role-save); }
+.pulim-ui :where([data-tone="share"]) { --tone: var(--pulim-role-share); }
+.pulim-ui :where([data-tone="danger"]) { --tone: var(--pulim-role-danger); }
+.pulim-ui :where([data-tone="correct"]) { --tone: var(--pulim-role-correct); }
+.pulim-ui :where([data-tone="incorrect"]) { --tone: var(--pulim-role-incorrect); }
+.pulim-ui :where([data-tone="hint"]) { --tone: var(--pulim-role-hint); }
+.pulim-ui :where([data-tone="info"]) { --tone: var(--pulim-role-info); }
+.pulim-ui :where([data-tone="review"]) { --tone: var(--pulim-role-review); }
+.pulim-ui :where([data-tone="streak"]) { --tone: var(--pulim-role-streak); }
+.pulim-ui :where([data-tone="mode-a"]) { --tone: var(--pulim-role-mode-a); }
+.pulim-ui :where([data-tone="mode-b"]) { --tone: var(--pulim-role-mode-b); }
+.pulim-ui :where([data-tone="mode-c"]) { --tone: var(--pulim-role-mode-c); }
+.pulim-ui :where([data-tone="difficulty-low"]) { --tone: var(--pulim-role-difficulty-low); }
+.pulim-ui :where([data-tone="difficulty-medium"]) { --tone: var(--pulim-role-difficulty-medium); }
+.pulim-ui :where([data-tone="difficulty-high"]) { --tone: var(--pulim-role-difficulty-high); }
+.pulim-ui :where([data-tone="math"]) { --tone: var(--pulim-role-subject-math); }
+.pulim-ui :where([data-tone="english"]) { --tone: var(--pulim-role-subject-english); }
+.pulim-ui :where([data-tone="unit-coordinate"]) { --tone: var(--pulim-role-unit-coordinate); }
+.pulim-ui :where([data-tone="unit-lines"]) { --tone: var(--pulim-role-unit-lines); }
+.pulim-ui :where([data-tone="unit-circles"]) { --tone: var(--pulim-role-unit-circles); }
+.pulim-ui :where([data-tone="unit-transformations"]) { --tone: var(--pulim-role-unit-transformations); }
+.pulim-ui :where([data-tone="unit-sets"]) { --tone: var(--pulim-role-unit-sets); }
+.pulim-ui :where([data-tone="unit-propositions"]) { --tone: var(--pulim-role-unit-propositions); }
+.pulim-ui :where([data-tone="unit-functions"]) { --tone: var(--pulim-role-unit-functions); }
+.pulim-ui :where([data-tone="unit-rational"]) { --tone: var(--pulim-role-unit-rational); }
+.pulim-ui :where([data-tone="unit-radical"]) { --tone: var(--pulim-role-unit-radical); }
+
+.pulim-control {
+  --edge: var(--tone, var(--pulim-line-control));
+  --face: var(--tone-solid, var(--tone, var(--pulim-control-neutral-fill)));
+  --rest: color-mix(in srgb, var(--edge) var(--pulim-state-rest-tint), transparent);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--pulim-space-8);
+  min-width: 0;
+  min-height: var(--pulim-size-control);
+  padding: var(--pulim-space-8) var(--pulim-space-16);
+  border: var(--pulim-stroke-border) solid var(--edge);
+  border-radius: var(--pulim-radius-ui);
+  background: var(--rest);
+  color: var(--pulim-text-default);
+  font-size: var(--pulim-font-body);
+  font-weight: var(--pulim-type-weight-normal);
+  line-height: var(--pulim-type-line-control);
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  box-shadow: 0 var(--pulim-stroke-depth) 0 var(--edge);
+}
+.pulim-control--primary { --tone: var(--pulim-role-start); }
+.pulim-control--skip { --face: var(--pulim-action-skip-fill); }
+.pulim-control--tool {
+  width: var(--pulim-size-tool);
+  min-height: var(--pulim-size-tool);
+  padding: 0;
+}
+@media (hover: hover) {
+  .pulim-control:where(:hover:not(:disabled, :has(:disabled))) {
+    text-decoration: underline;
+    text-underline-offset: .2em;
+  }
+  .pulim-control--tool:where(:hover:not(:disabled)) { border-color: currentColor; }
+}
+.pulim-control:where(:active:not(:disabled, :has(:disabled)), [aria-pressed="true"]:not(:disabled), :has(input:checked:enabled), .pulim-menu[open] > summary) {
+  background: var(--face);
+  color: var(--pulim-text-on-control-pressed);
+  border-color: color-mix(in srgb, var(--face) var(--pulim-state-pressed-edge-face), var(--pulim-palette-black));
+  box-shadow: inset 0 var(--pulim-stroke-depth) 0 color-mix(in srgb, var(--face) var(--pulim-state-pressed-depth-face), var(--pulim-palette-black));
+  transform: translateY(var(--pulim-stroke-depth));
+  text-decoration: none;
+}
+.pulim-control:where(:disabled, :has(:disabled)):not([data-result]), .pulim-plain:disabled {
+  opacity: var(--pulim-state-disabled-opacity);
+  box-shadow: none;
+  cursor: default;
+}
+.pulim-plain {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--pulim-space-8);
+  min-width: var(--pulim-size-tool);
+  min-height: var(--pulim-size-tool);
+  padding: var(--pulim-space-4) var(--pulim-space-8);
+  border: 0;
+  border-radius: var(--pulim-radius-ui);
+  color: inherit;
+  background: transparent;
+  font-size: var(--pulim-font-body);
+  line-height: var(--pulim-type-line-control);
+  text-decoration: none;
+  cursor: pointer;
+}
+.pulim-plain--tool { width: var(--pulim-size-tool); padding: 0; }
+@media (hover: hover) {
+  .pulim-plain:where(:not(:disabled)):hover { text-decoration: underline; text-underline-offset: .2em; }
+  .pulim-plain--tool:where(:not(:disabled)):hover .pulim-icon { opacity: .72; }
+}
+.pulim-tab:where([aria-current]:not([aria-current="false"]), [aria-pressed="true"], [aria-selected="true"])::after {
+  content: "";
+  position: absolute;
+  inset: auto var(--pulim-space-8) var(--pulim-stroke-border);
+  height: var(--pulim-stroke-border);
+  border-radius: var(--pulim-radius-detail);
+  background: currentColor;
+}
+.pulim-choices { display: grid; gap: var(--pulim-space-8); padding: 0; margin: 0; border: 0; min-inline-size: 0; }
+.pulim-choices legend { padding: 0; margin-bottom: var(--pulim-space-8); font-weight: var(--pulim-type-weight-strong); }
+.pulim-select { position: relative; }
+.pulim-select > input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.pulim-select:has(input:focus-visible) {
+  outline: var(--pulim-stroke-border) solid var(--pulim-focus-ring);
+  outline-offset: var(--pulim-space-4);
+}
+.pulim-option {
+  display: grid;
+  grid-template-columns: var(--pulim-size-icon) minmax(0, 1fr);
+  text-align: start;
+  padding-inline: var(--pulim-space-12);
+  font-size: var(--pulim-font-problem);
+  line-height: var(--pulim-type-line-problem);
+}
+.pulim-option-number { text-align: center; font-size: var(--pulim-font-body); }
+.pulim-option[data-result="correct"] { --result: var(--pulim-role-correct); --result-ink: var(--pulim-status-correct); }
+.pulim-option[data-result="incorrect"] { --result: var(--pulim-role-incorrect); --result-ink: var(--pulim-status-incorrect); }
+.pulim-option[data-result] {
+  background: color-mix(in srgb, var(--result) var(--pulim-state-result-tint), var(--pulim-surface-panel));
+  color: var(--result-ink);
+  border-color: currentColor;
+  box-shadow: none;
+  transform: none;
+  cursor: default;
+  text-decoration: none;
+}
+.pulim-field { display: grid; gap: var(--pulim-space-4); min-width: 0; }
+.pulim-input {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--pulim-size-control);
+  padding: var(--pulim-space-8) var(--pulim-space-12);
+  background: var(--pulim-surface-panel);
+  border: var(--pulim-stroke-border) solid var(--pulim-line-control);
+  border-radius: var(--pulim-radius-ui);
+}
+.pulim-input:disabled { opacity: var(--pulim-state-disabled-opacity); }
+.pulim-input[aria-invalid="true"] { border-color: var(--pulim-status-incorrect); }
+.pulim-input::placeholder { color: var(--pulim-text-secondary); }
+.pulim-error { color: var(--pulim-status-incorrect); font-size: var(--pulim-font-meta); }
+.pulim-tag, .pulim-verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pulim-space-4);
+  max-width: 100%;
+  border-radius: var(--pulim-radius-ui);
+  background: var(--tone-solid, var(--tone, var(--pulim-control-wash)));
+  color: var(--tag-ink, var(--pulim-text-control));
+  overflow-wrap: anywhere;
+}
+.pulim-tag {
+  min-height: var(--pulim-size-tag);
+  padding: var(--pulim-space-4) var(--pulim-space-8);
+  font-size: var(--pulim-font-meta);
+  line-height: var(--pulim-type-line-control);
+}
+.pulim-verdict { gap: var(--pulim-space-8); padding: var(--pulim-space-8) var(--pulim-space-12); }
+.pulim-math {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  padding-block: var(--pulim-space-4);
+  background: transparent;
+  font-size: var(--pulim-font-problem);
+  line-height: var(--pulim-type-line-problem);
+}
+.pulim-ui :where(.pulim-math, .pulim-math-inline) .katex { font-size: 1em; }
+.pulim-math .katex-display { margin: 0; }
+.pulim-math .katex-display > .katex { width: max-content; min-width: 100%; text-align: start; }
+
+.pulim-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pulim-space-16);
+  width: 100%;
+  min-height: var(--pulim-size-control);
+  padding: 0;
+  border: 0;
+  border-radius: var(--pulim-radius-ui);
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+}
+.pulim-switch__track {
+  position: relative;
+  flex: 0 0 var(--pulim-size-switch-track);
+  height: var(--pulim-size-tool);
+}
+.pulim-switch__track::before, .pulim-switch__track::after {
+  content: "";
+  position: absolute;
+  border: var(--pulim-stroke-border) solid var(--pulim-line-control);
+  border-radius: var(--pulim-radius-ui);
+}
+.pulim-switch__track::before { inset: var(--pulim-space-8) 0; background: var(--pulim-control-wash); }
+.pulim-switch__track::after {
+  inset: 0 auto 0 0;
+  width: var(--pulim-size-switch-thumb);
+  background: var(--pulim-surface-panel);
+  box-shadow: 0 var(--pulim-stroke-depth) 0 var(--pulim-line-control);
+  transition: transform var(--pulim-motion-switch);
+}
+.pulim-switch[aria-checked="true"] .pulim-switch__track::before {
+  background: var(--pulim-palette-green);
+  border-color: var(--pulim-checked-edge);
+}
+.pulim-switch[aria-checked="true"] .pulim-switch__track::after {
+  transform: translateX(calc(var(--pulim-size-switch-track) - var(--pulim-size-switch-thumb)));
+  border-color: var(--pulim-checked-edge);
+  box-shadow: 0 var(--pulim-stroke-depth) 0 var(--pulim-checked-edge);
+}
+.pulim-switch:disabled { opacity: var(--pulim-state-disabled-opacity); cursor: default; }
+.pulim-switch:disabled .pulim-switch__track::after { box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  .pulim-switch__track::after { transition: none; }
+}
+@media (forced-colors: active) {
+  .pulim-control:where([aria-pressed="true"], :has(input:checked)),
+  .pulim-switch[aria-checked="true"] .pulim-switch__track::before { border-color: Highlight; }
+  .pulim-tab:where([aria-current]:not([aria-current="false"]),[aria-pressed="true"],[aria-selected="true"]) { text-decoration: underline; }
+}
+
+/* Settings and form controls. */
+.pulim-range-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--pulim-space-4) var(--pulim-space-8);
+  align-items: center;
+}
+.pulim-range {
+  --value: 0;
+  --track-edge: var(--pulim-line-control);
+  --thumb-edge: var(--pulim-line-control);
+  --break: calc(var(--pulim-size-switch-thumb) / 2 + (100% - var(--pulim-size-switch-thumb)) * var(--value));
+  position: relative;
+  grid-column: 1 / -1;
+  display: grid;
+  align-items: center;
+  min-width: 0;
+}
+.pulim-range[data-filled] { --thumb-edge: var(--pulim-checked-edge); }
+.pulim-range::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  height: var(--pulim-size-slider-track);
+  border: var(--pulim-stroke-border) solid transparent;
+  border-radius: var(--pulim-radius-ui);
+  background:
+    linear-gradient(to right, var(--pulim-palette-green) 0 var(--break), var(--pulim-control-wash) var(--break) 100%) border-box,
+    linear-gradient(to right, var(--pulim-checked-edge) 0 var(--break), var(--track-edge) var(--break) 100%) border-box;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  pointer-events: none;
+}
+.pulim-range:not([data-filled])::before {
+  border-color: var(--track-edge);
+  background: var(--pulim-control-wash);
+}
+.pulim-range input {
+  appearance: none;
+  position: relative;
+  width: 100%;
+  height: var(--pulim-size-tool);
+  border: 0;
+  border-radius: var(--pulim-radius-ui);
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.pulim-range input::-webkit-slider-runnable-track { height: var(--pulim-size-tool); }
+.pulim-range input::-moz-range-track { height: var(--pulim-size-tool); }
+.pulim-range input::-webkit-slider-thumb {
+  appearance: none;
+  box-sizing: border-box;
+  width: var(--pulim-size-switch-thumb);
+  height: var(--pulim-size-tool);
+  background: var(--pulim-surface-panel);
+  border: var(--pulim-stroke-border) solid var(--thumb-edge);
+  border-radius: var(--pulim-radius-ui);
+  box-shadow: 0 var(--pulim-stroke-depth) 0 var(--thumb-edge);
+}
+.pulim-range input::-moz-range-thumb {
+  box-sizing: border-box;
+  width: var(--pulim-size-switch-thumb);
+  height: var(--pulim-size-tool);
+  background: var(--pulim-surface-panel);
+  border: var(--pulim-stroke-border) solid var(--thumb-edge);
+  border-radius: var(--pulim-radius-ui);
+  box-shadow: 0 var(--pulim-stroke-depth) 0 var(--thumb-edge);
+}
+.pulim-range:has(input:disabled) { opacity: var(--pulim-state-disabled-opacity); }
+.pulim-range input:disabled { cursor: default; }
+
+.pulim-field-icon { display: grid; align-items: center; min-width: 0; }
+.pulim-field-icon > * { grid-area: 1 / 1; }
+.pulim-field-icon .pulim-icon {
+  justify-self: start;
+  margin-inline-start: var(--pulim-space-12);
+  pointer-events: none;
+}
+.pulim-field-icon .pulim-input { padding-inline-start: calc(var(--pulim-space-12) + var(--pulim-size-icon) + var(--pulim-space-8)); }
+.pulim-select-field .pulim-input {
+  appearance: none;
+  padding-inline-start: var(--pulim-space-12);
+  padding-inline-end: calc(var(--pulim-space-12) + var(--pulim-size-icon) + var(--pulim-space-8));
+}
+.pulim-select-field .pulim-icon { justify-self: end; margin-inline: 0 var(--pulim-space-12); }
+.pulim-input:where(textarea) { min-height: calc(var(--pulim-size-control) * 2); resize: vertical; }
+.pulim-file { position: relative; }
+.pulim-file input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+.pulim-file:has(input:focus-visible) {
+  outline: var(--pulim-stroke-border) solid var(--pulim-focus-ring);
+  outline-offset: var(--pulim-space-4);
+}
+.pulim-menu { position: relative; width: fit-content; max-width: 100%; }
+.pulim-menu > summary, .pulim-disclosure > summary { list-style: none; }
+.pulim-menu > summary::-webkit-details-marker, .pulim-disclosure > summary::-webkit-details-marker { display: none; }
+.pulim-menu > summary { width: max-content; max-width: 100%; }
+.pulim-menu-items {
+  position: absolute;
+  inset-block-start: calc(100% + var(--pulim-space-8));
+  inset-inline-start: 0;
+  z-index: 2;
+  display: grid;
+  min-width: max(100%, calc(var(--pulim-size-control) * 3));
+  max-width: min(calc(100vw - 2 * var(--pulim-space-16)), var(--pulim-layout-dialog-max));
+  padding: var(--pulim-space-4);
+  border: var(--pulim-stroke-border) solid var(--pulim-line-control);
+  border-radius: var(--pulim-radius-ui);
+  background: var(--pulim-surface-panel);
+}
+.pulim-menu-items [data-tone="danger"] { color: var(--pulim-status-incorrect); }
+.pulim-disclosure {
+  padding: var(--pulim-space-8) var(--pulim-space-12);
+  border: var(--pulim-stroke-border) solid var(--pulim-line-divider);
+  border-radius: var(--pulim-radius-ui);
+  background: var(--pulim-surface-panel);
+}
+.pulim-disclosure > summary { display: flex; width: 100%; padding-inline: calc(var(--pulim-size-icon) + var(--pulim-space-12)); }
+.pulim-disclosure > summary > .pulim-disclosure-arrow { position: absolute; inset-inline-end: var(--pulim-space-4); }
+.pulim-disclosure[open] > summary > .pulim-disclosure-arrow { transform: rotate(180deg); }
+.pulim-disclosure > :not(summary) { margin-block: var(--pulim-space-8); }
+.pulim-dialog {
+  max-height: calc(100dvh - 2 * var(--pulim-space-16));
+  overflow: auto;
+  padding: var(--pulim-space-16);
+  border: var(--pulim-stroke-border) solid var(--pulim-line-control);
+  border-radius: var(--pulim-radius-ui);
+  background: var(--pulim-surface-panel);
+  color: var(--pulim-text-default);
+}
+.pulim-dialog::backdrop { background: rgb(0 0 0 / .52); }
+.pulim-progress {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: var(--pulim-radius-ui);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--pulim-radius-ui);
+  background: var(--pulim-control-wash);
+}
+.pulim-progress::-webkit-progress-bar { background: var(--pulim-control-wash); }
+.pulim-progress::-webkit-progress-value { background: var(--pulim-palette-green); }
+.pulim-progress::-moz-progress-bar { background: var(--pulim-palette-green); }
+.pulim-reaction[aria-pressed="true"] .pulim-icon { fill: currentColor; }
+@media (forced-colors: active) {
+  .pulim-range::before { border-color: CanvasText; background: Canvas; }
+  .pulim-range input { appearance: auto; forced-color-adjust: auto; }
+  .pulim-select-field select { appearance: auto; }
+  .pulim-select-field .pulim-icon { display: none; }
+}
+
+/* Screen layout and the current-event border use v4 tokens. */
+:root {
+  --harueum-nav-size: 216px;
+  --harueum-context-max: 288px;
+  --harueum-workspace-top: var(--pulim-space-12);
+  --harueum-type-weight-medium: 500;
+}
+html {
+  scroll-padding-block: var(--pulim-space-16);
+}
+body { margin: 0; min-height: 100dvh; }
+[hidden] { display: none !important; }
+.skip-link {
+  position: fixed;
+  inset: var(--pulim-space-12) auto auto var(--pulim-space-12);
+  z-index: 9;
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+.shell { min-height: 100dvh; }
+body[data-view="student"] .shell {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  block-size: 100dvh;
+}
+.brand { display: flex; align-items: center; gap: var(--pulim-space-8); }
+.bottom-chrome {
+  min-inline-size: 0;
+}
+.bottom-chrome, .action-dock, .action-dock > div { background: none; }
+.action-dock > div { display: none; padding-block-end: var(--pulim-space-8); }
+body[data-screen="today"] [data-action-route="today"],
+body[data-screen="next"] [data-action-route="next"],
+body[data-screen="learn"] [data-action-route="learn"],
+body[data-screen="story"] [data-action-route="story"] { display: block; }
+body:not([data-view="student"]) .bottom-chrome { display: none; }
+.global {
+  pointer-events: auto;
+  background: var(--pulim-surface-panel);
+  padding: var(--pulim-space-8) max(var(--pulim-space-8), env(safe-area-inset-right)) calc(var(--pulim-space-8) + env(safe-area-inset-bottom)) max(var(--pulim-space-8), env(safe-area-inset-left));
+}
+.global .brand { display: none; }
+.global > ul { list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--pulim-space-4); padding: 0; margin: 0; }
+.global a { width: 100%; flex-direction: column; gap: var(--pulim-space-4); }
+.nav-label { display: none; text-align: center; }
+[data-labels="true"] .nav-label { display: inline; }
+[data-labels="true"] .global a { min-height: 56px; padding: var(--pulim-space-4) var(--pulim-space-4) var(--pulim-space-8); }
+.workspace {
+  width: 100%;
+  max-width: calc(var(--pulim-layout-header-max) + var(--harueum-context-max));
+  margin-inline: auto;
+  padding: var(--harueum-workspace-top) var(--pulim-space-16) var(--pulim-space-24);
+}
+.screen { display: grid; gap: var(--pulim-space-24); }
+.page-header { display: flex; align-items: start; justify-content: space-between; gap: var(--pulim-space-8); }
+.screen > .page-header:has(.tab-title) { justify-content: center; text-align: center; }
+.tab-title, .calendar-date, .calendar-month {
+  font-size: var(--pulim-font-body);
+  font-weight: var(--pulim-type-weight-normal);
+  text-align: center;
+}
+.tab-title { font-weight: var(--pulim-type-weight-strong); line-height: var(--pulim-type-line-title); }
+.pulim-tag[data-tone="date"] {
+  --tag-ink: var(--pulim-text-secondary);
+  --tone: var(--pulim-control-wash);
+}
+.pulim-tag { align-items: center; }
+.pulim-tag > .pulim-icon { display: block; align-self: center; }
+.pulim-tag > span { display: block; line-height: var(--pulim-type-line-control); }
+.pulim-tag:has(> .subject-icon) { background: var(--pulim-control-wash); color: var(--pulim-text-control); }
+.today-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--pulim-space-12);
+  color: var(--pulim-status-info);
+  font-weight: var(--harueum-type-weight-medium);
+}
+.today-divider::before, .today-divider::after {
+  content: "";
+  flex: 1;
+  border-block-start: var(--pulim-stroke-border) solid currentColor;
+}
+.subject-icon, .colored-icon {
+  --harueum-cue-ink: var(--tone, var(--pulim-text-control));
+}
+.visual-cue { display: inline-flex; flex: none; align-items: center; justify-content: center; }
+.subject-icon, .colored-icon { color: var(--harueum-cue-ink); }
+:root[data-theme="dark"] :is(.subject-icon, .colored-icon) {
+  --harueum-cue-ink: color-mix(in srgb, var(--tone, var(--pulim-text-control)), var(--pulim-palette-white) 48%);
+}
+.heading-with-cue, .field-caption, .profile-header {
+  display: flex;
+  align-items: center;
+  gap: var(--pulim-space-8);
+}
+.profile-header { position: relative; padding-inline-end: calc(var(--pulim-size-tool) + var(--pulim-space-8)); }
+.profile-header > .pulim-plain--tool {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+}
+body[data-view="student"] .workspace {
+  min-block-size: 0;
+  padding-block-end: var(--pulim-space-8);
+}
+.action-screen {
+  block-size: 100%;
+  min-block-size: 0;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--pulim-space-8);
+}
+.action-screen > * {
+  width: min(100%, var(--pulim-layout-content-max));
+  margin-inline: auto;
+}
+.screen-scroll {
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  padding: var(--pulim-space-8) 0;
+  scroll-padding-block: var(--pulim-space-8);
+  align-content: start;
+}
+.schedule-screen { position: relative; }
+.schedule-scroll { scrollbar-width: none; overflow-anchor: none; }
+.schedule-scroll::-webkit-scrollbar { display: none; }
+.schedule-jump {
+  position: absolute;
+  inset-block-end: var(--pulim-space-8);
+  inset-inline-end: max(0px, calc((100% - var(--pulim-layout-content-max)) / 2));
+  width: auto;
+  z-index: 2;
+}
+.schedule-jump .pulim-control { background: var(--pulim-surface-panel); }
+.schedule-jump .pulim-control:active { background: var(--face); }
+.schedule-empty { min-block-size: calc(3 * var(--pulim-space-24)); }
+.schedule-days, .schedule-day {
+  display: grid;
+  gap: var(--pulim-space-8);
+  min-inline-size: 0;
+  align-content: start;
+}
+.schedule-day > :is(.calendar-date, .calendar-month) {
+  min-block-size: calc(var(--pulim-font-body) * var(--pulim-type-line-body));
+}
+.empty-timetable { text-align: center; padding-block: var(--pulim-space-8); }
+.action-card {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--pulim-space-8);
+  padding: var(--pulim-space-8) var(--pulim-space-16);
+  width: min(calc(100% - 2 * var(--pulim-space-8)), var(--pulim-layout-content-max));
+  margin-inline: auto;
+  border-radius: var(--pulim-radius-ui);
+  background: var(--pulim-surface-panel);
+}
+.action-description { display: flex; align-items: center; gap: var(--pulim-space-8); }
+.action-description .pulim-icon { width: var(--pulim-size-icon-small); height: var(--pulim-size-icon-small); }
+.schedule-action { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+.schedule-action-content {
+  display: grid;
+  align-content: center;
+  gap: var(--pulim-space-4);
+  min-block-size: max(var(--pulim-size-tool), 2lh);
+  line-height: var(--pulim-type-line-control);
+}
+.action-card > button { flex: 0 0 auto; }
+.action-card .pulim-progress { block-size: var(--pulim-space-4); }
+.action-card .section-links { flex: 1 1 0; min-inline-size: 0; }
+.action-card select { background: transparent; }
+.study-subject {
+  display: flex;
+  align-items: center;
+  gap: var(--pulim-space-4);
+  flex: 1;
+  min-width: 0;
+}
+.study-subject select {
+  min-width: 0;
+  width: 100%;
+  min-height: var(--pulim-size-tool);
+  border: 0;
+}
+#study-time { font-variant-numeric: tabular-nums; }
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.timeline-list { display: grid; gap: var(--pulim-space-8); margin: 0; padding: 0; list-style: none; }
+.event { border-color: transparent; }
+.event[aria-current="time"] { border-color: var(--pulim-status-info); background: var(--harueum-current-wash); }
+.event > summary { justify-content: start; text-align: start; padding-inline-start: var(--pulim-space-4); }
+.event-main { display: grid; gap: var(--pulim-space-8); min-width: 0; }
+.event-title { display: flex; align-items: center; gap: var(--pulim-space-8); line-height: 1.4; }
+.event-title, .subject-name, .group-title, .entity-name, .key-info, .study-subject select, #study-time {
+  font-weight: var(--harueum-type-weight-medium);
+}
+.event-title .pulim-icon { width: var(--pulim-size-icon-small); height: var(--pulim-size-icon-small); }
+.subject-name { font-size: var(--pulim-font-body); }
+.event-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-block-size: var(--pulim-size-tool);
+  align-items: center;
+  column-gap: var(--pulim-space-8);
+}
+.data-list { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--pulim-space-4) var(--pulim-space-12); margin: 0; }
+.data-list dt { display: flex; align-items: center; align-self: start; gap: var(--pulim-space-4); }
+.data-list dt .pulim-icon { width: var(--pulim-size-icon-small); height: var(--pulim-size-icon-small); }
+.data-list dd { margin: 0; text-align: end; overflow-wrap: anywhere; }
+.event .data-list { margin-block: var(--pulim-space-8); }
+.overlap, .action-grid { display: grid; gap: var(--pulim-space-12); }
+.action-grid > .pulim-stack { display: flex; flex-direction: column; }
+.action-grid > .pulim-stack > .pulim-control:last-child { margin-block-start: auto; }
+.action-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: var(--pulim-space-8); }
+.action-row > :is(.pulim-control, .pulim-plain) { flex: 1 1 9rem; min-width: min(100%, 9rem); }
+.dialog-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pulim-space-8);
+  padding-block-end: var(--pulim-space-4);
+}
+.dialog-actions > :only-child { grid-column: 1 / -1; }
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+  gap: var(--pulim-space-8);
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-inline-size: 0;
+}
+.picker-option { display: grid; justify-items: center; gap: var(--pulim-space-4); padding: var(--pulim-space-8); }
+.section-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--pulim-space-8); }
+.section-links > [role="tab"], .note-tabs > [role="tab"] { width: 100%; min-width: 0; padding-inline: var(--pulim-space-4); gap: var(--pulim-space-4); }
+.note-tabs .pulim-icon { width: var(--pulim-size-icon-small); height: var(--pulim-size-icon-small); }
+.note-sheet {
+  position: fixed;
+  inset: auto 0 0;
+  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  height: min(85dvh, 650px);
+  padding: 0;
+  border: 0;
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+.note-sheet[open] { display: grid; }
+.note-form {
+  display: grid;
+  grid-template: "handle" auto "workspace" minmax(0, 1fr) "controls" auto "submit" auto / minmax(0, 1fr);
+  gap: var(--pulim-space-8);
+  overflow: auto;
+  min-height: 0;
+}
+.sheet-handle {
+  grid-area: handle;
+  inline-size: 40px;
+  block-size: var(--pulim-space-4);
+  margin: var(--pulim-space-8) auto 0;
+  border-radius: var(--pulim-radius-ui);
+  background: var(--pulim-line-divider);
+}
+.note-workspace { grid-area: workspace; overflow: auto; display: grid; grid-template-rows: minmax(0, 1fr); padding: 0 var(--pulim-space-16) var(--pulim-space-4); }
+.note-surface, .note-rendered {
+  display: block;
+  width: 100%;
+  min-block-size: clamp(168px, 37dvh, 340px);
+}
+.note-surface {
+  margin: 0;
+  padding: var(--pulim-space-4) 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  resize: none;
+}
+.note-surface:focus, .note-surface:focus-visible,
+.task-entry input:focus, .task-entry input:focus-visible { outline: none; }
+.note-rendered { overflow-wrap: anywhere; }
+.note-rendered pre { overflow-x: auto; }
+.note-rendered table { max-width: 100%; }
+.note-rendered :is(h1, h2, h3) { margin-block: var(--pulim-space-8) var(--pulim-space-4); }
+.note-rendered :is(h1, h2) { font-size: var(--pulim-font-section); }
+.note-rendered :is(h3, h4, h5, h6) { font-size: var(--pulim-font-body); }
+.note-rendered p + p { margin-block-start: var(--pulim-space-8); }
+.note-actions { grid-area: controls; display: grid; gap: var(--pulim-space-4); padding: var(--pulim-space-8) var(--pulim-space-16) 0; }
+.note-session-nav { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--pulim-space-4); }
+.note-sheet[data-note-view="tasks"] .note-session-nav { visibility: hidden; }
+#note-tasks { grid-template-rows: minmax(0, 1fr) auto; }
+#task-items { overflow: auto; align-content: start; }
+.note-session-picker { display: grid; align-items: center; min-height: var(--pulim-size-tool); position: relative; border-radius: var(--pulim-radius-ui); }
+.note-session-picker:focus-within { outline: var(--pulim-stroke-border) solid var(--pulim-focus-ring); background: var(--harueum-focus-wash); }
+.note-session-picker select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.note-context-tags { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: var(--pulim-space-8); }
+.note-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--pulim-space-8); padding-block-end: var(--pulim-space-4); }
+.note-submit { grid-area: submit; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--pulim-space-8); padding: 0 var(--pulim-space-16) max(var(--pulim-space-12), calc(env(safe-area-inset-bottom) + var(--pulim-stroke-depth))); }
+.task-entry { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--pulim-space-8); padding-block-end: var(--pulim-stroke-depth); }
+.note-task { display: flex; align-items: baseline; gap: var(--pulim-space-8); overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: no-preference) {
+  .note-sheet[open] { animation: note-in 230ms ease-out both; }
+  @keyframes note-in { from { transform: translateY(100%); } }
+}
+.compose-body { display: block; width: 100%; min-height: 8rem; padding: 0; border: 0; background: transparent; resize: vertical; }
+.compose-body:focus-visible { outline: none; }
+@media (max-width: 719px) {
+  .compose-sheet {
+    position: fixed;
+    inset: auto 0 0;
+    margin: 0;
+    width: 100%;
+    max-width: none;
+    border: 0;
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+    padding-block-end: max(var(--pulim-space-16), env(safe-area-inset-bottom));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .compose-sheet[open] { animation: note-in 230ms ease-out both; }
+  }
+}
+.post-list { display: grid; gap: var(--pulim-space-12); }
+.post-actions > .pulim-menu { margin-inline-start: auto; }
+.post-card .pulim-menu-items {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  inset-block: auto calc(100% + var(--pulim-space-8));
+  margin: 0;
+  list-style: none;
+}
+.post-menu-action {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  text-align: start;
+}
+@media (hover: hover) {
+  .post-menu-action:hover { background: var(--pulim-control-wash); }
+}
+.post-menu-action:active { background: var(--pulim-control-wash); }
+.post-menu-action:focus-visible { outline-offset: calc(-1 * var(--pulim-stroke-border)); }
+:root[data-theme="dark"] .pulim-menu-items .post-menu-action[data-tone="danger"] {
+  color: color-mix(in srgb, var(--pulim-status-incorrect), var(--pulim-palette-white) 24%);
+}
+.post-actions { column-gap: 0; }
+.post-action { display: inline-flex; align-items: center; font-size: var(--pulim-font-meta); font-variant-numeric: tabular-nums; }
+.post-action button[aria-pressed="true"] .pulim-icon { fill: currentColor; }
+.shared-problem {
+  padding: var(--pulim-space-12);
+  background: var(--pulim-surface-page);
+  border-radius: var(--pulim-radius-ui);
+}
+.group-title { font-size: var(--pulim-font-body); }
+.stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--pulim-space-8); margin: 0; }
+.stat-tile {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border: var(--pulim-stroke-border) solid var(--tone);
+  border-radius: var(--pulim-radius-ui);
+  min-width: 0;
+  overflow: hidden;
+}
+.stat-tile dt {
+  background: var(--tone);
+  color: var(--pulim-palette-white);
+  text-align: center;
+  font-size: var(--pulim-font-meta);
+  padding: var(--pulim-space-4);
+  line-height: var(--pulim-type-line-control);
+}
+.stat-tile dd, .study-stat-details li { display: flex; align-items: center; gap: var(--pulim-space-4); flex-wrap: wrap; }
+.stat-tile .pulim-icon { width: var(--pulim-size-icon-small); height: var(--pulim-size-icon-small); }
+.stat-tile dd {
+  justify-content: center;
+  padding: var(--pulim-space-8) var(--pulim-space-4);
+  margin: 0;
+  font-size: var(--pulim-font-body);
+  font-weight: var(--harueum-type-weight-medium);
+  line-height: 1.25;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.study-stat-details { display: grid; gap: var(--pulim-space-8); padding: 0; margin: 0; list-style: none; }
+#screen-me .screen-scroll { grid-auto-rows: max-content; }
+.theme-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pulim-space-8);
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.theme-choices legend { margin-block-end: var(--pulim-space-8); }
+.theme-option { padding-inline: var(--pulim-space-8); }
+.action-row.four-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.four-options > .pulim-control { min-width: 0; }
+/* The preview uses one set of controls in both responsive positions. */
+:root {
+  --harueum-current-wash: color-mix(in srgb, var(--pulim-status-info) 10%, transparent);
+  --harueum-focus-wash: color-mix(in srgb, var(--pulim-focus-ring) 10%, transparent);
+}
+.study-screen { position: relative; }
+.study-return-row {
+  position: absolute;
+  grid-row: 2;
+  inset: auto 0 var(--pulim-space-8);
+  width: min(100%, calc(var(--pulim-layout-question-max) + 2 * var(--study-side)));
+  margin-inline: auto;
+  padding-inline: var(--study-side);
+  display: flex;
+  justify-content: end;
+  pointer-events: none;
+}
+#study-return-top {
+  pointer-events: auto;
+  background: var(--pulim-surface-panel);
+  border: var(--pulim-stroke-border) solid var(--pulim-line-control);
+}
+.study-paper canvas[data-pen-only] { touch-action: pan-y; }
+.study-settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--pulim-space-8);
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  background: var(--pulim-surface-panel);
+}
+.study-settings-tabs { display: flex; flex-wrap: wrap; gap: var(--pulim-space-4); }
+@media (width < 720px) {
+  #study-settings {
+    position: fixed;
+    inset: 0;
+    margin: 0;
+    width: 100%;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+    padding: max(var(--pulim-space-16), env(safe-area-inset-top)) max(var(--pulim-space-16), env(safe-area-inset-right))
+      max(var(--pulim-space-16), env(safe-area-inset-bottom)) max(var(--pulim-space-16), env(safe-area-inset-left));
+  }
+}
+
+.focus-shell, .study-screen {
+  --study-side: max(var(--pulim-space-16), env(safe-area-inset-left), env(safe-area-inset-right));
+  gap: 0;
+}
+.study-screen {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  block-size: var(--study-viewport-height, 100dvh);
+}
+.study-header, .study-dock, .study-result-dock {
+  width: min(100%, calc(var(--pulim-layout-question-max) + 2 * var(--study-side)));
+  margin-inline: auto;
+  padding-inline: var(--study-side);
+}
+.study-header {
+  display: flex;
+  align-items: center;
+  gap: var(--pulim-space-8);
+  min-block-size: var(--pulim-size-control);
+  padding-block: var(--pulim-space-8);
+}
+.study-header h1 { flex: 1; text-align: start; }
+.study-header-tools, .study-secondary-tools, .study-pen-tools {
+  display: flex;
+  gap: var(--pulim-space-4);
+  align-items: center;
+}
+.study-pen-tools { justify-content: center; }
+.study-pen-tools > button { border: var(--pulim-stroke-border) solid transparent; }
+.study-pen-tools > button[aria-pressed="true"] {
+  border-color: var(--pulim-status-info);
+  background: var(--harueum-current-wash);
+}
+.study-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pulim-space-16);
+  min-block-size: 0;
+  min-inline-size: 0;
+  padding-inline: max(var(--study-side), calc((100% - var(--pulim-layout-question-max)) / 2));
+  padding-block: var(--pulim-space-8) var(--pulim-space-16);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+.study-body > :empty:not(input, [role="status"]) { display: none; }
+.study-feedback:empty { position: absolute; }
+#study-prompt { min-inline-size: 0; }
+.study-feedback { font-weight: var(--harueum-type-weight-medium); }
+.study-feedback[data-result="correct"] { color: var(--pulim-status-correct); }
+.study-feedback[data-result="incorrect"] { color: var(--pulim-status-incorrect); }
+.study-dock {
+  display: grid;
+  gap: var(--pulim-space-8);
+  padding-block: var(--pulim-space-8) calc(var(--pulim-space-12) + env(safe-area-inset-bottom));
+}
+#study-mobile-pen:not(:has(> :not([hidden]))) { display: none; }
+.study-answer-row {
+  display: grid;
+  grid-template-columns: var(--pulim-size-tool) minmax(0, 1fr) var(--pulim-size-tool);
+  gap: var(--pulim-space-8);
+  align-items: center;
+  transition: grid-template-columns var(--pulim-motion-switch), gap var(--pulim-motion-switch);
+}
+.study-answer-row:has(form:focus-within) {
+  grid-template-columns: 0px minmax(0, 1fr) 0px;
+  gap: 0;
+}
+.study-answer-row:has(form:focus-within) > :is(.pulim-plain--tool, .study-secondary-tools) {
+  visibility: hidden;
+  width: 100%;
+  min-width: 0;
+  overflow: clip;
+}
+.study-answer-main { min-inline-size: 0; }
+.study-answer-main > .pulim-control { width: 100%; }
+.study-answer-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--pulim-size-tool);
+  align-items: center;
+  min-block-size: var(--pulim-size-control);
+  border: var(--pulim-stroke-border) solid var(--pulim-line-control);
+  border-radius: var(--pulim-radius-ui);
+  background: var(--pulim-surface-panel);
+}
+.study-answer-form:focus-within:not(:has([aria-invalid="true"])) {
+  border-color: var(--pulim-focus-ring);
+  background: var(--harueum-focus-wash);
+}
+.study-answer-form .pulim-input {
+  width: 100%;
+  min-inline-size: 0;
+  min-block-size: calc(var(--pulim-size-control) - 2 * var(--pulim-stroke-border));
+  padding: var(--pulim-space-8) var(--pulim-space-12);
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  font-size: var(--pulim-font-body);
+  white-space: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.study-answer-form .pulim-input:is(:empty, :has(> br:only-child))::before {
+  content: attr(aria-placeholder);
+  color: var(--pulim-text-secondary);
+  pointer-events: none;
+}
+.study-answer-form .pulim-input:focus-visible { outline: none; }
+.study-answer-form:has([aria-invalid="true"]) { border-color: var(--pulim-status-incorrect); }
+.study-answer-row [aria-pressed="true"] .pulim-icon { fill: currentColor; }
+.study-difficulty { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--pulim-space-4); }
+.study-difficulty .pulim-control { padding-inline: var(--pulim-space-4); }
+@media (width < 720px) {
+  .study-screen:not([data-difficulty-labels="true"]) .study-difficulty .pulim-control > span { display: none; }
+}
+@media (max-width: 480px) {
+  .study-difficulty .pulim-control {
+    flex-direction: column;
+    gap: var(--pulim-space-4);
+    padding-block: var(--pulim-space-4);
+    font-size: var(--pulim-font-meta);
+    white-space: nowrap;
+  }
+}
+.study-paper canvas {
+  display: block;
+  width: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+.study-paper { display: flex; flex-direction: column; flex: 1 0 auto; min-block-size: calc(6 * var(--pulim-size-tool)); }
+.study-paper canvas { flex: 1 0 auto; block-size: var(--study-paper-height, 0px); min-block-size: calc(6 * var(--pulim-size-tool)); }
+.focus-shell { min-block-size: 100dvh; grid-template-rows: auto minmax(0, 1fr); }
+.focus-shell > .page-header { padding-block: var(--harueum-workspace-top); }
+.study-result-dock {
+  align-self: end;
+  padding-block: var(--pulim-space-16) calc(var(--pulim-space-16) + env(safe-area-inset-bottom));
+}
+@media (min-width: 720px) {
+  .study-screen { grid-template-rows: auto minmax(0, 1fr); }
+  .study-header .study-context { justify-content: end; }
+  .study-dock { display: none; }
+  .study-answer-row {
+    --study-secondary-width: calc(2 * var(--pulim-size-tool) + var(--pulim-space-4));
+    grid-template-columns: minmax(0, 1fr) var(--study-secondary-width);
+  }
+  .study-answer-row:has(#study-share:not([hidden])) {
+    --study-secondary-width: calc(3 * var(--pulim-size-tool) + 2 * var(--pulim-space-4));
+  }
+  .study-answer-row:has(form:focus-within) { grid-template-columns: minmax(0, 1fr) 0px; }
+  .study-pen-tools { justify-content: start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .study-answer-row { transition: none; }
+}
+body:is([data-view="focus"], [data-view="result"]) .workspace { max-width: none; padding: 0; }
+body[data-view="focus"] .global,
+body[data-view="teacher"] .global,
+body[data-view="guest"] .global { display: none; }
+body[data-view="teacher"] .workspace,
+body[data-view="guest"] .workspace { padding-block-end: var(--pulim-space-24); }
+.manager-list { margin: 0; padding: 0; list-style: none; }
+.manager-list > li { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--pulim-space-8); }
+.answer-status { display: block; }
+@media (min-width: 480px) {
+  .action-grid, .overlap { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 720px) {
+  :root { --harueum-workspace-top: var(--pulim-space-16); }
+  .note-sheet {
+    inset: 0;
+    margin: auto;
+    width: min(calc(100% - 2 * var(--pulim-space-16)), 600px);
+    border-radius: var(--pulim-radius-ui);
+    border: var(--pulim-stroke-border) solid var(--pulim-line-control);
+  }
+  .note-sheet[open] { animation: none; }
+  .note-form {
+    grid-template: "workspace" minmax(0, 1fr) "controls" auto "submit" auto / minmax(0, 1fr);
+    padding-block-start: var(--pulim-space-16);
+  }
+  .sheet-handle { display: none; }
+  html { scroll-padding-block-end: var(--pulim-space-16); }
+  .global {
+    position: fixed;
+    pointer-events: auto;
+    background: var(--pulim-surface-panel);
+    display: flex;
+    flex-direction: column;
+    gap: var(--pulim-space-24);
+    inset: 0 auto 0 0;
+    width: var(--harueum-nav-size);
+    padding: var(--pulim-space-24) var(--pulim-space-16);
+    overflow-y: auto;
+  }
+  .global .brand { display: flex; padding: var(--pulim-space-4) var(--pulim-space-8); font-size: var(--pulim-font-title); font-weight: var(--pulim-type-weight-strong); }
+  .global .brand .pulim-icon { width: var(--pulim-size-tool); height: var(--pulim-size-tool); }
+  .global > ul { flex: 1 0 auto; grid-template-columns: 1fr; grid-template-rows: repeat(4, auto) minmax(max-content, 1fr); gap: var(--pulim-space-8); }
+  .global > ul > li:last-child { align-self: end; }
+  .global a, [data-labels="true"] .global a {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--pulim-space-12);
+    padding: var(--pulim-space-8) var(--pulim-space-12);
+    min-height: var(--pulim-size-control);
+    border: var(--pulim-stroke-border) solid transparent;
+  }
+  .global a[aria-current="page"] { border-color: var(--pulim-status-info); background: var(--harueum-current-wash); }
+  .global a[aria-current="page"]::after { content: none; }
+  .nav-label { display: inline; }
+  body[data-view="student"] .shell { padding-inline-start: var(--harueum-nav-size); }
+  .workspace { padding: var(--harueum-workspace-top) var(--pulim-space-24) var(--pulim-space-24); }
+}
+@media (max-height: 420px) {
+  .action-screen { gap: var(--pulim-space-4); }
+  .action-card { padding-block: var(--pulim-space-4); }
+}
+
+/* Pulim design tokens. Set data-theme on the html element. */
+:root {
+  --pulim-palette-black: #000000;
+  --pulim-palette-charcoal: #202020;
+  --pulim-palette-silver: #dedede;
+  --pulim-palette-white: #ffffff;
+  --pulim-palette-red: #942339;
+  --pulim-palette-pink: #a65170;
+  --pulim-palette-orange: #894522;
+  --pulim-palette-yellow: #8a661c;
+  --pulim-palette-green: #226440;
+  --pulim-palette-lime: #71872f;
+  --pulim-palette-blue: #315f91;
+  --pulim-palette-indigo: #435596;
+  --pulim-palette-violet: #6b4b84;
+  --pulim-solid-palette-lime: #627529;
+  --pulim-role-start: var(--pulim-palette-green);
+  --pulim-role-info: var(--pulim-palette-blue);
+  --pulim-role-review: var(--pulim-palette-yellow);
+  --pulim-role-streak: var(--pulim-palette-orange);
+  --pulim-role-save: var(--pulim-palette-yellow);
+  --pulim-role-share: var(--pulim-palette-blue);
+  --pulim-role-danger: var(--pulim-palette-red);
+  --pulim-role-correct: var(--pulim-palette-green);
+  --pulim-role-incorrect: var(--pulim-palette-red);
+  --pulim-role-hint: var(--pulim-palette-yellow);
+  --pulim-role-mode-a: var(--pulim-palette-yellow);
+  --pulim-role-mode-b: var(--pulim-palette-green);
+  --pulim-role-mode-c: var(--pulim-palette-blue);
+  --pulim-role-difficulty-low: var(--pulim-palette-green);
+  --pulim-role-difficulty-medium: var(--pulim-palette-yellow);
+  --pulim-role-difficulty-high: var(--pulim-palette-red);
+  --pulim-role-subject-math: var(--pulim-palette-blue);
+  --pulim-role-subject-english: var(--pulim-palette-violet);
+  --pulim-role-unit-coordinate: var(--pulim-palette-blue);
+  --pulim-role-unit-lines: var(--pulim-palette-green);
+  --pulim-role-unit-circles: var(--pulim-palette-yellow);
+  --pulim-role-unit-transformations: var(--pulim-palette-indigo);
+  --pulim-role-unit-sets: var(--pulim-palette-violet);
+  --pulim-role-unit-propositions: var(--pulim-palette-red);
+  --pulim-role-unit-functions: var(--pulim-palette-pink);
+  --pulim-role-unit-rational: var(--pulim-palette-lime);
+  --pulim-role-unit-radical: var(--pulim-palette-orange);
+  --pulim-space-4: 4px;
+  --pulim-space-8: 8px;
+  --pulim-space-12: 12px;
+  --pulim-space-16: 16px;
+  --pulim-space-24: 24px;
+  --pulim-radius-ui: 10px;
+  --pulim-radius-detail: 2px;
+  --pulim-stroke-border: 2px;
+  --pulim-stroke-depth: 2px;
+  --pulim-size-icon: 24px;
+  --pulim-size-icon-small: 18px;
+  --pulim-size-tool: 44px;
+  --pulim-size-control: 52px;
+  --pulim-size-tag: 32px;
+  --pulim-size-switch-track: 46px;
+  --pulim-size-switch-thumb: 28px;
+  --pulim-size-slider-track: 32px;
+  --pulim-layout-header-max: 960px;
+  --pulim-layout-content-max: 740px;
+  --pulim-layout-question-max: 704px;
+  --pulim-layout-dialog-max: 520px;
+  --pulim-font-meta: 14px;
+  --pulim-font-body: 17px;
+  --pulim-font-problem: 20px;
+  --pulim-font-section: 22px;
+  --pulim-font-title: 29px;
+  --pulim-type-weight-normal: 400;
+  --pulim-type-weight-strong: 700;
+  --pulim-type-line-body: 1.55;
+  --pulim-type-line-control: 1.3;
+  --pulim-type-line-title: 1.28;
+  --pulim-type-line-problem: 1.64;
+  --pulim-motion-switch: 150ms;
+  --pulim-state-rest-tint: 10%;
+  --pulim-state-pressed-edge-face: 86.666667%;
+  --pulim-state-pressed-depth-face: 73.333333%;
+  --pulim-state-result-tint: 18%;
+  --pulim-state-disabled-opacity: .6;
+}
+
+:root, :root[data-theme="light"] {
+  color-scheme: light;
+  --pulim-surface-page: #f8f8f8;
+  --pulim-surface-panel: #ffffff;
+  --pulim-text-default: #161616;
+  --pulim-text-secondary: #494949;
+  --pulim-text-control: #282828;
+  --pulim-line-control: #777777;
+  --pulim-line-divider: #d1d1d1;
+  --pulim-control-wash: #ededed;
+  --pulim-action-skip-fill: #747474;
+  --pulim-control-neutral-fill: #242424;
+  --pulim-text-on-control-pressed: #ffffff;
+  --pulim-font-family: "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --pulim-status-correct: var(--pulim-role-correct);
+  --pulim-status-incorrect: var(--pulim-role-incorrect);
+  --pulim-status-hint: var(--pulim-role-hint);
+  --pulim-status-review: var(--pulim-role-review);
+  --pulim-status-info: var(--pulim-role-info);
+  --pulim-status-streak: var(--pulim-role-streak);
+  --pulim-focus-ring: var(--pulim-palette-blue);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --pulim-surface-page: #151515;
+  --pulim-surface-panel: #202020;
+  --pulim-text-default: #f4f4f4;
+  --pulim-text-secondary: #c7c7c7;
+  --pulim-text-control: #eeeeee;
+  --pulim-line-control: #8f8f8f;
+  --pulim-line-divider: #4a4a4a;
+  --pulim-control-wash: #303030;
+  --pulim-action-skip-fill: #343434;
+  --pulim-control-neutral-fill: #303030;
+  --pulim-text-on-control-pressed: #f4f4f4;
+  --pulim-font-family: "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --pulim-status-correct: hsl(from var(--pulim-role-correct) h s calc(100 - l));
+  --pulim-status-incorrect: hsl(from var(--pulim-role-incorrect) h s calc(100 - l));
+  --pulim-status-hint: hsl(from var(--pulim-role-hint) h s calc(100 - l));
+  --pulim-status-review: hsl(from var(--pulim-role-review) h s calc(100 - l));
+  --pulim-status-info: hsl(from var(--pulim-role-info) h s calc(100 - l));
+  --pulim-status-streak: hsl(from var(--pulim-role-streak) h s calc(100 - l));
+  --pulim-focus-ring: var(--pulim-status-info);
+}
+
+:root[data-theme="paper"] {
+  color-scheme: light;
+  --pulim-surface-page: #eee8d9;
+  --pulim-surface-panel: #faf6e9;
+  --pulim-text-default: #27231e;
+  --pulim-text-secondary: #514a3e;
+  --pulim-text-control: #302a23;
+  --pulim-line-control: #817665;
+  --pulim-line-divider: #d0c5b2;
+  --pulim-control-wash: #e9e0cd;
+  --pulim-action-skip-fill: #747474;
+  --pulim-control-neutral-fill: #29251f;
+  --pulim-text-on-control-pressed: #ffffff;
+  --pulim-font-family: "Noto Serif KR", "Noto Serif CJK KR", serif;
+  --pulim-status-correct: var(--pulim-role-correct);
+  --pulim-status-incorrect: var(--pulim-role-incorrect);
+  --pulim-status-hint: var(--pulim-role-hint);
+  --pulim-status-review: var(--pulim-role-review);
+  --pulim-status-info: var(--pulim-role-info);
+  --pulim-status-streak: var(--pulim-role-streak);
+  --pulim-focus-ring: var(--pulim-palette-blue);
+}
+
+.pulim-ui :where([data-tone="unit-rational"]) { --tone-solid: var(--pulim-solid-palette-lime); }
+:root { --harueum-current-wash: color-mix(in srgb, var(--pulim-status-info) 10%, transparent); --harueum-focus-wash: color-mix(in srgb, var(--pulim-focus-ring) 10%, transparent); }
+
+*{box-sizing:border-box}
+html{scroll-padding-top:90px}
+body{margin:0;background:var(--pulim-surface-page);color:var(--pulim-text-default);font:var(--pulim-font-body)/var(--pulim-type-line-body) var(--pulim-font-family)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:var(--pulim-stroke-border) solid var(--pulim-focus-ring);outline-offset:4px}
+.bar{position:sticky;top:0;z-index:2;background:var(--pulim-surface-page);border-bottom:1px solid var(--pulim-line-divider)}
+.bar-inner,main,footer{width:min(1120px,100% - 2 * var(--pulim-space-16));margin-inline:auto}
+.bar-inner{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:var(--pulim-space-8);flex-wrap:wrap;padding-block:var(--pulim-space-8)}
+.wordmark{font-size:14px;font-weight:700;letter-spacing:.02em}
+.themes{display:flex;gap:4px}
+.themes button{background:transparent;border:2px solid transparent;border-radius:var(--pulim-radius-ui);font-size:14px;padding:6px 10px;min-height:44px}
+.themes [aria-pressed=true]{border-color:var(--pulim-status-info);background:var(--harueum-current-wash)}
+.hero{padding-block:clamp(36px,7vw,84px) var(--pulim-space-24);border-bottom:1px solid var(--pulim-line-divider)}
+h1,h2,h3,p{margin:0}
+h1{font-size:clamp(34px,6vw,60px);line-height:1.12;letter-spacing:-.045em}
+h2{font-size:var(--pulim-font-section);letter-spacing:-.023em}
+h3{font-size:var(--pulim-font-body);margin:var(--pulim-space-16) 0 var(--pulim-space-8)}
+.hero p,.section-note{color:var(--pulim-text-secondary);margin-top:8px}
+section{margin-block:32px}
+.swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:8px;margin-top:12px}
+.swatch,.metric,.state{background:var(--pulim-surface-panel);border:1px solid var(--pulim-line-divider);border-radius:var(--pulim-radius-ui)}
+.swatch{text-align:left;min-width:0;padding:8px 8px 10px;display:grid;gap:2px}
+.swatch:hover{border-color:var(--pulim-line-control)}
+.paint{display:block;min-height:62px;background:var(--paint);border-radius:6px;border:1px solid color-mix(in srgb,var(--pulim-line-divider) 50%,transparent);margin-bottom:5px}
+.sample-label{font-weight:500;font-size:14px}
+.hex,code{font-family:ui-monospace,monospace;font-size:12px;font-variant-numeric:tabular-nums}
+code{color:var(--pulim-text-secondary);overflow-wrap:anywhere}
+.states,.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:8px;margin-top:12px}
+.state,.metric{padding:12px}
+.state>.example{display:grid;place-items:center;min-height:44px;border:var(--pulim-stroke-border) solid var(--stroke);border-radius:var(--pulim-radius-ui);background:var(--fill);margin-bottom:8px;font-size:14px;font-weight:500}
+.state p{font-size:14px;color:var(--pulim-text-secondary)}
+.metric h3{margin:0 0 8px}
+.metric dl{margin:0}
+.metric dl>div{display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--pulim-line-divider);padding:6px 0;font-size:14px}
+.metric dt{min-width:0}
+.metric code{display:block}
+.metric dd{margin:0;white-space:nowrap;font-variant-numeric:tabular-nums}
+footer{color:var(--pulim-text-secondary);border-top:1px solid var(--pulim-line-divider);padding-block:16px 24px;font-size:14px}
+#notice{position:fixed;bottom:16px;right:16px;padding:10px 14px;background:var(--pulim-surface-panel);border:1px solid var(--pulim-line-control);border-radius:var(--pulim-radius-ui);font-size:14px;z-index:3}
+#notice:empty{display:none}
+
+[hidden]{display:none!important}
+.palette-nav{display:flex;gap:4px 16px;flex-wrap:wrap;margin-top:12px;font-size:14px}
+.palette-nav a{color:var(--pulim-status-info);text-underline-offset:4px}
+.icon-search{width:min(100%,360px);margin-top:12px;font-size:14px}
+.icon-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,138px),1fr));gap:8px}
+.icon-tile{display:grid;grid-template-rows:32px 1fr auto;justify-items:center;align-items:center;gap:4px;min-width:0;min-height:98px;padding:8px;background:var(--pulim-surface-panel);border:var(--pulim-stroke-border) solid var(--pulim-line-control);border-radius:var(--pulim-radius-ui);text-align:center;font-size:14px}
+.icon-tile:hover{border-color:var(--pulim-status-info);background:var(--harueum-current-wash)}
+.specimens,.tag-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,154px),1fr));gap:8px;margin-top:12px}
+.specimen,.tag-demo{min-width:0;padding:12px;background:var(--pulim-surface-panel);border:1px solid var(--pulim-line-divider);border-radius:var(--pulim-radius-ui)}
+.specimen h3{font-size:14px;margin:8px 0 2px}
+.specimen-stage{display:grid;place-items:center;min-height:82px;padding:8px 4px;background:var(--pulim-surface-page);border-radius:var(--pulim-radius-ui)}
+.specimen-stage .pulim-control{max-width:100%}
+.specimens{grid-template-columns:repeat(auto-fit,minmax(min(100%,182px),1fr))}
+.tag-demo{display:grid;justify-items:start;gap:6px;padding:8px}
+.corner-shape{width:64px;height:48px;border:2px solid var(--pulim-status-info);background:var(--harueum-current-wash)}
+
+</style></head><body class="pulim-ui"><svg id="harueum-icons" width="0" height="0" aria-hidden="true" style="position:absolute" xmlns="http://www.w3.org/2000/svg">
+<symbol id="ico-book" viewBox="0 0 24 24"><path d="M12 5v15M4 4h4a4 4 0 0 1 4 4 4 4 0 0 1 4-4h4v14h-4a4 4 0 0 0-4 2 4 4 0 0 0-4-2H4z" /></symbol>
+<symbol id="ico-pulleem" viewBox="0 0 24 24"><path d="m3 7 9-4 9 4-9 4-9-4Zm0 5 9 4 9-4M3 17l9 4 9-4" /></symbol>
+<symbol id="ico-math" viewBox="0 0 24 24"><path d="M19 4H5l7 8-7 8h14" /></symbol>
+<symbol id="ico-english" viewBox="0 0 24 24"><path d="m4 20 8-16 8 16M7 14h10" /></symbol>
+<symbol id="ico-save" viewBox="0 0 24 24"><path d="M4 3h13l4 4v14H3V3h1Zm3 0v6h10V3M7 21v-7h10v7" /></symbol>
+<symbol id="ico-records" viewBox="0 0 24 24"><path d="M4 20h16M7 16v-4m5 4V8m5 8V4" /></symbol>
+<symbol id="ico-trophy" viewBox="0 0 24 24"><path d="M8 3h8v7a4 4 0 0 1-8 0V3Zm0 2H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4m-4 2v5m-4 2h8" /></symbol>
+<symbol id="ico-comment" viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-6 4V5a2 2 0 0 1 2-2Z" /></symbol>
+<symbol id="ico-back" viewBox="0 0 24 24"><path d="m14 5-7 7 7 7M7 12h14" /></symbol>
+<symbol id="ico-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10" /></symbol>
+<symbol id="ico-flame" viewBox="0 0 24 24"><path d="M12 22c4.4 0 7-3.1 7-6.5 0-2.6-1.2-4-2.7-5.5.1 2.2-1.1 3-2.2 3 .5-4-1.8-7.1-4.1-10-.2 2.7-1.3 4.9-2.7 6.6C5.8 11.5 5 13.4 5 15.5 5 19 7.7 22 12 22Z" /></symbol>
+<symbol id="ico-post" viewBox="0 0 24 24"><path d="M4 3h16v12l-6 6H4Z" /><path d="M14 21v-6h6M8 8h8M8 12h5" /></symbol>
+<symbol id="ico-moon" viewBox="0 0 24 24"><path d="M21 13A9 9 0 0 1 11 3a9 9 0 1 0 10 10Z" /></symbol>
+<symbol id="ico-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1 1M18 18l1 1M5 19l1-1M18 6l1-1" /></symbol>
+<symbol id="ico-settings" viewBox="0 0 24 24"><path d="M10 3h4l.6 2.5 2 .9L19 5.5 21 9l-1.9 1.7v2.6L21 15l-2 3.5-2.4-.9-2 .9L14 21h-4l-.6-2.5-2-.9L5 18.5 3 15l1.9-1.7v-2.6L3 9l2-3.5 2.4.9 2-.9z" /><circle cx="12" cy="12" r="3" /></symbol>
+<symbol id="ico-activity" viewBox="0 0 24 24"><path d="M2 12h5l3-8 4 16 3-8h5" /></symbol>
+<symbol id="ico-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 5 5" /></symbol>
+<symbol id="ico-person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 22v-2a8 8 0 0 1 16 0v2" /></symbol>
+<symbol id="ico-like" viewBox="0 0 24 24"><path d="M7 10v11H3V10zm0 1 5-9c2 0 3 2 2 5l-1 3h6a2 2 0 0 1 2 2l-2 7a3 3 0 0 1-3 2H7" /></symbol>
+<symbol id="ico-dislike" viewBox="0 0 24 24"><g transform="rotate(180 12 12)"><path d="M7 10v11H3V10zm0 1 5-9c2 0 3 2 2 5l-1 3h6a2 2 0 0 1 2 2l-2 7a3 3 0 0 1-3 2H7" /></g></symbol>
+<symbol id="ico-social-repeat" viewBox="0 0 24 24"><path d="m16 2 4 4-4 4M20 6H6a3 3 0 0 0-3 3v3M8 22l-4-4 4-4M4 18h14a3 3 0 0 0 3-3v-3" /></symbol>
+<symbol id="ico-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /></symbol>
+<symbol id="ico-edit" viewBox="0 0 24 24"><path d="m15 3 6 6-11 11-7 1 1-7zM12 6l6 6" /></symbol>
+<symbol id="ico-trash" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7" /></symbol>
+<symbol id="ico-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3" /><path d="M2 21v-2a7 7 0 0 1 14 0v2M17 5a3 3 0 0 1 0 6M20 21v-2a7 7 0 0 0-3-5" /></symbol>
+<symbol id="ico-link" viewBox="0 0 24 24"><path d="m9 15 6-6M9 17l-1 1a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0M15 7l1-1a3.5 3.5 0 0 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" /></symbol>
+<symbol id="ico-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 11v6M12 7v.1" /></symbol>
+<symbol id="ico-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6" /></symbol>
+<symbol id="ico-logout" viewBox="0 0 24 24"><path d="M9 3H3v18h6M9 12h12m-4-4 4 4-4 4" /></symbol>
+<symbol id="ico-plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" /></symbol>
+<symbol id="ico-external" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7L10 14M10 3H3v18h18v-7" /></symbol>
+<symbol id="ico-resume" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+<symbol id="ico-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16"/></symbol>
+<symbol id="ico-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="ico-foundation" viewBox="0 0 24 24"><path d="M4 18h16M6 15V9h4v6M14 15V5h4v10"/></symbol>
+<symbol id="ico-application" viewBox="0 0 24 24"><path d="M4 18 9 13l3 3 8-10M16 6h4v4"/></symbol>
+<symbol id="ico-star" viewBox="0 0 24 24"><path d="m12 3 2.4 5 5.6.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.6-.8z"/></symbol>
+<symbol id="ico-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+<symbol id="ico-difficulty-low" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+<symbol id="ico-difficulty-medium" viewBox="0 0 24 24"><path d="M6 9h12m-12 6h12"/></symbol>
+<symbol id="ico-difficulty-high" viewBox="0 0 24 24"><path d="M6 6h12m-12 6h12m-12 6h12"/></symbol>
+<symbol id="ico-pen" viewBox="0 0 24 24"><path d="m14 5 5 5M4 20l4.5-1 11-11a2.8 2.8 0 0 0-4-4L4.7 15zM4 20h16"/></symbol>
+<symbol id="ico-erase" viewBox="0 0 24 24"><path d="m9 19-5-5a2 2 0 0 1 0-3l7-7a2 2 0 0 1 3 0l6 6a2 2 0 0 1 0 3l-6 6zm-3-9 9 9m-5 0h11"/></symbol>
+<symbol id="ico-undo" viewBox="0 0 24 24"><path d="m8 5-4 5 4 5m-4-5h10a5 5 0 0 1 0 10"/></symbol>
+<symbol id="ico-chevron-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+<symbol id="ico-chevron-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+<symbol id="ico-next" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+<symbol id="ico-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+<symbol id="ico-archive" viewBox="0 0 24 24"><path d="M3 4h18v4H3zM5 8v12h14V8M9 12h6"/></symbol>
+<symbol id="ico-download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></symbol>
+<symbol id="ico-upload" viewBox="0 0 24 24"><path d="M12 15V3m-4 4 4-4 4 4M4 17v3h16v-3"/></symbol>
+<symbol id="ico-skip" viewBox="0 0 24 24"><path d="m5 6 9 6-9 6zm13 0v12"/></symbol>
+<symbol id="ico-poly" viewBox="0 0 24 24"><path d="m4 17 8-10m0 10L4 7m11 0c0-4 6-4 5-1-.5 1.5-4 3-5 5h5"/></symbol>
+<symbol id="ico-quad" viewBox="0 0 24 24"><path d="M4 8c3 15 13 15 16 0M3 13h18"/></symbol>
+<symbol id="ico-geo" viewBox="0 0 24 24"><path d="M4 18h16M6 21V4m2 12L19 5m-3 0h3v3"/></symbol>
+<symbol id="ico-set" viewBox="0 0 24 24"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></symbol>
+<symbol id="ico-prop" viewBox="0 0 24 24"><path d="M3 8h13M3 15h13m-4-12 8 9-8 9"/></symbol>
+<symbol id="ico-line" viewBox="0 0 24 24"><path d="M3 18 19 5m-4 0h4v4M5 7h4M7 5v4"/></symbol>
+<symbol id="ico-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 12h8"/><circle cx="12" cy="12" r="1"/></symbol>
+<symbol id="ico-move" viewBox="0 0 24 24"><path d="M4 16h16m-4-4 4 4-4 4M20 8H4m4-4L4 8l4 4"/></symbol>
+<symbol id="ico-function" viewBox="0 0 24 24"><path d="M5 20V4m-2 13h18M7 15c4-1 3-9 7-9h5"/></symbol>
+<symbol id="ico-rational" viewBox="0 0 24 24"><path d="M3 12h18M12 3v18M4 14c4 0 6 2 6 6m4-16c0 4 2 6 6 6"/></symbol>
+<symbol id="ico-radical" viewBox="0 0 24 24"><path d="m3 14 3-1 3 6 5-14h7m-4 6 4 5m0-5-4 5"/></symbol>
+<symbol id="ico-new" viewBox="0 0 24 24"><path d="M12 2v6m0 8v6M2 12h6m8 0h6m-6-4-4 8-4-4 8-4Z"/></symbol>
+<symbol id="ico-balance" viewBox="0 0 24 24"><path d="M12 4v15M6 20h12M4 7h16M6 7l-3 7h6L6 7Zm12 0-3 7h6l-3-7Z"/></symbol>
+<symbol id="ico-repeat" viewBox="0 0 24 24"><path d="M5 8a8 8 0 1 1-1 7m1-12v5h5"/></symbol>
+<symbol id="ico-share" viewBox="0 0 24 24"><path d="M12 15V3m-4 4 4-4 4 4M6 11H4v9h16v-9h-2"/></symbol>
+<symbol id="ico-expand" viewBox="0 0 24 24"><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4"/></symbol>
+<symbol id="ico-collapse" viewBox="0 0 24 24"><path d="M4 8h4V4m12 4h-4V4M8 20v-4H4m12 4v-4h4"/></symbol>
+<symbol id="ico-up" viewBox="0 0 24 24"><path d="M12 20V4m-6 6 6-6 6 6"/></symbol>
+<symbol id="ico-keyboard" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h.01M11 9h.01M15 9h.01M7 13h.01M17 13h.01m-7 2h5"/></symbol>
+<symbol id="ico-bulb" viewBox="0 0 24 24"><path d="M9 18h6m-5 3h4M9 15c0-1.6-3-2.1-3-6a6 6 0 0 1 12 0c0 3.9-3 4.4-3 6Z"/></symbol>
+<symbol id="ico-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+<symbol id="ico-chevron-down" viewBox="0 0 24 24"><g transform="rotate(90 12 12)"><path d="m9 5 7 7-7 7"/></g></symbol>
+<symbol id="ico-hourglass" viewBox="0 0 24 24"><path d="M4 4h16l-8 8 8 8H4l8-8z"/></symbol><symbol id="ico-school" viewBox="0 0 24 24"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6M12 4V2h4"/></symbol><symbol id="ico-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0ZM12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></symbol><symbol id="ico-hash" viewBox="0 0 24 24"><path d="M10 3 7 21M17 3l-3 18M4 9h16M3 15h16"/></symbol><symbol id="ico-lunch" viewBox="0 0 24 24"><path d="M4 3v5a3 3 0 0 0 6 0V3M7 3v18M19 3c-3 2-4 5-4 9h4m0-9v18"/></symbol><symbol id="ico-history" viewBox="0 0 24 24"><path d="M3 8h18l-9-5-9 5ZM3 21h18M5 18h14M7 10v6m5-6v6m5-6v6"/></symbol><symbol id="ico-science" viewBox="0 0 24 24"><path d="M9 3h6m-5 0v7L4 19a1 1 0 0 0 1 2h14a1 1 0 0 0 1-2l-6-9V3M8 15h8"/></symbol><symbol id="ico-language" viewBox="0 0 24 24"><path d="M3 5h12M5 9c1 3 4 6 8 8M13 5C12 10 8 15 3 17M9 3v2m5 16 4-10 4 10m-7-3h6"/></symbol><symbol id="ico-globe" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM2 12h20M12 2c5 5 5 15 0 20-5-5-5-15 0-20Z"/></symbol><symbol id="ico-building" viewBox="0 0 24 24"><path d="M3 21h18M6 21V4h12v17M9 8h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1"/></symbol><symbol id="ico-clipboard" viewBox="0 0 24 24"><path d="M9 4H5v17h14V4h-4M9 3h6v4H9zM8 12h8m-8 4h5"/></symbol><symbol id="ico-headphones" viewBox="0 0 24 24"><path d="M3 14v-2a9 9 0 0 1 18 0v2M3 13h4v7H5a2 2 0 0 1-2-2zm18 0h-4v7h2a2 2 0 0 0 2-2z"/></symbol><symbol id="ico-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h2a2 2 0 0 0 0-4 1.5 1.5 0 0 1 0-3h3a4 4 0 0 0 4-4c0-4-4-7-9-7ZM7 10h.01M10 6.5h.01m5 .5h.01"/></symbol><symbol id="ico-enter" viewBox="0 0 24 24"><path d="M14 4h6v16h-6M3 12h12m-4-4 4 4-4 4"/></symbol><symbol id="ico-lock" viewBox="0 0 24 24"><path d="M6 10h12v11H6zM8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></symbol></svg>
+<header class="bar"><div class="bar-inner"><span class="wordmark">하루이음 · 개정 24</span><div class="themes" role="group" aria-label="테마">
+<button type="button" data-theme-choice="light" aria-pressed="true">밝게</button>
+<button type="button" data-theme-choice="dark" aria-pressed="false">어둡게</button>
+<button type="button" data-theme-choice="paper" aria-pressed="false">종이</button></div></div></header>
+<main><div class="hero"><h1>디자인 시스템 팔레트</h1><p>하루이음 개정 24의 색상과 UI 토큰. 색상 견본을 누르면 현재 테마의 HEX 값이 복사됩니다.</p><nav class="palette-nav" aria-label="팔레트 목차"><a href="#colors">색상</a><a href="#icons">아이콘</a><a href="#buttons">버튼 종류</a><a href="#tags">태그</a><a href="#corners">모서리</a></nav></div>
+<section id="colors"><h2>기본 색상</h2><div class="swatches"><button class="swatch" type="button" data-copy="--pulim-palette-black" data-light="#000000" data-dark="#000000" data-paper="#000000" aria-label="블랙 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-black)"></span><span class="sample-label">블랙</span><span class="hex">#000000</span><code>--pulim-palette-black</code></button><button class="swatch" type="button" data-copy="--pulim-palette-charcoal" data-light="#202020" data-dark="#202020" data-paper="#202020" aria-label="차콜 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-charcoal)"></span><span class="sample-label">차콜</span><span class="hex">#202020</span><code>--pulim-palette-charcoal</code></button><button class="swatch" type="button" data-copy="--pulim-palette-silver" data-light="#DEDEDE" data-dark="#DEDEDE" data-paper="#DEDEDE" aria-label="실버 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-silver)"></span><span class="sample-label">실버</span><span class="hex">#DEDEDE</span><code>--pulim-palette-silver</code></button><button class="swatch" type="button" data-copy="--pulim-palette-white" data-light="#FFFFFF" data-dark="#FFFFFF" data-paper="#FFFFFF" aria-label="화이트 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-white)"></span><span class="sample-label">화이트</span><span class="hex">#FFFFFF</span><code>--pulim-palette-white</code></button><button class="swatch" type="button" data-copy="--pulim-palette-red" data-light="#942339" data-dark="#942339" data-paper="#942339" aria-label="빨강 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-red)"></span><span class="sample-label">빨강</span><span class="hex">#942339</span><code>--pulim-palette-red</code></button><button class="swatch" type="button" data-copy="--pulim-palette-pink" data-light="#A65170" data-dark="#A65170" data-paper="#A65170" aria-label="분홍 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-pink)"></span><span class="sample-label">분홍</span><span class="hex">#A65170</span><code>--pulim-palette-pink</code></button><button class="swatch" type="button" data-copy="--pulim-palette-orange" data-light="#894522" data-dark="#894522" data-paper="#894522" aria-label="주황 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-orange)"></span><span class="sample-label">주황</span><span class="hex">#894522</span><code>--pulim-palette-orange</code></button><button class="swatch" type="button" data-copy="--pulim-palette-yellow" data-light="#8A661C" data-dark="#8A661C" data-paper="#8A661C" aria-label="황토 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-yellow)"></span><span class="sample-label">황토</span><span class="hex">#8A661C</span><code>--pulim-palette-yellow</code></button><button class="swatch" type="button" data-copy="--pulim-palette-green" data-light="#226440" data-dark="#226440" data-paper="#226440" aria-label="초록 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-green)"></span><span class="sample-label">초록</span><span class="hex">#226440</span><code>--pulim-palette-green</code></button><button class="swatch" type="button" data-copy="--pulim-palette-lime" data-light="#71872F" data-dark="#71872F" data-paper="#71872F" aria-label="라임 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-lime)"></span><span class="sample-label">라임</span><span class="hex">#71872F</span><code>--pulim-palette-lime</code></button><button class="swatch" type="button" data-copy="--pulim-palette-blue" data-light="#315F91" data-dark="#315F91" data-paper="#315F91" aria-label="파랑 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-blue)"></span><span class="sample-label">파랑</span><span class="hex">#315F91</span><code>--pulim-palette-blue</code></button><button class="swatch" type="button" data-copy="--pulim-palette-indigo" data-light="#435596" data-dark="#435596" data-paper="#435596" aria-label="남색 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-indigo)"></span><span class="sample-label">남색</span><span class="hex">#435596</span><code>--pulim-palette-indigo</code></button><button class="swatch" type="button" data-copy="--pulim-palette-violet" data-light="#6B4B84" data-dark="#6B4B84" data-paper="#6B4B84" aria-label="보라 색상값 복사"><span class="paint" style="--paint:var(--pulim-palette-violet)"></span><span class="sample-label">보라</span><span class="hex">#6B4B84</span><code>--pulim-palette-violet</code></button></div></section>
+<section><h2>테마 색상</h2><div class="swatches"><button class="swatch" type="button" data-copy="--pulim-surface-page" data-light="#F8F8F8" data-dark="#151515" data-paper="#EEE8D9" aria-label="페이지 색상값 복사"><span class="paint" style="--paint:var(--pulim-surface-page)"></span><span class="sample-label">페이지</span><span class="hex">#F8F8F8</span><code>--pulim-surface-page</code></button><button class="swatch" type="button" data-copy="--pulim-surface-panel" data-light="#FFFFFF" data-dark="#202020" data-paper="#FAF6E9" aria-label="패널·입력 색상값 복사"><span class="paint" style="--paint:var(--pulim-surface-panel)"></span><span class="sample-label">패널·입력</span><span class="hex">#FFFFFF</span><code>--pulim-surface-panel</code></button><button class="swatch" type="button" data-copy="--pulim-text-default" data-light="#161616" data-dark="#F4F4F4" data-paper="#27231E" aria-label="기본 글자 색상값 복사"><span class="paint" style="--paint:var(--pulim-text-default)"></span><span class="sample-label">기본 글자</span><span class="hex">#161616</span><code>--pulim-text-default</code></button><button class="swatch" type="button" data-copy="--pulim-text-secondary" data-light="#494949" data-dark="#C7C7C7" data-paper="#514A3E" aria-label="보조 글자 색상값 복사"><span class="paint" style="--paint:var(--pulim-text-secondary)"></span><span class="sample-label">보조 글자</span><span class="hex">#494949</span><code>--pulim-text-secondary</code></button><button class="swatch" type="button" data-copy="--pulim-text-control" data-light="#282828" data-dark="#EEEEEE" data-paper="#302A23" aria-label="조작 글자 색상값 복사"><span class="paint" style="--paint:var(--pulim-text-control)"></span><span class="sample-label">조작 글자</span><span class="hex">#282828</span><code>--pulim-text-control</code></button><button class="swatch" type="button" data-copy="--pulim-text-on-control-pressed" data-light="#FFFFFF" data-dark="#F4F4F4" data-paper="#FFFFFF" aria-label="눌림 글자 색상값 복사"><span class="paint" style="--paint:var(--pulim-text-on-control-pressed)"></span><span class="sample-label">눌림 글자</span><span class="hex">#FFFFFF</span><code>--pulim-text-on-control-pressed</code></button><button class="swatch" type="button" data-copy="--pulim-line-control" data-light="#777777" data-dark="#8F8F8F" data-paper="#817665" aria-label="조작 테두리 색상값 복사"><span class="paint" style="--paint:var(--pulim-line-control)"></span><span class="sample-label">조작 테두리</span><span class="hex">#777777</span><code>--pulim-line-control</code></button><button class="swatch" type="button" data-copy="--pulim-line-divider" data-light="#D1D1D1" data-dark="#4A4A4A" data-paper="#D0C5B2" aria-label="구분선 색상값 복사"><span class="paint" style="--paint:var(--pulim-line-divider)"></span><span class="sample-label">구분선</span><span class="hex">#D1D1D1</span><code>--pulim-line-divider</code></button><button class="swatch" type="button" data-copy="--pulim-control-wash" data-light="#EDEDED" data-dark="#303030" data-paper="#E9E0CD" aria-label="중립 배경 색상값 복사"><span class="paint" style="--paint:var(--pulim-control-wash)"></span><span class="sample-label">중립 배경</span><span class="hex">#EDEDED</span><code>--pulim-control-wash</code></button><button class="swatch" type="button" data-copy="--pulim-control-neutral-fill" data-light="#242424" data-dark="#303030" data-paper="#29251F" aria-label="중립 눌림 색상값 복사"><span class="paint" style="--paint:var(--pulim-control-neutral-fill)"></span><span class="sample-label">중립 눌림</span><span class="hex">#242424</span><code>--pulim-control-neutral-fill</code></button><button class="swatch" type="button" data-copy="--pulim-action-skip-fill" data-light="#747474" data-dark="#343434" data-paper="#747474" aria-label="건너뛰기 눌림 색상값 복사"><span class="paint" style="--paint:var(--pulim-action-skip-fill)"></span><span class="sample-label">건너뛰기 눌림</span><span class="hex">#747474</span><code>--pulim-action-skip-fill</code></button><button class="swatch" type="button" data-copy="--pulim-focus-ring" data-light="#315F91" data-dark="#6E9CCE" data-paper="#315F91" aria-label="키보드 포커스 색상값 복사"><span class="paint" style="--paint:var(--pulim-focus-ring)"></span><span class="sample-label">키보드 포커스</span><span class="hex">#315F91</span><code>--pulim-focus-ring</code></button></div></section>
+<section><h2>상태 색상</h2><p class="section-note">밝게·종이는 역할색을 사용합니다. 어두운 테마에서는 상태 표시의 HSL 명도를 반전합니다.</p><div class="swatches"><button class="swatch" type="button" data-copy="--pulim-status-correct" data-light="#226440" data-dark="#9BDDB9" data-paper="#226440" aria-label="정답 색상값 복사"><span class="paint" style="--paint:var(--pulim-status-correct)"></span><span class="sample-label">정답</span><span class="hex">#226440</span><code>--pulim-status-correct</code></button><button class="swatch" type="button" data-copy="--pulim-status-incorrect" data-light="#942339" data-dark="#DC6B81" data-paper="#942339" aria-label="오답 색상값 복사"><span class="paint" style="--paint:var(--pulim-status-incorrect)"></span><span class="sample-label">오답</span><span class="hex">#942339</span><code>--pulim-status-incorrect</code></button><button class="swatch" type="button" data-copy="--pulim-status-hint" data-light="#8A661C" data-dark="#E3BF75" data-paper="#8A661C" aria-label="힌트·경고 색상값 복사"><span class="paint" style="--paint:var(--pulim-status-hint)"></span><span class="sample-label">힌트·경고</span><span class="hex">#8A661C</span><code>--pulim-status-hint</code></button><button class="swatch" type="button" data-copy="--pulim-status-review" data-light="#8A661C" data-dark="#E3BF75" data-paper="#8A661C" aria-label="복습 색상값 복사"><span class="paint" style="--paint:var(--pulim-status-review)"></span><span class="sample-label">복습</span><span class="hex">#8A661C</span><code>--pulim-status-review</code></button><button class="swatch" type="button" data-copy="--pulim-status-info" data-light="#315F91" data-dark="#6E9CCE" data-paper="#315F91" aria-label="정보·현재 위치 색상값 복사"><span class="paint" style="--paint:var(--pulim-status-info)"></span><span class="sample-label">정보·현재 위치</span><span class="hex">#315F91</span><code>--pulim-status-info</code></button><button class="swatch" type="button" data-copy="--pulim-status-streak" data-light="#894522" data-dark="#DD9976" data-paper="#894522" aria-label="스트릭 색상값 복사"><span class="paint" style="--paint:var(--pulim-status-streak)"></span><span class="sample-label">스트릭</span><span class="hex">#894522</span><code>--pulim-status-streak</code></button></div>
+<div class="states">
+  <article class="state"><div class="example" style="--stroke:var(--pulim-status-info);--fill:var(--harueum-current-wash)">현재 선택</div><p>정보색 테두리 · 같은 색 10% 불투명도로 채움</p><code>--harueum-current-wash</code></article>
+  <article class="state"><div class="example" style="--stroke:var(--pulim-focus-ring);--fill:var(--harueum-focus-wash)">답안 입력 포커스</div><p>포커스색 테두리 · 같은 색 10% 불투명도로 채움</p><code>--harueum-focus-wash</code></article>
+  <article class="state"><div class="example" style="color:var(--pulim-status-correct);--stroke:var(--pulim-status-correct);--fill:color-mix(in srgb,var(--pulim-role-correct) var(--pulim-state-result-tint),var(--pulim-surface-panel))">정답 판정</div><p>판정색 18%를 패널 색과 혼합</p><code>--pulim-state-result-tint</code></article>
+</div></section>
+<section><h2>역할 색상</h2><h3>학습과 조작</h3><div class="swatches"><button class="swatch" type="button" data-copy="--pulim-role-start" data-light="#226440" data-dark="#226440" data-paper="#226440" aria-label="시작·채점 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-start)"></span><span class="sample-label">시작·채점</span><span class="hex">#226440</span><code>--pulim-role-start</code></button><button class="swatch" type="button" data-copy="--pulim-role-info" data-light="#315F91" data-dark="#315F91" data-paper="#315F91" aria-label="정보 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-info)"></span><span class="sample-label">정보</span><span class="hex">#315F91</span><code>--pulim-role-info</code></button><button class="swatch" type="button" data-copy="--pulim-role-review" data-light="#8A661C" data-dark="#8A661C" data-paper="#8A661C" aria-label="복습 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-review)"></span><span class="sample-label">복습</span><span class="hex">#8A661C</span><code>--pulim-role-review</code></button><button class="swatch" type="button" data-copy="--pulim-role-streak" data-light="#894522" data-dark="#894522" data-paper="#894522" aria-label="스트릭 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-streak)"></span><span class="sample-label">스트릭</span><span class="hex">#894522</span><code>--pulim-role-streak</code></button><button class="swatch" type="button" data-copy="--pulim-role-save" data-light="#8A661C" data-dark="#8A661C" data-paper="#8A661C" aria-label="보관 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-save)"></span><span class="sample-label">보관</span><span class="hex">#8A661C</span><code>--pulim-role-save</code></button><button class="swatch" type="button" data-copy="--pulim-role-share" data-light="#315F91" data-dark="#315F91" data-paper="#315F91" aria-label="공유 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-share)"></span><span class="sample-label">공유</span><span class="hex">#315F91</span><code>--pulim-role-share</code></button><button class="swatch" type="button" data-copy="--pulim-role-danger" data-light="#942339" data-dark="#942339" data-paper="#942339" aria-label="위험 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-danger)"></span><span class="sample-label">위험</span><span class="hex">#942339</span><code>--pulim-role-danger</code></button><button class="swatch" type="button" data-copy="--pulim-role-correct" data-light="#226440" data-dark="#226440" data-paper="#226440" aria-label="정답 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-correct)"></span><span class="sample-label">정답</span><span class="hex">#226440</span><code>--pulim-role-correct</code></button><button class="swatch" type="button" data-copy="--pulim-role-incorrect" data-light="#942339" data-dark="#942339" data-paper="#942339" aria-label="오답 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-incorrect)"></span><span class="sample-label">오답</span><span class="hex">#942339</span><code>--pulim-role-incorrect</code></button><button class="swatch" type="button" data-copy="--pulim-role-hint" data-light="#8A661C" data-dark="#8A661C" data-paper="#8A661C" aria-label="힌트 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-hint)"></span><span class="sample-label">힌트</span><span class="hex">#8A661C</span><code>--pulim-role-hint</code></button></div><h3>과목·모드·난이도</h3><div class="swatches"><button class="swatch" type="button" data-copy="--pulim-role-subject-math" data-light="#315F91" data-dark="#315F91" data-paper="#315F91" aria-label="수학 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-subject-math)"></span><span class="sample-label">수학</span><span class="hex">#315F91</span><code>--pulim-role-subject-math</code></button><button class="swatch" type="button" data-copy="--pulim-role-subject-english" data-light="#6B4B84" data-dark="#6B4B84" data-paper="#6B4B84" aria-label="영어 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-subject-english)"></span><span class="sample-label">영어</span><span class="hex">#6B4B84</span><code>--pulim-role-subject-english</code></button><button class="swatch" type="button" data-copy="--pulim-role-mode-a" data-light="#8A661C" data-dark="#8A661C" data-paper="#8A661C" aria-label="모드 A 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-mode-a)"></span><span class="sample-label">모드 A</span><span class="hex">#8A661C</span><code>--pulim-role-mode-a</code></button><button class="swatch" type="button" data-copy="--pulim-role-mode-b" data-light="#226440" data-dark="#226440" data-paper="#226440" aria-label="모드 B 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-mode-b)"></span><span class="sample-label">모드 B</span><span class="hex">#226440</span><code>--pulim-role-mode-b</code></button><button class="swatch" type="button" data-copy="--pulim-role-mode-c" data-light="#315F91" data-dark="#315F91" data-paper="#315F91" aria-label="모드 C 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-mode-c)"></span><span class="sample-label">모드 C</span><span class="hex">#315F91</span><code>--pulim-role-mode-c</code></button><button class="swatch" type="button" data-copy="--pulim-role-difficulty-low" data-light="#226440" data-dark="#226440" data-paper="#226440" aria-label="쉬움 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-difficulty-low)"></span><span class="sample-label">쉬움</span><span class="hex">#226440</span><code>--pulim-role-difficulty-low</code></button><button class="swatch" type="button" data-copy="--pulim-role-difficulty-medium" data-light="#8A661C" data-dark="#8A661C" data-paper="#8A661C" aria-label="보통 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-difficulty-medium)"></span><span class="sample-label">보통</span><span class="hex">#8A661C</span><code>--pulim-role-difficulty-medium</code></button><button class="swatch" type="button" data-copy="--pulim-role-difficulty-high" data-light="#942339" data-dark="#942339" data-paper="#942339" aria-label="어려움 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-difficulty-high)"></span><span class="sample-label">어려움</span><span class="hex">#942339</span><code>--pulim-role-difficulty-high</code></button></div><h3>수학 단원</h3><div class="swatches"><button class="swatch" type="button" data-copy="--pulim-role-unit-coordinate" data-light="#315F91" data-dark="#315F91" data-paper="#315F91" aria-label="좌표 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-unit-coordinate)"></span><span class="sample-label">좌표</span><span class="hex">#315F91</span><code>--pulim-role-unit-coordinate</code></button><button class="swatch" type="button" data-copy="--pulim-role-unit-lines" data-light="#226440" data-dark="#226440" data-paper="#226440" aria-label="직선 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-unit-lines)"></span><span class="sample-label">직선</span><span class="hex">#226440</span><code>--pulim-role-unit-lines</code></button><button class="swatch" type="button" data-copy="--pulim-role-unit-circles" data-light="#8A661C" data-dark="#8A661C" data-paper="#8A661C" aria-label="원 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-unit-circles)"></span><span class="sample-label">원</span><span class="hex">#8A661C</span><code>--pulim-role-unit-circles</code></button><button class="swatch" type="button" data-copy="--pulim-role-unit-transformations" data-light="#435596" data-dark="#435596" data-paper="#435596" aria-label="도형의 이동 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-unit-transformations)"></span><span class="sample-label">도형의 이동</span><span class="hex">#435596</span><code>--pulim-role-unit-transformations</code></button><button class="swatch" type="button" data-copy="--pulim-role-unit-sets" data-light="#6B4B84" data-dark="#6B4B84" data-paper="#6B4B84" aria-label="집합 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-unit-sets)"></span><span class="sample-label">집합</span><span class="hex">#6B4B84</span><code>--pulim-role-unit-sets</code></button><button class="swatch" type="button" data-copy="--pulim-role-unit-propositions" data-light="#942339" data-dark="#942339" data-paper="#942339" aria-label="명제 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-unit-propositions)"></span><span class="sample-label">명제</span><span class="hex">#942339</span><code>--pulim-role-unit-propositions</code></button><button class="swatch" type="button" data-copy="--pulim-role-unit-functions" data-light="#A65170" data-dark="#A65170" data-paper="#A65170" aria-label="함수 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-unit-functions)"></span><span class="sample-label">함수</span><span class="hex">#A65170</span><code>--pulim-role-unit-functions</code></button><button class="swatch" type="button" data-copy="--pulim-role-unit-rational" data-light="#71872F" data-dark="#71872F" data-paper="#71872F" aria-label="유리함수 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-unit-rational)"></span><span class="sample-label">유리함수</span><span class="hex">#71872F</span><code>--pulim-role-unit-rational</code></button><button class="swatch" type="button" data-copy="--pulim-role-unit-radical" data-light="#894522" data-dark="#894522" data-paper="#894522" aria-label="무리함수 색상값 복사"><span class="paint" style="--paint:var(--pulim-role-unit-radical)"></span><span class="sample-label">무리함수</span><span class="hex">#894522</span><code>--pulim-role-unit-radical</code></button></div><div class="swatches"><button class="swatch" type="button" data-copy="--pulim-solid-palette-lime" data-light="#627529" data-dark="#627529" data-paper="#627529" aria-label="유리함수 태그 실제 채움 색상값 복사"><span class="paint" style="--paint:var(--pulim-solid-palette-lime)"></span><span class="sample-label">유리함수 태그 실제 채움</span><span class="hex">#627529</span><code>--pulim-solid-palette-lime</code></button></div></section>
+<section id="icons"><h2>아이콘 팔레트</h2><p class="section-note">개정 24에 내장된 89개 아이콘. 아이콘을 누르면 SVG 심볼 ID를 복사합니다.</p><label class="pulim-field icon-search">아이콘 검색<input class="pulim-input" id="icon-filter" type="search" placeholder="이름 또는 ID"></label><p id="icon-empty" class="pulim-meta" hidden>검색에 맞는 아이콘이 없습니다.</p><div class="icon-group"><h3>서비스·탐색</h3><div class="icon-grid"><button type="button" class="icon-tile" data-icon-copy="ico-book" aria-label="연습 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-book"></use></svg><span>연습</span><code>ico-book</code></button><button type="button" class="icon-tile" data-icon-copy="ico-pulleem" aria-label="풀림 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-pulleem"></use></svg><span>풀림</span><code>ico-pulleem</code></button><button type="button" class="icon-tile" data-icon-copy="ico-math" aria-label="수학 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-math"></use></svg><span>수학</span><code>ico-math</code></button><button type="button" class="icon-tile" data-icon-copy="ico-english" aria-label="영어 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-english"></use></svg><span>영어</span><code>ico-english</code></button><button type="button" class="icon-tile" data-icon-copy="ico-records" aria-label="기록 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-records"></use></svg><span>기록</span><code>ico-records</code></button><button type="button" class="icon-tile" data-icon-copy="ico-back" aria-label="뒤로 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-back"></use></svg><span>뒤로</span><code>ico-back</code></button><button type="button" class="icon-tile" data-icon-copy="ico-home" aria-label="홈 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-home"></use></svg><span>홈</span><code>ico-home</code></button><button type="button" class="icon-tile" data-icon-copy="ico-post" aria-label="담벼락 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-post"></use></svg><span>담벼락</span><code>ico-post</code></button><button type="button" class="icon-tile" data-icon-copy="ico-moon" aria-label="어둡게 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-moon"></use></svg><span>어둡게</span><code>ico-moon</code></button><button type="button" class="icon-tile" data-icon-copy="ico-sun" aria-label="밝게 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-sun"></use></svg><span>밝게</span><code>ico-sun</code></button><button type="button" class="icon-tile" data-icon-copy="ico-settings" aria-label="설정 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-settings"></use></svg><span>설정</span><code>ico-settings</code></button><button type="button" class="icon-tile" data-icon-copy="ico-search" aria-label="검색 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-search"></use></svg><span>검색</span><code>ico-search</code></button><button type="button" class="icon-tile" data-icon-copy="ico-person" aria-label="계정 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-person"></use></svg><span>계정</span><code>ico-person</code></button><button type="button" class="icon-tile" data-icon-copy="ico-more" aria-label="더보기 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-more"></use></svg><span>더보기</span><code>ico-more</code></button><button type="button" class="icon-tile" data-icon-copy="ico-external" aria-label="외부 링크 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-external"></use></svg><span>외부 링크</span><code>ico-external</code></button><button type="button" class="icon-tile" data-icon-copy="ico-chevron-left" aria-label="이전 항목 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-chevron-left"></use></svg><span>이전 항목</span><code>ico-chevron-left</code></button><button type="button" class="icon-tile" data-icon-copy="ico-chevron-right" aria-label="다음 항목 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-chevron-right"></use></svg><span>다음 항목</span><code>ico-chevron-right</code></button><button type="button" class="icon-tile" data-icon-copy="ico-next" aria-label="다음 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-next"></use></svg><span>다음</span><code>ico-next</code></button><button type="button" class="icon-tile" data-icon-copy="ico-chevron-down" aria-label="펼치기 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-chevron-down"></use></svg><span>펼치기</span><code>ico-chevron-down</code></button></div></div><div class="icon-group"><h3>편집·도구</h3><div class="icon-grid"><button type="button" class="icon-tile" data-icon-copy="ico-save" aria-label="저장 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-save"></use></svg><span>저장</span><code>ico-save</code></button><button type="button" class="icon-tile" data-icon-copy="ico-edit" aria-label="수정 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-edit"></use></svg><span>수정</span><code>ico-edit</code></button><button type="button" class="icon-tile" data-icon-copy="ico-trash" aria-label="삭제 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-trash"></use></svg><span>삭제</span><code>ico-trash</code></button><button type="button" class="icon-tile" data-icon-copy="ico-link" aria-label="링크 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-link"></use></svg><span>링크</span><code>ico-link</code></button><button type="button" class="icon-tile" data-icon-copy="ico-plus" aria-label="추가 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-plus"></use></svg><span>추가</span><code>ico-plus</code></button><button type="button" class="icon-tile" data-icon-copy="ico-pen" aria-label="펜 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-pen"></use></svg><span>펜</span><code>ico-pen</code></button><button type="button" class="icon-tile" data-icon-copy="ico-erase" aria-label="지우개 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-erase"></use></svg><span>지우개</span><code>ico-erase</code></button><button type="button" class="icon-tile" data-icon-copy="ico-undo" aria-label="되돌리기 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-undo"></use></svg><span>되돌리기</span><code>ico-undo</code></button><button type="button" class="icon-tile" data-icon-copy="ico-archive" aria-label="보관 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-archive"></use></svg><span>보관</span><code>ico-archive</code></button><button type="button" class="icon-tile" data-icon-copy="ico-download" aria-label="내보내기 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-download"></use></svg><span>내보내기</span><code>ico-download</code></button><button type="button" class="icon-tile" data-icon-copy="ico-upload" aria-label="가져오기 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-upload"></use></svg><span>가져오기</span><code>ico-upload</code></button><button type="button" class="icon-tile" data-icon-copy="ico-skip" aria-label="건너뛰기 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-skip"></use></svg><span>건너뛰기</span><code>ico-skip</code></button><button type="button" class="icon-tile" data-icon-copy="ico-share" aria-label="공유 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-share"></use></svg><span>공유</span><code>ico-share</code></button><button type="button" class="icon-tile" data-icon-copy="ico-expand" aria-label="확대 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-expand"></use></svg><span>확대</span><code>ico-expand</code></button><button type="button" class="icon-tile" data-icon-copy="ico-collapse" aria-label="축소 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-collapse"></use></svg><span>축소</span><code>ico-collapse</code></button><button type="button" class="icon-tile" data-icon-copy="ico-up" aria-label="맨 위로 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-up"></use></svg><span>맨 위로</span><code>ico-up</code></button></div></div><div class="icon-group"><h3>풀이·기록</h3><div class="icon-grid"><button type="button" class="icon-tile" data-icon-copy="ico-trophy" aria-label="순위 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-trophy"></use></svg><span>순위</span><code>ico-trophy</code></button><button type="button" class="icon-tile" data-icon-copy="ico-flame" aria-label="연속 학습 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-flame"></use></svg><span>연속 학습</span><code>ico-flame</code></button><button type="button" class="icon-tile" data-icon-copy="ico-activity" aria-label="활동 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-activity"></use></svg><span>활동</span><code>ico-activity</code></button><button type="button" class="icon-tile" data-icon-copy="ico-close" aria-label="닫기·오답 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-close"></use></svg><span>닫기·오답</span><code>ico-close</code></button><button type="button" class="icon-tile" data-icon-copy="ico-resume" aria-label="이어 풀기 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-resume"></use></svg><span>이어 풀기</span><code>ico-resume</code></button><button type="button" class="icon-tile" data-icon-copy="ico-calendar" aria-label="달력 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-calendar"></use></svg><span>달력</span><code>ico-calendar</code></button><button type="button" class="icon-tile" data-icon-copy="ico-clock" aria-label="시간 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-clock"></use></svg><span>시간</span><code>ico-clock</code></button><button type="button" class="icon-tile" data-icon-copy="ico-foundation" aria-label="기본 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-foundation"></use></svg><span>기본</span><code>ico-foundation</code></button><button type="button" class="icon-tile" data-icon-copy="ico-application" aria-label="유형 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-application"></use></svg><span>유형</span><code>ico-application</code></button><button type="button" class="icon-tile" data-icon-copy="ico-star" aria-label="별·북마크·발전 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-star"></use></svg><span>별·북마크·발전</span><code>ico-star</code></button><button type="button" class="icon-tile" data-icon-copy="ico-target" aria-label="목표 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-target"></use></svg><span>목표</span><code>ico-target</code></button><button type="button" class="icon-tile" data-icon-copy="ico-difficulty-low" aria-label="낮은 난도 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-difficulty-low"></use></svg><span>낮은 난도</span><code>ico-difficulty-low</code></button><button type="button" class="icon-tile" data-icon-copy="ico-difficulty-medium" aria-label="중간 난도 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-difficulty-medium"></use></svg><span>중간 난도</span><code>ico-difficulty-medium</code></button><button type="button" class="icon-tile" data-icon-copy="ico-difficulty-high" aria-label="높은 난도 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-difficulty-high"></use></svg><span>높은 난도</span><code>ico-difficulty-high</code></button><button type="button" class="icon-tile" data-icon-copy="ico-check" aria-label="확인·정답 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-check"></use></svg><span>확인·정답</span><code>ico-check</code></button><button type="button" class="icon-tile" data-icon-copy="ico-new" aria-label="새 문제 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-new"></use></svg><span>새 문제</span><code>ico-new</code></button><button type="button" class="icon-tile" data-icon-copy="ico-balance" aria-label="균형 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-balance"></use></svg><span>균형</span><code>ico-balance</code></button><button type="button" class="icon-tile" data-icon-copy="ico-repeat" aria-label="다시 풀기 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-repeat"></use></svg><span>다시 풀기</span><code>ico-repeat</code></button><button type="button" class="icon-tile" data-icon-copy="ico-keyboard" aria-label="키보드·입력 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-keyboard"></use></svg><span>키보드·입력</span><code>ico-keyboard</code></button><button type="button" class="icon-tile" data-icon-copy="ico-bulb" aria-label="힌트 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-bulb"></use></svg><span>힌트</span><code>ico-bulb</code></button><button type="button" class="icon-tile" data-icon-copy="ico-eye" aria-label="답안 보기 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-eye"></use></svg><span>답안 보기</span><code>ico-eye</code></button></div></div><div class="icon-group"><h3>담벼락·계정</h3><div class="icon-grid"><button type="button" class="icon-tile" data-icon-copy="ico-comment" aria-label="댓글 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-comment"></use></svg><span>댓글</span><code>ico-comment</code></button><button type="button" class="icon-tile" data-icon-copy="ico-like" aria-label="좋아요 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-like"></use></svg><span>좋아요</span><code>ico-like</code></button><button type="button" class="icon-tile" data-icon-copy="ico-dislike" aria-label="싫어요 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-dislike"></use></svg><span>싫어요</span><code>ico-dislike</code></button><button type="button" class="icon-tile" data-icon-copy="ico-social-repeat" aria-label="리포스트 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-social-repeat"></use></svg><span>리포스트</span><code>ico-social-repeat</code></button><button type="button" class="icon-tile" data-icon-copy="ico-users" aria-label="사람들 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-users"></use></svg><span>사람들</span><code>ico-users</code></button><button type="button" class="icon-tile" data-icon-copy="ico-info" aria-label="정보 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-info"></use></svg><span>정보</span><code>ico-info</code></button><button type="button" class="icon-tile" data-icon-copy="ico-logout" aria-label="로그아웃 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-logout"></use></svg><span>로그아웃</span><code>ico-logout</code></button></div></div><div class="icon-group"><h3>수학 단원</h3><div class="icon-grid"><button type="button" class="icon-tile" data-icon-copy="ico-poly" aria-label="다항식 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-poly"></use></svg><span>다항식</span><code>ico-poly</code></button><button type="button" class="icon-tile" data-icon-copy="ico-quad" aria-label="이차식 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-quad"></use></svg><span>이차식</span><code>ico-quad</code></button><button type="button" class="icon-tile" data-icon-copy="ico-geo" aria-label="좌표 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-geo"></use></svg><span>좌표</span><code>ico-geo</code></button><button type="button" class="icon-tile" data-icon-copy="ico-set" aria-label="집합 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-set"></use></svg><span>집합</span><code>ico-set</code></button><button type="button" class="icon-tile" data-icon-copy="ico-prop" aria-label="명제 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-prop"></use></svg><span>명제</span><code>ico-prop</code></button><button type="button" class="icon-tile" data-icon-copy="ico-line" aria-label="직선 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-line"></use></svg><span>직선</span><code>ico-line</code></button><button type="button" class="icon-tile" data-icon-copy="ico-circle" aria-label="원 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-circle"></use></svg><span>원</span><code>ico-circle</code></button><button type="button" class="icon-tile" data-icon-copy="ico-move" aria-label="도형의 이동 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-move"></use></svg><span>도형의 이동</span><code>ico-move</code></button><button type="button" class="icon-tile" data-icon-copy="ico-function" aria-label="함수 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-function"></use></svg><span>함수</span><code>ico-function</code></button><button type="button" class="icon-tile" data-icon-copy="ico-rational" aria-label="유리함수 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-rational"></use></svg><span>유리함수</span><code>ico-rational</code></button><button type="button" class="icon-tile" data-icon-copy="ico-radical" aria-label="무리함수 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-radical"></use></svg><span>무리함수</span><code>ico-radical</code></button></div></div><div class="icon-group"><h3>하루이음 확장</h3><div class="icon-grid"><button type="button" class="icon-tile" data-icon-copy="ico-hourglass" aria-label="오늘·모래시계 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-hourglass"></use></svg><span>오늘·모래시계</span><code>ico-hourglass</code></button><button type="button" class="icon-tile" data-icon-copy="ico-school" aria-label="학교 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-school"></use></svg><span>학교</span><code>ico-school</code></button><button type="button" class="icon-tile" data-icon-copy="ico-pin" aria-label="장소 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-pin"></use></svg><span>장소</span><code>ico-pin</code></button><button type="button" class="icon-tile" data-icon-copy="ico-hash" aria-label="번호 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-hash"></use></svg><span>번호</span><code>ico-hash</code></button><button type="button" class="icon-tile" data-icon-copy="ico-lunch" aria-label="급식 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-lunch"></use></svg><span>급식</span><code>ico-lunch</code></button><button type="button" class="icon-tile" data-icon-copy="ico-history" aria-label="한국사 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-history"></use></svg><span>한국사</span><code>ico-history</code></button><button type="button" class="icon-tile" data-icon-copy="ico-science" aria-label="과학 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-science"></use></svg><span>과학</span><code>ico-science</code></button><button type="button" class="icon-tile" data-icon-copy="ico-language" aria-label="국어 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-language"></use></svg><span>국어</span><code>ico-language</code></button><button type="button" class="icon-tile" data-icon-copy="ico-globe" aria-label="세계·광장 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-globe"></use></svg><span>세계·광장</span><code>ico-globe</code></button><button type="button" class="icon-tile" data-icon-copy="ico-building" aria-label="학원 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-building"></use></svg><span>학원</span><code>ico-building</code></button><button type="button" class="icon-tile" data-icon-copy="ico-clipboard" aria-label="할 일 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-clipboard"></use></svg><span>할 일</span><code>ico-clipboard</code></button><button type="button" class="icon-tile" data-icon-copy="ico-headphones" aria-label="효과음 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-headphones"></use></svg><span>효과음</span><code>ico-headphones</code></button><button type="button" class="icon-tile" data-icon-copy="ico-palette" aria-label="팔레트 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-palette"></use></svg><span>팔레트</span><code>ico-palette</code></button><button type="button" class="icon-tile" data-icon-copy="ico-enter" aria-label="입장 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-enter"></use></svg><span>입장</span><code>ico-enter</code></button><button type="button" class="icon-tile" data-icon-copy="ico-lock" aria-label="비공개 아이콘 ID 복사"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-lock"></use></svg><span>비공개</span><code>ico-lock</code></button></div></div></section><section id="buttons"><h2>버튼 종류 팔레트</h2><p class="section-note">버튼을 눌러 눌림 상태를 확인할 수 있습니다. 선택 토글과 스위치는 상태가 바뀝니다.</p><div class="specimens"><article class="specimen"><div class="specimen-stage"><button type="button" class="pulim-control" ><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-close"></use></svg><span>닫기</span></button></div><h3>기본</h3><code>.pulim-control</code></article><article class="specimen"><div class="specimen-stage"><button type="button" class="pulim-control pulim-control--primary" ><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-check"></use></svg><span>정답 확인</span></button></div><h3>주 동작</h3><code>.pulim-control--primary</code></article><article class="specimen"><div class="specimen-stage"><button type="button" class="pulim-control" data-tone="share"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-share"></use></svg><span>공유</span></button></div><h3>공유</h3><code>data-tone=&quot;share&quot;</code></article><article class="specimen"><div class="specimen-stage"><button type="button" class="pulim-control" data-tone="save"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-star"></use></svg><span>북마크</span></button></div><h3>보관</h3><code>data-tone=&quot;save&quot;</code></article><article class="specimen"><div class="specimen-stage"><button type="button" class="pulim-control" data-tone="danger"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-close"></use></svg><span>차단</span></button></div><h3>위험</h3><code>data-tone=&quot;danger&quot;</code></article><article class="specimen"><div class="specimen-stage"><button type="button" class="pulim-control pulim-control--skip" ><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-skip"></use></svg><span>건너뛰기</span></button></div><h3>건너뛰기</h3><code>.pulim-control--skip</code></article><article class="specimen"><div class="specimen-stage"><button type="button" class="pulim-plain pulim-plain--tool" aria-label="풀이 설정" ><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-settings"></use></svg></button></div><h3>아이콘 버튼</h3><code>.pulim-plain--tool</code></article><article class="specimen"><div class="specimen-stage"><div class="study-pen-tools"><button type="button" class="pulim-plain pulim-plain--tool" aria-label="펜" aria-pressed="true"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-pen"></use></svg></button></div></div><h3>선택된 필기구</h3><code>정보색 2px · 10% 배경</code></article><article class="specimen"><div class="specimen-stage"><button type="button" class="pulim-control" aria-pressed="true" data-demo-pressed><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-check"></use></svg><span>선택</span></button></div><h3>선택 토글</h3><code>aria-pressed</code></article><article class="specimen"><div class="specimen-stage"><button type="button" class="pulim-plain pulim-tab" aria-current="page"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-users"></use></svg><span>그룹</span></button></div><h3>밑줄 탭</h3><code>.pulim-tab</code></article><article class="specimen"><div class="specimen-stage"><button type="button" class="pulim-control" disabled><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-close"></use></svg><span>실행 불가</span></button></div><h3>비활성</h3><code>disabled</code></article><article class="specimen"><div class="specimen-stage"><button type="button" class="pulim-switch" role="switch" aria-checked="true" data-demo-checked><span>효과음</span><span class="pulim-switch__track" aria-hidden="true"></span></button></div><h3>스위치</h3><code>role=&quot;switch&quot;</code></article></div></section><section id="tags"><h2>태그 팔레트</h2><p class="section-note">견본 아래에 태그의 <code>data-tone</code> 값을 표시했습니다. 태그는 최소 높이 32px, 아이콘 18px입니다.</p><h3>정보와 상태</h3><div class="tag-grid"><div class="tag-demo"><span class="pulim-tag" data-tone="neutral"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-info"></use></svg><span>일반</span></span><code>neutral</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="date"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-calendar"></use></svg><span>9/30 수</span></span><code>date</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="info"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-school"></use></svg><span>학교</span></span><code>info</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="hint"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-hourglass"></use></svg><span>D-3</span></span><code>hint</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="correct"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-check"></use></svg><span>정답</span></span><code>correct</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="incorrect"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-close"></use></svg><span>오답</span></span><code>incorrect</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="save"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-star"></use></svg><span>보관</span></span><code>save</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="share"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-share"></use></svg><span>공유</span></span><code>share</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="danger"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-close"></use></svg><span>위험</span></span><code>danger</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="review"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-repeat"></use></svg><span>복습</span></span><code>review</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="streak"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-flame"></use></svg><span>스트릭</span></span><code>streak</code></div></div><h3>과목·모드·난도</h3><div class="tag-grid"><div class="tag-demo"><span class="pulim-tag" data-tone="math"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-math"></use></svg><span>수학</span></span><code>math</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="english"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-english"></use></svg><span>영어</span></span><code>english</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="mode-a"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-book"></use></svg><span>모드 A</span></span><code>mode-a</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="mode-b"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-book"></use></svg><span>모드 B</span></span><code>mode-b</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="mode-c"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-book"></use></svg><span>모드 C</span></span><code>mode-c</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="difficulty-low"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-difficulty-low"></use></svg><span>쉬움</span></span><code>difficulty-low</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="difficulty-medium"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-difficulty-medium"></use></svg><span>보통</span></span><code>difficulty-medium</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="difficulty-high"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-difficulty-high"></use></svg><span>어려움</span></span><code>difficulty-high</code></div></div><h3>수학 단원</h3><div class="tag-grid"><div class="tag-demo"><span class="pulim-tag" data-tone="unit-coordinate"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-geo"></use></svg><span>좌표</span></span><code>unit-coordinate</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="unit-lines"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-line"></use></svg><span>직선</span></span><code>unit-lines</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="unit-circles"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-circle"></use></svg><span>원</span></span><code>unit-circles</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="unit-transformations"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-move"></use></svg><span>도형의 이동</span></span><code>unit-transformations</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="unit-sets"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-set"></use></svg><span>집합</span></span><code>unit-sets</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="unit-propositions"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-prop"></use></svg><span>명제</span></span><code>unit-propositions</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="unit-functions"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-function"></use></svg><span>함수</span></span><code>unit-functions</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="unit-rational"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-rational"></use></svg><span>유리함수</span></span><code>unit-rational</code></div><div class="tag-demo"><span class="pulim-tag" data-tone="unit-radical"><svg class="pulim-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ico-radical"></use></svg><span>무리함수</span></span><code>unit-radical</code></div></div></section><section id="corners"><h2>모서리 팔레트</h2><div class="specimens"><article class="specimen"><div class="specimen-stage"><div class="corner-shape" style="border-radius:0" aria-hidden="true"></div></div><h3>직각</h3><code>0px · 모바일 전체 화면 설정</code></article><article class="specimen"><div class="specimen-stage"><div class="corner-shape" style="border-radius:var(--pulim-radius-detail)" aria-hidden="true"></div></div><h3>작은 모서리</h3><code>2px · 선택 밑줄 끝</code></article><article class="specimen"><div class="specimen-stage"><div class="corner-shape" style="border-radius:var(--pulim-radius-ui)" aria-hidden="true"></div></div><h3>기본 모서리</h3><code>10px · 버튼·입력·태그·카드</code></article><article class="specimen"><div class="specimen-stage"><div class="corner-shape" style="border-radius:var(--pulim-radius-ui) var(--pulim-radius-ui) 0 0" aria-hidden="true"></div></div><h3>모바일 하단 시트</h3><code>위 10px · 아래 0px</code></article></div></section><section><h2>글자·크기·간격</h2><p class="section-note">밝게·어둡게는 Noto Sans KR 계열, 종이는 Noto Serif KR 계열을 사용합니다.</p><div class="metrics"><article class="metric"><h3>글자 크기</h3><dl><div><dt>보조·태그<code>--pulim-font-meta</code></dt><dd>14px</dd></div><div><dt>본문·입력<code>--pulim-font-body</code></dt><dd>17px</dd></div><div><dt>지문<code>--pulim-font-problem</code></dt><dd>20px</dd></div><div><dt>섹션 제목<code>--pulim-font-section</code></dt><dd>22px</dd></div><div><dt>화면 제목<code>--pulim-font-title</code></dt><dd>29px</dd></div></dl></article><article class="metric"><h3>글자 굵기</h3><dl><div><dt>Regular<code>--pulim-type-weight-normal</code></dt><dd>400</dd></div><div><dt>Bold<code>--pulim-type-weight-strong</code></dt><dd>700</dd></div><div><dt>Medium<code>--harueum-type-weight-medium</code></dt><dd>500</dd></div></dl></article><article class="metric"><h3>줄 높이</h3><dl><div><dt>본문<code>--pulim-type-line-body</code></dt><dd>1.55</dd></div><div><dt>버튼·태그<code>--pulim-type-line-control</code></dt><dd>1.3</dd></div><div><dt>제목<code>--pulim-type-line-title</code></dt><dd>1.28</dd></div><div><dt>지문<code>--pulim-type-line-problem</code></dt><dd>1.64</dd></div></dl></article><article class="metric"><h3>간격</h3><dl><div><dt>4px 간격<code>--pulim-space-4</code></dt><dd>4px</dd></div><div><dt>8px 간격<code>--pulim-space-8</code></dt><dd>8px</dd></div><div><dt>12px 간격<code>--pulim-space-12</code></dt><dd>12px</dd></div><div><dt>16px 간격<code>--pulim-space-16</code></dt><dd>16px</dd></div><div><dt>24px 간격<code>--pulim-space-24</code></dt><dd>24px</dd></div></dl></article><article class="metric"><h3>모서리와 선</h3><dl><div><dt>공용 모서리<code>--pulim-radius-ui</code></dt><dd>10px</dd></div><div><dt>작은 모서리<code>--pulim-radius-detail</code></dt><dd>2px</dd></div><div><dt>테두리<code>--pulim-stroke-border</code></dt><dd>2px</dd></div><div><dt>버튼 깊이<code>--pulim-stroke-depth</code></dt><dd>2px</dd></div></dl></article><article class="metric"><h3>조작 크기</h3><dl><div><dt>기본 아이콘<code>--pulim-size-icon</code></dt><dd>24px</dd></div><div><dt>태그 아이콘<code>--pulim-size-icon-small</code></dt><dd>18px</dd></div><div><dt>아이콘 버튼<code>--pulim-size-tool</code></dt><dd>44px</dd></div><div><dt>버튼·입력<code>--pulim-size-control</code></dt><dd>52px</dd></div><div><dt>태그 최소 높이<code>--pulim-size-tag</code></dt><dd>32px</dd></div><div><dt>스위치 너비<code>--pulim-size-switch-track</code></dt><dd>46px</dd></div><div><dt>스위치 손잡이<code>--pulim-size-switch-thumb</code></dt><dd>28px</dd></div><div><dt>슬라이더 높이<code>--pulim-size-slider-track</code></dt><dd>32px</dd></div></dl></article><article class="metric"><h3>레이아웃</h3><dl><div><dt>헤더 최대 너비<code>--pulim-layout-header-max</code></dt><dd>960px</dd></div><div><dt>본문 최대 너비<code>--pulim-layout-content-max</code></dt><dd>740px</dd></div><div><dt>문제 최대 너비<code>--pulim-layout-question-max</code></dt><dd>704px</dd></div><div><dt>모달 최대 너비<code>--pulim-layout-dialog-max</code></dt><dd>520px</dd></div><div><dt>좌측 메뉴 너비<code>--harueum-nav-size</code></dt><dd>216px</dd></div></dl></article><article class="metric"><h3>상태와 동작</h3><dl><div><dt>버튼 기본 면<code>--pulim-state-rest-tint</code></dt><dd>10%</dd></div><div><dt>판정 배경<code>--pulim-state-result-tint</code></dt><dd>18%</dd></div><div><dt>비활성 불투명도<code>--pulim-state-disabled-opacity</code></dt><dd>.6</dd></div><div><dt>눌림 테두리 면 비율<code>--pulim-state-pressed-edge-face</code></dt><dd>86.666667%</dd></div><div><dt>눌림 그림자 면 비율<code>--pulim-state-pressed-depth-face</code></dt><dd>73.333333%</dd></div><div><dt>전환 시간<code>--pulim-motion-switch</code></dt><dd>150ms</dd></div></dl></article></div></section>
+</main><footer>Harueum_Design_System_1.0_rev24.html</footer><div id="notice" role="status" aria-live="polite"></div>
+<script>
+const themeButtons = document.querySelectorAll('[data-theme-choice]');
+const swatches = document.querySelectorAll('[data-copy]');
+const notice = document.getElementById('notice');
+let noticeTimer;
+
+for (const button of themeButtons) {
+  button.addEventListener('click', () => {
+    const theme = button.dataset.themeChoice;
+    document.documentElement.dataset.theme = theme;
+    for (const choice of themeButtons) choice.setAttribute('aria-pressed', String(choice === button));
+    for (const swatch of swatches) swatch.querySelector('.hex').textContent = swatch.dataset[theme];
+  });
+}
+
+for (const swatch of swatches) {
+  swatch.addEventListener('click', async () => {
+    const value = swatch.dataset[document.documentElement.dataset.theme];
+    try {
+      await navigator.clipboard.writeText(value);
+      notice.textContent = value + ' 복사됨';
+    } catch {
+      const range = document.createRange();
+      range.selectNodeContents(swatch.querySelector('.hex'));
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      notice.textContent = value + ' 선택됨';
+    }
+    clearTimeout(noticeTimer);
+    noticeTimer = setTimeout(() => { notice.textContent = ''; }, 2200);
+  });
+}
+
+const iconTiles = [...document.querySelectorAll('[data-icon-copy]')];
+for (const tile of iconTiles) {
+  tile.addEventListener('click', async () => {
+    const code = tile.querySelector('code');
+    try {
+      await navigator.clipboard.writeText(tile.dataset.iconCopy);
+      notice.textContent = tile.dataset.iconCopy + ' 복사됨';
+    } catch {
+      const range = document.createRange();
+      range.selectNodeContents(code);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      notice.textContent = tile.dataset.iconCopy + ' 선택됨';
+    }
+    clearTimeout(noticeTimer);
+    noticeTimer = setTimeout(() => { notice.textContent = ''; }, 2200);
+  });
+}
+document.getElementById('icon-filter').addEventListener('input', event => {
+  const query = event.currentTarget.value.trim().toLowerCase();
+  for (const tile of iconTiles) tile.hidden = !tile.textContent.toLowerCase().includes(query);
+  for (const group of document.querySelectorAll('.icon-group')) {
+    group.hidden = !group.querySelector('.icon-tile:not([hidden])');
+  }
+  document.getElementById('icon-empty').hidden = iconTiles.some(tile => !tile.hidden);
+});
+for (const control of document.querySelectorAll('[data-demo-pressed], [data-demo-checked]')) {
+  const attr = control.matches('[data-demo-pressed]') ? 'aria-pressed' : 'aria-checked';
+  control.addEventListener('click', () => control.setAttribute(attr, String(control.getAttribute(attr) !== 'true')));
+}
+</script></body></html>

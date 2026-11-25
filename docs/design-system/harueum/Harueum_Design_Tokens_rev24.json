@@ -1,0 +1,498 @@
+{
+  "name": "Harueum Design System",
+  "source": "Harueum_Design_System_1.0_rev24.html",
+  "revision": 24,
+  "base": {
+    "--pulim-palette-black": "#000000",
+    "--pulim-palette-charcoal": "#202020",
+    "--pulim-palette-silver": "#dedede",
+    "--pulim-palette-white": "#ffffff",
+    "--pulim-palette-red": "#942339",
+    "--pulim-palette-pink": "#a65170",
+    "--pulim-palette-orange": "#894522",
+    "--pulim-palette-yellow": "#8a661c",
+    "--pulim-palette-green": "#226440",
+    "--pulim-palette-lime": "#71872f",
+    "--pulim-palette-blue": "#315f91",
+    "--pulim-palette-indigo": "#435596",
+    "--pulim-palette-violet": "#6b4b84",
+    "--pulim-solid-palette-lime": "#627529",
+    "--pulim-role-start": "var(--pulim-palette-green)",
+    "--pulim-role-info": "var(--pulim-palette-blue)",
+    "--pulim-role-review": "var(--pulim-palette-yellow)",
+    "--pulim-role-streak": "var(--pulim-palette-orange)",
+    "--pulim-role-save": "var(--pulim-palette-yellow)",
+    "--pulim-role-share": "var(--pulim-palette-blue)",
+    "--pulim-role-danger": "var(--pulim-palette-red)",
+    "--pulim-role-correct": "var(--pulim-palette-green)",
+    "--pulim-role-incorrect": "var(--pulim-palette-red)",
+    "--pulim-role-hint": "var(--pulim-palette-yellow)",
+    "--pulim-role-mode-a": "var(--pulim-palette-yellow)",
+    "--pulim-role-mode-b": "var(--pulim-palette-green)",
+    "--pulim-role-mode-c": "var(--pulim-palette-blue)",
+    "--pulim-role-difficulty-low": "var(--pulim-palette-green)",
+    "--pulim-role-difficulty-medium": "var(--pulim-palette-yellow)",
+    "--pulim-role-difficulty-high": "var(--pulim-palette-red)",
+    "--pulim-role-subject-math": "var(--pulim-palette-blue)",
+    "--pulim-role-subject-english": "var(--pulim-palette-violet)",
+    "--pulim-role-unit-coordinate": "var(--pulim-palette-blue)",
+    "--pulim-role-unit-lines": "var(--pulim-palette-green)",
+    "--pulim-role-unit-circles": "var(--pulim-palette-yellow)",
+    "--pulim-role-unit-transformations": "var(--pulim-palette-indigo)",
+    "--pulim-role-unit-sets": "var(--pulim-palette-violet)",
+    "--pulim-role-unit-propositions": "var(--pulim-palette-red)",
+    "--pulim-role-unit-functions": "var(--pulim-palette-pink)",
+    "--pulim-role-unit-rational": "var(--pulim-palette-lime)",
+    "--pulim-role-unit-radical": "var(--pulim-palette-orange)",
+    "--pulim-space-4": "4px",
+    "--pulim-space-8": "8px",
+    "--pulim-space-12": "12px",
+    "--pulim-space-16": "16px",
+    "--pulim-space-24": "24px",
+    "--pulim-radius-ui": "10px",
+    "--pulim-radius-detail": "2px",
+    "--pulim-stroke-border": "2px",
+    "--pulim-stroke-depth": "2px",
+    "--pulim-size-icon": "24px",
+    "--pulim-size-icon-small": "18px",
+    "--pulim-size-tool": "44px",
+    "--pulim-size-control": "52px",
+    "--pulim-size-tag": "32px",
+    "--pulim-size-switch-track": "46px",
+    "--pulim-size-switch-thumb": "28px",
+    "--pulim-size-slider-track": "32px",
+    "--pulim-layout-header-max": "960px",
+    "--pulim-layout-content-max": "740px",
+    "--pulim-layout-question-max": "704px",
+    "--pulim-layout-dialog-max": "520px",
+    "--pulim-font-meta": "14px",
+    "--pulim-font-body": "17px",
+    "--pulim-font-problem": "20px",
+    "--pulim-font-section": "22px",
+    "--pulim-font-title": "29px",
+    "--pulim-type-weight-normal": "400",
+    "--pulim-type-weight-strong": "700",
+    "--pulim-type-line-body": "1.55",
+    "--pulim-type-line-control": "1.3",
+    "--pulim-type-line-title": "1.28",
+    "--pulim-type-line-problem": "1.64",
+    "--pulim-motion-switch": "150ms",
+    "--pulim-state-rest-tint": "10%",
+    "--pulim-state-pressed-edge-face": "86.666667%",
+    "--pulim-state-pressed-depth-face": "73.333333%",
+    "--pulim-state-result-tint": "18%",
+    "--pulim-state-disabled-opacity": ".6",
+    "--harueum-nav-size": "216px",
+    "--harueum-context-max": "288px",
+    "--harueum-workspace-top": "var(--pulim-space-12)",
+    "--harueum-type-weight-medium": "500",
+    "--harueum-current-wash": "color-mix(in srgb, var(--pulim-status-info) 10%, transparent)",
+    "--harueum-focus-wash": "color-mix(in srgb, var(--pulim-focus-ring) 10%, transparent)"
+  },
+  "themes": {
+    "light": {
+      "--pulim-surface-page": "#f8f8f8",
+      "--pulim-surface-panel": "#ffffff",
+      "--pulim-text-default": "#161616",
+      "--pulim-text-secondary": "#494949",
+      "--pulim-text-control": "#282828",
+      "--pulim-line-control": "#777777",
+      "--pulim-line-divider": "#d1d1d1",
+      "--pulim-control-wash": "#ededed",
+      "--pulim-action-skip-fill": "#747474",
+      "--pulim-control-neutral-fill": "#242424",
+      "--pulim-text-on-control-pressed": "#ffffff",
+      "--pulim-font-family": "\"Noto Sans KR\", \"Noto Sans CJK KR\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+      "--pulim-status-correct": "var(--pulim-role-correct)",
+      "--pulim-status-incorrect": "var(--pulim-role-incorrect)",
+      "--pulim-status-hint": "var(--pulim-role-hint)",
+      "--pulim-status-review": "var(--pulim-role-review)",
+      "--pulim-status-info": "var(--pulim-role-info)",
+      "--pulim-status-streak": "var(--pulim-role-streak)",
+      "--pulim-focus-ring": "var(--pulim-palette-blue)"
+    },
+    "dark": {
+      "--pulim-surface-page": "#151515",
+      "--pulim-surface-panel": "#202020",
+      "--pulim-text-default": "#f4f4f4",
+      "--pulim-text-secondary": "#c7c7c7",
+      "--pulim-text-control": "#eeeeee",
+      "--pulim-line-control": "#8f8f8f",
+      "--pulim-line-divider": "#4a4a4a",
+      "--pulim-control-wash": "#303030",
+      "--pulim-action-skip-fill": "#343434",
+      "--pulim-control-neutral-fill": "#303030",
+      "--pulim-text-on-control-pressed": "#f4f4f4",
+      "--pulim-font-family": "\"Noto Sans KR\", \"Noto Sans CJK KR\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+      "--pulim-status-correct": "hsl(from var(--pulim-role-correct) h s calc(100 - l))",
+      "--pulim-status-incorrect": "hsl(from var(--pulim-role-incorrect) h s calc(100 - l))",
+      "--pulim-status-hint": "hsl(from var(--pulim-role-hint) h s calc(100 - l))",
+      "--pulim-status-review": "hsl(from var(--pulim-role-review) h s calc(100 - l))",
+      "--pulim-status-info": "hsl(from var(--pulim-role-info) h s calc(100 - l))",
+      "--pulim-status-streak": "hsl(from var(--pulim-role-streak) h s calc(100 - l))",
+      "--pulim-focus-ring": "var(--pulim-status-info)"
+    },
+    "paper": {
+      "--pulim-surface-page": "#eee8d9",
+      "--pulim-surface-panel": "#faf6e9",
+      "--pulim-text-default": "#27231e",
+      "--pulim-text-secondary": "#514a3e",
+      "--pulim-text-control": "#302a23",
+      "--pulim-line-control": "#817665",
+      "--pulim-line-divider": "#d0c5b2",
+      "--pulim-control-wash": "#e9e0cd",
+      "--pulim-action-skip-fill": "#747474",
+      "--pulim-control-neutral-fill": "#29251f",
+      "--pulim-text-on-control-pressed": "#ffffff",
+      "--pulim-font-family": "\"Noto Serif KR\", \"Noto Serif CJK KR\", serif",
+      "--pulim-status-correct": "var(--pulim-role-correct)",
+      "--pulim-status-incorrect": "var(--pulim-role-incorrect)",
+      "--pulim-status-hint": "var(--pulim-role-hint)",
+      "--pulim-status-review": "var(--pulim-role-review)",
+      "--pulim-status-info": "var(--pulim-role-info)",
+      "--pulim-status-streak": "var(--pulim-role-streak)",
+      "--pulim-focus-ring": "var(--pulim-palette-blue)"
+    }
+  },
+  "media": {
+    "(min-width: 720px)": {
+      "root": {
+        "--harueum-workspace-top": "var(--pulim-space-16)"
+      },
+      "scopedCustomProperties": {
+        ".study-answer-row": {
+          "--study-secondary-width": "calc(2 * var(--pulim-size-tool) + var(--pulim-space-4))"
+        },
+        ".study-answer-row:has(#study-share:not([hidden]))": {
+          "--study-secondary-width": "calc(3 * var(--pulim-size-tool) + 2 * var(--pulim-space-4))"
+        }
+      }
+    }
+  },
+  "scopedCustomProperties": {
+    "tokens": {
+      ".pulim-ui :where([data-tone=\"unit-rational\"])": {
+        "--tone-solid": "var(--pulim-solid-palette-lime)"
+      }
+    },
+    "components": {
+      ".pulim-ui": {
+        "--pulim-checked-edge": "color-mix(in srgb, var(--pulim-palette-green) var(--pulim-state-pressed-edge-face), var(--pulim-palette-black))"
+      },
+      ".pulim-ui :where([data-tone]:not([data-tone=\"neutral\"]))": {
+        "--tag-ink": "var(--pulim-palette-white)"
+      },
+      ".pulim-ui :where([data-tone=\"neutral\"])": {
+        "--tone": "initial",
+        "--tag-ink": "initial",
+        "--tone-solid": "initial"
+      },
+      ".pulim-ui :where([data-tone=\"save\"])": {
+        "--tone": "var(--pulim-role-save)"
+      },
+      ".pulim-ui :where([data-tone=\"share\"])": {
+        "--tone": "var(--pulim-role-share)"
+      },
+      ".pulim-ui :where([data-tone=\"danger\"])": {
+        "--tone": "var(--pulim-role-danger)"
+      },
+      ".pulim-ui :where([data-tone=\"correct\"])": {
+        "--tone": "var(--pulim-role-correct)"
+      },
+      ".pulim-ui :where([data-tone=\"incorrect\"])": {
+        "--tone": "var(--pulim-role-incorrect)"
+      },
+      ".pulim-ui :where([data-tone=\"hint\"])": {
+        "--tone": "var(--pulim-role-hint)"
+      },
+      ".pulim-ui :where([data-tone=\"info\"])": {
+        "--tone": "var(--pulim-role-info)"
+      },
+      ".pulim-ui :where([data-tone=\"review\"])": {
+        "--tone": "var(--pulim-role-review)"
+      },
+      ".pulim-ui :where([data-tone=\"streak\"])": {
+        "--tone": "var(--pulim-role-streak)"
+      },
+      ".pulim-ui :where([data-tone=\"mode-a\"])": {
+        "--tone": "var(--pulim-role-mode-a)"
+      },
+      ".pulim-ui :where([data-tone=\"mode-b\"])": {
+        "--tone": "var(--pulim-role-mode-b)"
+      },
+      ".pulim-ui :where([data-tone=\"mode-c\"])": {
+        "--tone": "var(--pulim-role-mode-c)"
+      },
+      ".pulim-ui :where([data-tone=\"difficulty-low\"])": {
+        "--tone": "var(--pulim-role-difficulty-low)"
+      },
+      ".pulim-ui :where([data-tone=\"difficulty-medium\"])": {
+        "--tone": "var(--pulim-role-difficulty-medium)"
+      },
+      ".pulim-ui :where([data-tone=\"difficulty-high\"])": {
+        "--tone": "var(--pulim-role-difficulty-high)"
+      },
+      ".pulim-ui :where([data-tone=\"math\"])": {
+        "--tone": "var(--pulim-role-subject-math)"
+      },
+      ".pulim-ui :where([data-tone=\"english\"])": {
+        "--tone": "var(--pulim-role-subject-english)"
+      },
+      ".pulim-ui :where([data-tone=\"unit-coordinate\"])": {
+        "--tone": "var(--pulim-role-unit-coordinate)"
+      },
+      ".pulim-ui :where([data-tone=\"unit-lines\"])": {
+        "--tone": "var(--pulim-role-unit-lines)"
+      },
+      ".pulim-ui :where([data-tone=\"unit-circles\"])": {
+        "--tone": "var(--pulim-role-unit-circles)"
+      },
+      ".pulim-ui :where([data-tone=\"unit-transformations\"])": {
+        "--tone": "var(--pulim-role-unit-transformations)"
+      },
+      ".pulim-ui :where([data-tone=\"unit-sets\"])": {
+        "--tone": "var(--pulim-role-unit-sets)"
+      },
+      ".pulim-ui :where([data-tone=\"unit-propositions\"])": {
+        "--tone": "var(--pulim-role-unit-propositions)"
+      },
+      ".pulim-ui :where([data-tone=\"unit-functions\"])": {
+        "--tone": "var(--pulim-role-unit-functions)"
+      },
+      ".pulim-ui :where([data-tone=\"unit-rational\"])": {
+        "--tone": "var(--pulim-role-unit-rational)"
+      },
+      ".pulim-ui :where([data-tone=\"unit-radical\"])": {
+        "--tone": "var(--pulim-role-unit-radical)"
+      },
+      ".pulim-control": {
+        "--edge": "var(--tone, var(--pulim-line-control))",
+        "--face": "var(--tone-solid, var(--tone, var(--pulim-control-neutral-fill)))",
+        "--rest": "color-mix(in srgb, var(--edge) var(--pulim-state-rest-tint), transparent)"
+      },
+      ".pulim-control--primary": {
+        "--tone": "var(--pulim-role-start)"
+      },
+      ".pulim-control--skip": {
+        "--face": "var(--pulim-action-skip-fill)"
+      },
+      ".pulim-option[data-result=\"correct\"]": {
+        "--result": "var(--pulim-role-correct)",
+        "--result-ink": "var(--pulim-status-correct)"
+      },
+      ".pulim-option[data-result=\"incorrect\"]": {
+        "--result": "var(--pulim-role-incorrect)",
+        "--result-ink": "var(--pulim-status-incorrect)"
+      },
+      ".pulim-range": {
+        "--value": "0",
+        "--track-edge": "var(--pulim-line-control)",
+        "--thumb-edge": "var(--pulim-line-control)",
+        "--break": "calc(var(--pulim-size-switch-thumb) / 2 + (100% - var(--pulim-size-switch-thumb)) * var(--value))"
+      },
+      ".pulim-range[data-filled]": {
+        "--thumb-edge": "var(--pulim-checked-edge)"
+      }
+    },
+    "harueum": {
+      ".pulim-tag[data-tone=\"date\"]": {
+        "--tag-ink": "var(--pulim-text-secondary)",
+        "--tone": "var(--pulim-control-wash)"
+      },
+      ".subject-icon, .colored-icon": {
+        "--harueum-cue-ink": "var(--tone, var(--pulim-text-control))"
+      },
+      ".focus-shell, .study-screen": {
+        "--study-side": "max(var(--pulim-space-16), env(safe-area-inset-left), env(safe-area-inset-right))"
+      },
+      ":root[data-theme=\"dark\"] :is(.subject-icon, .colored-icon)": {
+        "--harueum-cue-ink": "color-mix(in srgb, var(--tone, var(--pulim-text-control)), var(--pulim-palette-white) 48%)"
+      }
+    }
+  },
+  "resolvedHexColors": {
+    "light": {
+      "--pulim-palette-black": "#000000",
+      "--pulim-palette-charcoal": "#202020",
+      "--pulim-palette-silver": "#DEDEDE",
+      "--pulim-palette-white": "#FFFFFF",
+      "--pulim-palette-red": "#942339",
+      "--pulim-palette-pink": "#A65170",
+      "--pulim-palette-orange": "#894522",
+      "--pulim-palette-yellow": "#8A661C",
+      "--pulim-palette-green": "#226440",
+      "--pulim-palette-lime": "#71872F",
+      "--pulim-palette-blue": "#315F91",
+      "--pulim-palette-indigo": "#435596",
+      "--pulim-palette-violet": "#6B4B84",
+      "--pulim-solid-palette-lime": "#627529",
+      "--pulim-role-start": "#226440",
+      "--pulim-role-info": "#315F91",
+      "--pulim-role-review": "#8A661C",
+      "--pulim-role-streak": "#894522",
+      "--pulim-role-save": "#8A661C",
+      "--pulim-role-share": "#315F91",
+      "--pulim-role-danger": "#942339",
+      "--pulim-role-correct": "#226440",
+      "--pulim-role-incorrect": "#942339",
+      "--pulim-role-hint": "#8A661C",
+      "--pulim-role-mode-a": "#8A661C",
+      "--pulim-role-mode-b": "#226440",
+      "--pulim-role-mode-c": "#315F91",
+      "--pulim-role-difficulty-low": "#226440",
+      "--pulim-role-difficulty-medium": "#8A661C",
+      "--pulim-role-difficulty-high": "#942339",
+      "--pulim-role-subject-math": "#315F91",
+      "--pulim-role-subject-english": "#6B4B84",
+      "--pulim-role-unit-coordinate": "#315F91",
+      "--pulim-role-unit-lines": "#226440",
+      "--pulim-role-unit-circles": "#8A661C",
+      "--pulim-role-unit-transformations": "#435596",
+      "--pulim-role-unit-sets": "#6B4B84",
+      "--pulim-role-unit-propositions": "#942339",
+      "--pulim-role-unit-functions": "#A65170",
+      "--pulim-role-unit-rational": "#71872F",
+      "--pulim-role-unit-radical": "#894522",
+      "--pulim-surface-page": "#F8F8F8",
+      "--pulim-surface-panel": "#FFFFFF",
+      "--pulim-text-default": "#161616",
+      "--pulim-text-secondary": "#494949",
+      "--pulim-text-control": "#282828",
+      "--pulim-line-control": "#777777",
+      "--pulim-line-divider": "#D1D1D1",
+      "--pulim-control-wash": "#EDEDED",
+      "--pulim-action-skip-fill": "#747474",
+      "--pulim-control-neutral-fill": "#242424",
+      "--pulim-text-on-control-pressed": "#FFFFFF",
+      "--pulim-status-correct": "#226440",
+      "--pulim-status-incorrect": "#942339",
+      "--pulim-status-hint": "#8A661C",
+      "--pulim-status-review": "#8A661C",
+      "--pulim-status-info": "#315F91",
+      "--pulim-status-streak": "#894522",
+      "--pulim-focus-ring": "#315F91"
+    },
+    "dark": {
+      "--pulim-palette-black": "#000000",
+      "--pulim-palette-charcoal": "#202020",
+      "--pulim-palette-silver": "#DEDEDE",
+      "--pulim-palette-white": "#FFFFFF",
+      "--pulim-palette-red": "#942339",
+      "--pulim-palette-pink": "#A65170",
+      "--pulim-palette-orange": "#894522",
+      "--pulim-palette-yellow": "#8A661C",
+      "--pulim-palette-green": "#226440",
+      "--pulim-palette-lime": "#71872F",
+      "--pulim-palette-blue": "#315F91",
+      "--pulim-palette-indigo": "#435596",
+      "--pulim-palette-violet": "#6B4B84",
+      "--pulim-solid-palette-lime": "#627529",
+      "--pulim-role-start": "#226440",
+      "--pulim-role-info": "#315F91",
+      "--pulim-role-review": "#8A661C",
+      "--pulim-role-streak": "#894522",
+      "--pulim-role-save": "#8A661C",
+      "--pulim-role-share": "#315F91",
+      "--pulim-role-danger": "#942339",
+      "--pulim-role-correct": "#226440",
+      "--pulim-role-incorrect": "#942339",
+      "--pulim-role-hint": "#8A661C",
+      "--pulim-role-mode-a": "#8A661C",
+      "--pulim-role-mode-b": "#226440",
+      "--pulim-role-mode-c": "#315F91",
+      "--pulim-role-difficulty-low": "#226440",
+      "--pulim-role-difficulty-medium": "#8A661C",
+      "--pulim-role-difficulty-high": "#942339",
+      "--pulim-role-subject-math": "#315F91",
+      "--pulim-role-subject-english": "#6B4B84",
+      "--pulim-role-unit-coordinate": "#315F91",
+      "--pulim-role-unit-lines": "#226440",
+      "--pulim-role-unit-circles": "#8A661C",
+      "--pulim-role-unit-transformations": "#435596",
+      "--pulim-role-unit-sets": "#6B4B84",
+      "--pulim-role-unit-propositions": "#942339",
+      "--pulim-role-unit-functions": "#A65170",
+      "--pulim-role-unit-rational": "#71872F",
+      "--pulim-role-unit-radical": "#894522",
+      "--pulim-surface-page": "#151515",
+      "--pulim-surface-panel": "#202020",
+      "--pulim-text-default": "#F4F4F4",
+      "--pulim-text-secondary": "#C7C7C7",
+      "--pulim-text-control": "#EEEEEE",
+      "--pulim-line-control": "#8F8F8F",
+      "--pulim-line-divider": "#4A4A4A",
+      "--pulim-control-wash": "#303030",
+      "--pulim-action-skip-fill": "#343434",
+      "--pulim-control-neutral-fill": "#303030",
+      "--pulim-text-on-control-pressed": "#F4F4F4",
+      "--pulim-status-correct": "#9BDDB9",
+      "--pulim-status-incorrect": "#DC6B81",
+      "--pulim-status-hint": "#E3BF75",
+      "--pulim-status-review": "#E3BF75",
+      "--pulim-status-info": "#6E9CCE",
+      "--pulim-status-streak": "#DD9976",
+      "--pulim-focus-ring": "#6E9CCE"
+    },
+    "paper": {
+      "--pulim-palette-black": "#000000",
+      "--pulim-palette-charcoal": "#202020",
+      "--pulim-palette-silver": "#DEDEDE",
+      "--pulim-palette-white": "#FFFFFF",
+      "--pulim-palette-red": "#942339",
+      "--pulim-palette-pink": "#A65170",
+      "--pulim-palette-orange": "#894522",
+      "--pulim-palette-yellow": "#8A661C",
+      "--pulim-palette-green": "#226440",
+      "--pulim-palette-lime": "#71872F",
+      "--pulim-palette-blue": "#315F91",
+      "--pulim-palette-indigo": "#435596",
+      "--pulim-palette-violet": "#6B4B84",
+      "--pulim-solid-palette-lime": "#627529",
+      "--pulim-role-start": "#226440",
+      "--pulim-role-info": "#315F91",
+      "--pulim-role-review": "#8A661C",
+      "--pulim-role-streak": "#894522",
+      "--pulim-role-save": "#8A661C",
+      "--pulim-role-share": "#315F91",
+      "--pulim-role-danger": "#942339",
+      "--pulim-role-correct": "#226440",
+      "--pulim-role-incorrect": "#942339",
+      "--pulim-role-hint": "#8A661C",
+      "--pulim-role-mode-a": "#8A661C",
+      "--pulim-role-mode-b": "#226440",
+      "--pulim-role-mode-c": "#315F91",
+      "--pulim-role-difficulty-low": "#226440",
+      "--pulim-role-difficulty-medium": "#8A661C",
+      "--pulim-role-difficulty-high": "#942339",
+      "--pulim-role-subject-math": "#315F91",
+      "--pulim-role-subject-english": "#6B4B84",
+      "--pulim-role-unit-coordinate": "#315F91",
+      "--pulim-role-unit-lines": "#226440",
+      "--pulim-role-unit-circles": "#8A661C",
+      "--pulim-role-unit-transformations": "#435596",
+      "--pulim-role-unit-sets": "#6B4B84",
+      "--pulim-role-unit-propositions": "#942339",
+      "--pulim-role-unit-functions": "#A65170",
+      "--pulim-role-unit-rational": "#71872F",
+      "--pulim-role-unit-radical": "#894522",
+      "--pulim-surface-page": "#EEE8D9",
+      "--pulim-surface-panel": "#FAF6E9",
+      "--pulim-text-default": "#27231E",
+      "--pulim-text-secondary": "#514A3E",
+      "--pulim-text-control": "#302A23",
+      "--pulim-line-control": "#817665",
+      "--pulim-line-divider": "#D0C5B2",
+      "--pulim-control-wash": "#E9E0CD",
+      "--pulim-action-skip-fill": "#747474",
+      "--pulim-control-neutral-fill": "#29251F",
+      "--pulim-text-on-control-pressed": "#FFFFFF",
+      "--pulim-status-correct": "#226440",
+      "--pulim-status-incorrect": "#942339",
+      "--pulim-status-hint": "#8A661C",
+      "--pulim-status-review": "#8A661C",
+      "--pulim-status-info": "#315F91",
+      "--pulim-status-streak": "#894522",
+      "--pulim-focus-ring": "#315F91"
+    }
+  }
+}
